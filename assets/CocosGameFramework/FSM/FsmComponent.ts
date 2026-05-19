@@ -1,4 +1,5 @@
-import { _decorator, Component } from 'cc';
+import { _decorator } from 'cc';
+import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
 import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
 import { FsmManager } from '../../GameFramework/FSM/FsmManager';
@@ -8,12 +9,13 @@ import { IFsm } from '../../GameFramework/FSM/IFsm';
 const { ccclass } = _decorator;
 
 @ccclass('FsmComponent')
-export class FsmComponent extends Component {
+export class FsmComponent extends GameFrameworkComponent {
     private _manager!: FsmManager;
 
     get manager(): FsmManager { return this._manager; }
 
     onLoad(): void {
+        super.onLoad();
         this._manager = new FsmManager();
         GameFrameworkEntry.registerModule(MODULE_ID.FSM, this._manager);
     }
@@ -24,15 +26,23 @@ export class FsmComponent extends Component {
         return this._manager.createFsm(name, owner, states);
     }
 
-    destroyFsm<T extends object>(name: string): boolean {
-        return this._manager.destroyFsm(name);
+    hasFsm<T extends object>(ownerCtor: new (...args: any[]) => T, name: string = ''): boolean {
+        return this._manager.hasFsm(ownerCtor, name);
     }
 
-    hasFsm(name: string): boolean {
-        return this._manager.hasFsm(name);
+    getFsm<T extends object>(ownerCtor: new (...args: any[]) => T, name: string = ''): IFsm<T> | null {
+        return this._manager.getFsm<T>(ownerCtor, name);
     }
 
-    getFsm<T extends object>(name: string): IFsm<T> | null {
-        return this._manager.getFsm<T>(name);
+    getAllFsms(): IFsm<any>[] {
+        return this._manager.getAllFsms();
+    }
+
+    destroyFsm<T extends object>(ownerCtor: new (...args: any[]) => T, name: string = ''): boolean {
+        return this._manager.destroyFsm(ownerCtor, name);
+    }
+
+    destroyFsmByInstance<T extends object>(fsm: IFsm<T>): boolean {
+        return this._manager.destroyFsmByInstance(fsm);
     }
 }

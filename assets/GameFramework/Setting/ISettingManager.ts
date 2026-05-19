@@ -1,19 +1,31 @@
+import { ISettingHelper } from './ISettingHelper';
+
 export interface ISettingManager {
-    load(): void;
-    save(): void;
+    readonly count: number;
 
-    hasKey(key: string): boolean;
-    removeKey(key: string): void;
+    setSettingHelper(settingHelper: ISettingHelper): void;
 
-    getInt(key: string, defaultValue?: number): number;
-    getFloat(key: string, defaultValue?: number): number;
-    getBool(key: string, defaultValue?: boolean): boolean;
-    getString(key: string, defaultValue?: string): string;
-    getObject<T>(key: string, defaultValue?: T): T | null;
+    load(): boolean;
+    save(): boolean;
 
-    setInt(key: string, value: number): void;
-    setFloat(key: string, value: number): void;
-    setBool(key: string, value: boolean): void;
-    setString(key: string, value: string): void;
-    setObject<T>(key: string, value: T): void;
+    getAllSettingNames(): string[];
+
+    hasKey(settingName: string): boolean;
+    removeKey(settingName: string): boolean;
+    removeAllSettings(): void;
+
+    getBool(settingName: string, defaultValue?: boolean): boolean;
+    setBool(settingName: string, value: boolean): void;
+
+    getInt(settingName: string, defaultValue?: number): number;
+    setInt(settingName: string, value: number): void;
+
+    getFloat(settingName: string, defaultValue?: number): number;
+    setFloat(settingName: string, value: number): void;
+
+    getString(settingName: string, defaultValue?: string): string;
+    setString(settingName: string, value: string): void;
+
+    getObject<T>(settingName: string, defaultValue?: T | null): T | null;
+    setObject<T>(settingName: string, obj: T): void;
 }

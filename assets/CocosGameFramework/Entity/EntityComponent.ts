@@ -1,4 +1,5 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Node } from 'cc';
+import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
 import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
 import { EntityManager } from '../../GameFramework/Entity/EntityManager';
@@ -37,7 +38,7 @@ class EntityGroupConfig {
 }
 
 @ccclass('EntityComponent')
-export class EntityComponent extends Component {
+export class EntityComponent extends GameFrameworkComponent {
     @property({ type: Node, tooltip: '所有实体分组节点的挂载根节点' })
     entityRoot: Node | null = null;
 
@@ -53,6 +54,7 @@ export class EntityComponent extends Component {
     // ---- 生命周期 ----
 
     onLoad(): void {
+        super.onLoad();
         this._manager = new EntityManager();
 
         const resourceMgr = GameFrameworkEntry.getModule(CocosResourceManager, MODULE_ID.RESOURCE);

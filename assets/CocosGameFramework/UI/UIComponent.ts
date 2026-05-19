@@ -1,4 +1,5 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Node } from 'cc';
+import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
 import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
 import { UIManager } from '../../GameFramework/UI/UIManager';
@@ -25,7 +26,7 @@ class UIGroupConfigData {
 }
 
 @ccclass('UIComponent')
-export class UIComponent extends Component {
+export class UIComponent extends GameFrameworkComponent {
     @property({ type: Node, tooltip: 'UI 根节点' })
     uiRoot: Node | null = null;
 
@@ -54,6 +55,7 @@ export class UIComponent extends Component {
     get manager(): UIManager { return this._manager; }
 
     onLoad(): void {
+        super.onLoad();
         this._manager = new UIManager();
 
         const resourceMgr = GameFrameworkEntry.getModule(CocosResourceManager, MODULE_ID.RESOURCE);

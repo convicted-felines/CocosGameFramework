@@ -1,3 +1,7 @@
+import { INetworkChannel } from './INetworkChannel';
+import { INetworkChannelHelper } from './INetworkChannelHelper';
+import { Packet } from './Packet';
+
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
 export interface IHttpRequestParams {
@@ -16,13 +20,36 @@ export interface IHttpResponse {
 export type HttpSuccessCallback = (response: IHttpResponse, userData?: object) => void;
 export type HttpFailureCallback = (url: string, errorMessage: string, userData?: object) => void;
 
-export type WsMessageCallback = (channelName: string, data: string | ArrayBuffer) => void;
-export type WsOpenCallback = (channelName: string) => void;
-export type WsCloseCallback = (channelName: string, code: number, reason: string) => void;
-export type WsErrorCallback = (channelName: string, errorMessage: string) => void;
-
 export interface INetworkManager {
-    // HTTP
+    /** 网络频道数量 */
+    readonly networkChannelCount: number;
+
+    // ── WebSocket 频道管理 ────────────────────────────────────────────────
+
+    /** 是否存在指定网络频道 */
+    hasNetworkChannel(name: string): boolean;
+
+    /** 获取指定网络频道 */
+    getNetworkChannel(name: string): INetworkChannel | null;
+
+    /** 获取所有网络频道 */
+    getAllNetworkChannels(): INetworkChannel[];
+
+    /**
+     * 创建网络频道（WebSocket）。
+     * @param name 频道名称
+     * @param helper 频道辅助器（可选，传入自定义辅助器以实现心跳/序列化）
+     */
+    createNetworkChannel(name: string, helper?: INetworkChannelHelper): INetworkChannel;
+
+    /** 销毁网络频道，返回是否成功 */
+    destroyNetworkChannel(name: string): boolean;
+
+    /** 向指定频道发送消息包 */
+    sendPacket<T extends Packet>(channelName: string, packet: T): boolean;
+
+    // ── HTTP ──────────────────────────────────────────────────────────────
+
     sendRequest(
         url: string,
         params?: IHttpRequestParams,
@@ -32,18 +59,4 @@ export interface INetworkManager {
     ): void;
 
     sendRequestAsync(url: string, params?: IHttpRequestParams): Promise<IHttpResponse>;
-
-    // WebSocket
-    createWebSocketChannel(
-        channelName: string,
-        url: string,
-        onOpen?: WsOpenCallback,
-        onMessage?: WsMessageCallback,
-        onClose?: WsCloseCallback,
-        onError?: WsErrorCallback
-    ): void;
-
-    sendWebSocketMessage(channelName: string, data: string | ArrayBuffer): boolean;
-    closeWebSocketChannel(channelName: string): void;
-    hasWebSocketChannel(channelName: string): boolean;
 }

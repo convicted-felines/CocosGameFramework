@@ -1,7 +1,3 @@
-export type SceneLoadedCallback = (sceneName: string, duration: number, userData?: object) => void;
-export type SceneUnloadedCallback = (sceneName: string, userData?: object) => void;
-export type SceneFailureCallback = (sceneName: string, errorMessage: string, userData?: object) => void;
-
 export interface ISceneManager {
     readonly loadedSceneCount: number;
 
@@ -24,4 +20,10 @@ export interface ISceneManager {
     sceneIsUnloading(sceneName: string): boolean;
 
     getLoadedSceneNames(): string[];
+    getLoadingSceneNames(): string[];
+    getUnloadingSceneNames(): string[];
 }
+
+export type SceneLoadedCallback = (sceneName: string, duration: number, userData?: object) => void;
+export type SceneUnloadedCallback = (sceneName: string, userData?: object) => void;
+export type SceneFailureCallback = (sceneName: string, errorMessage: string, userData?: object) => void;

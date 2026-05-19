@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"d:\\\\CocosProject\\\\CocosGameFramework\\\\assets\" -Directory)",
+      "WebSearch",
+      "PowerShell(New-Item -ItemType Directory -Force \"d:\\\\CocosProject\\\\CocosGameFramework\\\\assets\\\\GameFramework\\\\Utility\")"
+    ]
+  }
+}

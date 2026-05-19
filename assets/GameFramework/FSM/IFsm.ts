@@ -2,7 +2,9 @@ import { FsmState } from './FsmState';
 
 export interface IFsm<T extends object> {
     readonly name: string;
+    readonly fullName: string;
     readonly owner: T;
+    readonly ownerType: Function;
     readonly stateCount: number;
     readonly isRunning: boolean;
     readonly isDestroyed: boolean;
@@ -16,6 +18,7 @@ export interface IFsm<T extends object> {
     getAllStates(): FsmState<T>[];
     changeState<TState extends FsmState<T>>(ctor: new (...args: any[]) => TState): void;
 
+    hasData(name: string): boolean;
     setData<TData>(name: string, data: TData): void;
     getData<TData>(name: string): TData | undefined;
     removeData(name: string): boolean;

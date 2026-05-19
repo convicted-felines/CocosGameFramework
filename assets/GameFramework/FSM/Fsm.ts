@@ -28,7 +28,9 @@ export class Fsm<T extends object> implements IFsm<T> {
     }
 
     get name(): string { return this._name; }
+    get fullName(): string { return `${this._owner.constructor.name}.${this._name}`; }
     get owner(): T { return this._owner; }
+    get ownerType(): Function { return this._owner.constructor; }
     get stateCount(): number { return this._states.size; }
     get isRunning(): boolean { return this._isRunning; }
     get isDestroyed(): boolean { return this._isDestroyed; }
@@ -74,10 +76,15 @@ export class Fsm<T extends object> implements IFsm<T> {
             );
         }
         const prevState = this._currentState;
+        // call onLeave before switching so the leaving state still sees itself as current
+        prevState?.onLeave(this, false);
         this._currentState = nextState;
         this._currentStateTime = 0;
-        prevState?.onLeave(this, false);
         nextState.onEnter(this);
+    }
+
+    hasData(name: string): boolean {
+        return this._data.has(name);
     }
 
     setData<TData>(name: string, data: TData): void {

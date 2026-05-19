@@ -3,9 +3,11 @@ import { IDataTable } from './IDataTable';
 import { GameFrameworkError } from '../Base/GameFrameworkError';
 
 export class DataTable<T extends IDataRow> implements IDataTable<T> {
-    private _name: string;
-    private _rowType: new () => T;
-    private _rows: Map<number, T> = new Map();
+    private readonly _name: string;
+    private readonly _rowType: new () => T;
+    private readonly _rows: Map<number, T> = new Map();
+    private _minIdDataRow: T | null = null;
+    private _maxIdDataRow: T | null = null;
 
     constructor(name: string, rowType: new () => T) {
         this._name = name;
@@ -14,44 +16,145 @@ export class DataTable<T extends IDataRow> implements IDataTable<T> {
 
     get name(): string { return this._name; }
     get count(): number { return this._rows.size; }
+    get minIdDataRow(): T | null { return this._minIdDataRow; }
+    get maxIdDataRow(): T | null { return this._maxIdDataRow; }
 
-    hasDataRow(id: number): boolean { return this._rows.has(id); }
+    // ---- 查询 ----
 
-    getDataRow(id: number): T | null { return this._rows.get(id) ?? null; }
-
-    getAllDataRows(): T[] { return Array.from(this._rows.values()); }
-
-    parseFromCsv(csv: string): boolean {
-        const lines = csv.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-        // 第一行为字段名（注释），第二行起为数据
-        const dataLines = lines.filter(l => !l.startsWith('#'));
-        if (dataLines.length === 0) return true;
-
-        let success = true;
-        for (const line of dataLines) {
-            const fields = line.split(',').map(f => f.trim());
-            const row = new this._rowType();
-            if (row.parseFromRow(fields)) {
-                this._rows.set(row.id, row);
-            } else {
-                console.warn(`[DataTable] ${this._name}: failed to parse row: ${line}`);
-                success = false;
-            }
+    hasDataRow(idOrCondition: number | ((row: T) => boolean)): boolean {
+        if (typeof idOrCondition === 'number') {
+            return this._rows.has(idOrCondition);
         }
-        return success;
+        for (const row of this._rows.values()) {
+            if (idOrCondition(row)) return true;
+        }
+        return false;
     }
 
-    parseFromJson(jsonArray: Record<string, any>[]): boolean {
-        let success = true;
-        for (const data of jsonArray) {
-            const row = new this._rowType();
-            if (row.parseFromJson(data)) {
-                this._rows.set(row.id, row);
-            } else {
-                console.warn(`[DataTable] ${this._name}: failed to parse json row:`, data);
-                success = false;
-            }
+    getDataRow(idOrCondition: number | ((row: T) => boolean)): T | null {
+        if (typeof idOrCondition === 'number') {
+            return this._rows.get(idOrCondition) ?? null;
         }
-        return success;
+        for (const row of this._rows.values()) {
+            if (idOrCondition(row)) return row;
+        }
+        return null;
+    }
+
+    getDataRows(condition: (row: T) => boolean): T[] {
+        const results: T[] = [];
+        this.getDataRowsInto(condition, results);
+        return results;
+    }
+
+    getDataRowsInto(condition: (row: T) => boolean, results: T[]): void {
+        results.length = 0;
+        for (const row of this._rows.values()) {
+            if (condition(row)) results.push(row);
+        }
+    }
+
+    getDataRowsSorted(comparison: (a: T, b: T) => number): T[] {
+        const results: T[] = [];
+        this.getDataRowsSortedInto(comparison, results);
+        return results;
+    }
+
+    getDataRowsSortedInto(comparison: (a: T, b: T) => number, results: T[]): void {
+        results.length = 0;
+        for (const row of this._rows.values()) results.push(row);
+        results.sort(comparison);
+    }
+
+    getDataRowsFiltered(condition: (row: T) => boolean, comparison: (a: T, b: T) => number): T[] {
+        const results: T[] = [];
+        this.getDataRowsFilteredInto(condition, comparison, results);
+        return results;
+    }
+
+    getDataRowsFilteredInto(condition: (row: T) => boolean, comparison: (a: T, b: T) => number, results: T[]): void {
+        results.length = 0;
+        for (const row of this._rows.values()) {
+            if (condition(row)) results.push(row);
+        }
+        results.sort(comparison);
+    }
+
+    getAllDataRows(): T[] {
+        return Array.from(this._rows.values());
+    }
+
+    getAllDataRowsInto(results: T[]): void {
+        results.length = 0;
+        for (const row of this._rows.values()) results.push(row);
+    }
+
+    // ---- 逐行写入 ----
+
+    addDataRow(dataRowString: string, userData?: any): boolean {
+        const row = new this._rowType();
+        if (!row.parseDataRow(dataRowString, userData)) {
+            console.warn(`[DataTable] ${this._name}: failed to parse row: ${dataRowString}`);
+            return false;
+        }
+        if (this._rows.has(row.id)) {
+            throw new GameFrameworkError(`DataRow id [${row.id}] already exists in DataTable [${this._name}].`);
+        }
+        this._rows.set(row.id, row);
+        this._updateMinMax(row);
+        return true;
+    }
+
+    removeDataRow(id: number): boolean {
+        if (!this._rows.delete(id)) return false;
+        if ((this._minIdDataRow !== null && this._minIdDataRow.id === id) ||
+            (this._maxIdDataRow !== null && this._maxIdDataRow.id === id)) {
+            this._recalcMinMax();
+        }
+        return true;
+    }
+
+    removeAllDataRows(): void {
+        this._rows.clear();
+        this._minIdDataRow = null;
+        this._maxIdDataRow = null;
+    }
+
+    // ---- 批量解析 ----
+
+    parseData(dataTableString: string, userData?: any): boolean {
+        let pos = 0;
+        while (pos < dataTableString.length) {
+            const nl = dataTableString.indexOf('\n', pos);
+            const end = nl === -1 ? dataTableString.length : nl;
+            const line = dataTableString.substring(pos, end).replace(/[\r\s]+$/, '');
+            pos = end + 1;
+            if (line.length === 0 || line.charAt(0) === '#') continue;
+            if (!this.addDataRow(line, userData)) return false;
+        }
+        return true;
+    }
+
+    // ---- Iterator ----
+
+    [Symbol.iterator](): Iterator<T> {
+        return this._rows.values();
+    }
+
+    // ---- Internal ----
+
+    private _updateMinMax(row: T): void {
+        if (this._minIdDataRow === null || row.id < this._minIdDataRow.id) this._minIdDataRow = row;
+        if (this._maxIdDataRow === null || row.id > this._maxIdDataRow.id) this._maxIdDataRow = row;
+    }
+
+    private _recalcMinMax(): void {
+        this._minIdDataRow = null;
+        this._maxIdDataRow = null;
+        for (const row of this._rows.values()) this._updateMinMax(row);
+    }
+
+    shutdown(): void {
+        this.removeAllDataRows();
     }
 }

@@ -1,4 +1,4 @@
 import { FsmState } from '../FSM/FsmState';
-import { ProcedureManager } from './ProcedureManager';
+import { IProcedureManager } from './IProcedureManager';
 
-export abstract class ProcedureBase extends FsmState<ProcedureManager> {}
+export abstract class ProcedureBase extends FsmState<IProcedureManager> {}

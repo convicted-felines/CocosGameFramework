@@ -1,4 +1,5 @@
-import { _decorator, Component } from 'cc';
+import { _decorator } from 'cc';
+import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
 import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
 import { LocalizationManager } from '../../GameFramework/Localization/LocalizationManager';
@@ -6,7 +7,7 @@ import { LocalizationManager } from '../../GameFramework/Localization/Localizati
 const { ccclass, property } = _decorator;
 
 @ccclass('LocalizationComponent')
-export class LocalizationComponent extends Component {
+export class LocalizationComponent extends GameFrameworkComponent {
     /** 默认语言标签，如 'zh-CN'、'en-US' */
     @property({ tooltip: '默认语言标签（如 zh-CN、en-US）' })
     defaultLanguage: string = 'zh-CN';
@@ -16,6 +17,7 @@ export class LocalizationComponent extends Component {
     get manager(): LocalizationManager { return this._manager; }
 
     onLoad(): void {
+        super.onLoad();
         this._manager = new LocalizationManager();
         this._manager.language = this.defaultLanguage;
         GameFrameworkEntry.registerModule(MODULE_ID.LOCALIZATION, this._manager);

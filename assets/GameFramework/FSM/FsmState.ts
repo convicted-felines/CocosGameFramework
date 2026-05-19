@@ -1,4 +1,5 @@
 import { IFsm } from './IFsm';
+import { GameFrameworkError } from '../Base/GameFrameworkError';
 
 export abstract class FsmState<T extends object> {
 
@@ -16,6 +17,14 @@ export abstract class FsmState<T extends object> {
         fsm: IFsm<T>,
         ctor: new (...args: any[]) => TState
     ): void {
+        if (!fsm) {
+            throw new GameFrameworkError('FSM is invalid.');
+        }
+        if (!fsm.hasState(ctor)) {
+            throw new GameFrameworkError(
+                `State type '${ctor.name}' is invalid.`
+            );
+        }
         fsm.changeState(ctor);
     }
 }

@@ -1,84 +1,134 @@
 import { GameFrameworkModule } from '../Base/GameFrameworkModule';
+import { GameFrameworkError } from '../Base/GameFrameworkError';
 import { ISettingManager } from './ISettingManager';
-import { sys } from 'cc';
+import { ISettingHelper } from './ISettingHelper';
 
-// Web 平台使用 localStorage，Native 平台使用 sys.localStorage（JSB 等效实现）
 export class SettingManager extends GameFrameworkModule implements ISettingManager {
-    private _storage: Storage = sys.localStorage as unknown as Storage;
+    private _helper: ISettingHelper | null = null;
 
     get priority(): number { return 70; }
 
-    load(): void {
-        // localStorage 无需显式 load，已持久化
+    get count(): number {
+        this._checkHelper();
+        return this._helper!.count;
     }
 
-    save(): void {
-        // localStorage 自动持久化，无需显式 save
+    setSettingHelper(settingHelper: ISettingHelper): void {
+        if (!settingHelper) {
+            throw new GameFrameworkError('Setting helper is invalid.');
+        }
+        this._helper = settingHelper;
     }
 
-    hasKey(key: string): boolean {
-        return this._storage.getItem(key) !== null;
+    load(): boolean {
+        this._checkHelper();
+        return this._helper!.load();
     }
 
-    removeKey(key: string): void {
-        this._storage.removeItem(key);
+    save(): boolean {
+        this._checkHelper();
+        return this._helper!.save();
     }
 
-    getInt(key: string, defaultValue: number = 0): number {
-        const v = this._storage.getItem(key);
-        if (v === null) return defaultValue;
-        const parsed = parseInt(v, 10);
-        return isNaN(parsed) ? defaultValue : parsed;
+    getAllSettingNames(): string[] {
+        this._checkHelper();
+        return this._helper!.getAllSettingNames();
     }
 
-    getFloat(key: string, defaultValue: number = 0): number {
-        const v = this._storage.getItem(key);
-        if (v === null) return defaultValue;
-        const parsed = parseFloat(v);
-        return isNaN(parsed) ? defaultValue : parsed;
+    hasKey(settingName: string): boolean {
+        this._checkHelper();
+        this._checkName(settingName);
+        return this._helper!.hasKey(settingName);
     }
 
-    getBool(key: string, defaultValue: boolean = false): boolean {
-        const v = this._storage.getItem(key);
-        if (v === null) return defaultValue;
-        return v === 'true';
+    removeKey(settingName: string): boolean {
+        this._checkHelper();
+        this._checkName(settingName);
+        return this._helper!.removeKey(settingName);
     }
 
-    getString(key: string, defaultValue: string = ''): string {
-        return this._storage.getItem(key) ?? defaultValue;
+    removeAllSettings(): void {
+        this._checkHelper();
+        this._helper!.removeAllSettings();
     }
 
-    getObject<T>(key: string, defaultValue: T | null = null): T | null {
-        const v = this._storage.getItem(key);
-        if (v === null) return defaultValue;
-        try {
-            return JSON.parse(v) as T;
-        } catch {
-            return defaultValue;
+    getBool(settingName: string, defaultValue: boolean = false): boolean {
+        this._checkHelper();
+        this._checkName(settingName);
+        return this._helper!.getBool(settingName, defaultValue);
+    }
+
+    setBool(settingName: string, value: boolean): void {
+        this._checkHelper();
+        this._checkName(settingName);
+        this._helper!.setBool(settingName, value);
+    }
+
+    getInt(settingName: string, defaultValue: number = 0): number {
+        this._checkHelper();
+        this._checkName(settingName);
+        return this._helper!.getInt(settingName, defaultValue);
+    }
+
+    setInt(settingName: string, value: number): void {
+        this._checkHelper();
+        this._checkName(settingName);
+        this._helper!.setInt(settingName, value);
+    }
+
+    getFloat(settingName: string, defaultValue: number = 0): number {
+        this._checkHelper();
+        this._checkName(settingName);
+        return this._helper!.getFloat(settingName, defaultValue);
+    }
+
+    setFloat(settingName: string, value: number): void {
+        this._checkHelper();
+        this._checkName(settingName);
+        this._helper!.setFloat(settingName, value);
+    }
+
+    getString(settingName: string, defaultValue: string = ''): string {
+        this._checkHelper();
+        this._checkName(settingName);
+        return this._helper!.getString(settingName, defaultValue);
+    }
+
+    setString(settingName: string, value: string): void {
+        this._checkHelper();
+        this._checkName(settingName);
+        this._helper!.setString(settingName, value);
+    }
+
+    getObject<T>(settingName: string, defaultValue: T | null = null): T | null {
+        this._checkHelper();
+        this._checkName(settingName);
+        return this._helper!.getObject<T>(settingName, defaultValue);
+    }
+
+    setObject<T>(settingName: string, obj: T): void {
+        this._checkHelper();
+        this._checkName(settingName);
+        this._helper!.setObject<T>(settingName, obj);
+    }
+
+    update(_elapseSeconds: number, _realElapseSeconds: number): void {}
+
+    shutdown(): void {
+        if (this._helper) {
+            this._helper.save();
         }
     }
 
-    setInt(key: string, value: number): void {
-        this._storage.setItem(key, String(Math.trunc(value)));
+    private _checkHelper(): void {
+        if (!this._helper) {
+            throw new GameFrameworkError('Setting helper is invalid.');
+        }
     }
 
-    setFloat(key: string, value: number): void {
-        this._storage.setItem(key, String(value));
+    private _checkName(settingName: string): void {
+        if (!settingName) {
+            throw new GameFrameworkError('Setting name is invalid.');
+        }
     }
-
-    setBool(key: string, value: boolean): void {
-        this._storage.setItem(key, value ? 'true' : 'false');
-    }
-
-    setString(key: string, value: string): void {
-        this._storage.setItem(key, value);
-    }
-
-    setObject<T>(key: string, value: T): void {
-        this._storage.setItem(key, JSON.stringify(value));
-    }
-
-    update(_e: number, _r: number): void {}
-
-    shutdown(): void {}
 }

@@ -1,6 +1,8 @@
-import { _decorator, Component, director } from 'cc';
+import { _decorator, Component, director, game } from 'cc';
 import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
+import { GameFrameworkComponent } from './GameFrameworkComponent';
+import { ShutdownType } from './ShutdownType';
 
 import { EventManager } from '../../GameFramework/Event/EventManager';
 import { FsmManager } from '../../GameFramework/FSM/FsmManager';
@@ -17,7 +19,9 @@ import { CocosResourceManager } from '../Resource/CocosResourceManager';
 import { CocosSoundManager } from '../Sound/CocosSoundManager';
 import { CocosSceneManager } from '../Scene/CocosSceneManager';
 import { CocosDownloadManager } from '../Download/CocosDownloadManager';
+import { DataNodeManager } from '../../GameFramework/DataNode/DataNodeManager';
 
+import { BaseComponent } from './BaseComponent';
 import { EventComponent } from '../Event/EventComponent';
 import { FsmComponent } from '../FSM/FsmComponent';
 import { ProcedureComponent } from '../Procedure/ProcedureComponent';
@@ -32,6 +36,7 @@ import { UIComponent } from '../UI/UIComponent';
 import { EntityComponent } from '../Entity/EntityComponent';
 import { SoundComponent } from '../Sound/SoundComponent';
 import { DownloadComponent } from '../Download/DownloadComponent';
+import { DataNodeComponent } from '../DataNode/DataNodeComponent';
 
 import { ProcedureLaunch } from '../../Game/Procedure/ProcedureLaunch';
 import { ProcedurePreload } from '../../Game/Procedure/ProcedurePreload';
@@ -44,6 +49,7 @@ const { ccclass } = _decorator;
  *
  * 场景节点层级示例：
  * GameEntry (此 Component)
+ * ├── BaseNode       → BaseComponent   ← 游戏速度 / 帧率 / 日志助手
  * ├── EventNode      → EventComponent
  * ├── FsmNode        → FsmComponent
  * ├── ProcedureNode  → ProcedureComponent
@@ -62,6 +68,40 @@ const { ccclass } = _decorator;
 @ccclass('GameEntry')
 export class GameEntry extends Component {
     private _lastRealMs: number = 0;
+
+    // 由 BaseComponent.setGameSpeed() 驱动，无需直接导入 BaseComponent，避免循环依赖
+    private static _gameSpeed: number = 1;
+
+    /** 由 BaseComponent 调用，同步游戏速度。 */
+    static setGameSpeed(speed: number): void {
+        GameEntry._gameSpeed = Math.max(0, speed);
+    }
+
+    /**
+     * 按组件类型检索已注册的框架组件。
+     * 等价于 Unity 的 GameEntry.GetComponent<T>()。
+     */
+    static getComponent<T extends GameFrameworkComponent>(type: new (...args: any[]) => T): T | null {
+        return GameFrameworkComponent.getComponent(type);
+    }
+
+    /**
+     * 关闭框架，支持三种模式：
+     *  - ShutdownType.None    — 仅关闭框架模块
+     *  - ShutdownType.Restart — 关闭后重新加载当前场景
+     *  - ShutdownType.Quit   — 关闭后退出应用
+     */
+    static shutdown(type: ShutdownType = ShutdownType.None): void {
+        GameFrameworkEntry.shutdown();
+        switch (type) {
+            case ShutdownType.Restart:
+                director.loadScene(director.getScene()!.name);
+                break;
+            case ShutdownType.Quit:
+                game.end();
+                break;
+        }
+    }
 
     // ---- 模块静态访问门面（通过 GameFrameworkEntry 直接取已注册实例） ----
 
@@ -121,9 +161,14 @@ export class GameEntry extends Component {
         return GameFrameworkEntry.getModule(CocosDownloadManager, MODULE_ID.DOWNLOAD);
     }
 
+    static get DataNode(): DataNodeManager {
+        return GameFrameworkEntry.getModule(DataNodeManager, MODULE_ID.DATANODE);
+    }
+
     // ---- 便捷访问子节点 Component（可选，业务层也可自行 getComponent） ----
 
     get eventComp(): EventComponent { return this.getComponentInChildren(EventComponent)!; }
+    get baseComp(): BaseComponent { return this.getComponentInChildren(BaseComponent)!; }
     get fsmComp(): FsmComponent { return this.getComponentInChildren(FsmComponent)!; }
     get procedureComp(): ProcedureComponent { return this.getComponentInChildren(ProcedureComponent)!; }
     get resourceComp(): ResourceComponent { return this.getComponentInChildren(ResourceComponent)!; }
@@ -137,6 +182,7 @@ export class GameEntry extends Component {
     get settingComp(): SettingComponent { return this.getComponentInChildren(SettingComponent)!; }
     get dataTableComp(): DataTableComponent { return this.getComponentInChildren(DataTableComponent)!; }
     get objectPoolComp(): ObjectPoolComponent { return this.getComponentInChildren(ObjectPoolComponent)!; }
+    get dataNodeComp(): DataNodeComponent { return this.getComponentInChildren(DataNodeComponent)!; }
 
     // ---- 生命周期 ----
 
@@ -153,7 +199,7 @@ export class GameEntry extends Component {
         const nowMs = performance.now();
         const realDt = (nowMs - this._lastRealMs) / 1000;
         this._lastRealMs = nowMs;
-        GameFrameworkEntry.update(dt, realDt);
+        GameFrameworkEntry.update(dt * GameEntry._gameSpeed, realDt);
     }
 
     onDestroy(): void {
@@ -162,8 +208,9 @@ export class GameEntry extends Component {
     }
 
     private _startProcedure(): void {
+        const fsmMgr = GameFrameworkEntry.getModule(FsmManager, MODULE_ID.FSM);
         const procMgr = GameFrameworkEntry.getModule(ProcedureManager, MODULE_ID.PROCEDURE);
-        procMgr.initialize([
+        procMgr.initialize(fsmMgr, [
             new ProcedureLaunch(),
             new ProcedurePreload(),
             new ProcedureMain(),

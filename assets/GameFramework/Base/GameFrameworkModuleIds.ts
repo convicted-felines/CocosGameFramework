@@ -3,6 +3,7 @@ export const MODULE_ID = {
     FSM:          'GameFramework.IFsmManager',
     PROCEDURE:    'GameFramework.IProcedureManager',
     SETTING:      'GameFramework.ISettingManager',
+    CONFIG:       'GameFramework.IConfigManager',
     DATATABLE:    'GameFramework.IDataTableManager',
     RESOURCE:     'GameFramework.IResourceManager',
     OBJPOOL:      'GameFramework.IObjectPoolManager',
@@ -13,6 +14,8 @@ export const MODULE_ID = {
     NETWORK:      'GameFramework.INetworkManager',
     LOCALIZATION: 'GameFramework.ILocalizationManager',
     DOWNLOAD:     'GameFramework.IDownloadManager',
+    WEBREQUEST:   'GameFramework.IWebRequestManager',
+    DATANODE:     'GameFramework.IDataNodeManager',
 } as const;
 
 export type ModuleId = typeof MODULE_ID[keyof typeof MODULE_ID];
