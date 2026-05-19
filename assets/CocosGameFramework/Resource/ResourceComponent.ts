@@ -13,6 +13,7 @@ import {
     UnloadSceneFailureCallback,
     IResourceGroup,
     ResourceUpdateStatus,
+    HasAssetResult,
 } from '../../GameFramework/Resource/IResourceManager';
 import { EventHandler } from '../../GameFramework/Event/IEventManager';
 
@@ -29,9 +30,14 @@ export class ResourceComponent extends GameFrameworkComponent {
     @property({ tooltip: '对象池过期时间（秒）' })
     assetExpireTime: number = 60;
 
+    @property({ tooltip: '更新失败最大重试次数' })
+    updateRetryCount: number = 3;
+
     private _manager!: CocosResourceManager;
 
     get manager(): CocosResourceManager { return this._manager; }
+
+    get loadWaitingTaskCount(): number { return this._manager.loadWaitingTaskCount; }
 
     onLoad(): void {
         super.onLoad();
@@ -39,16 +45,29 @@ export class ResourceComponent extends GameFrameworkComponent {
         this._manager.assetCapacity = this.assetCapacity;
         this._manager.assetAutoReleaseInterval = this.assetAutoReleaseInterval;
         this._manager.assetExpireTime = this.assetExpireTime;
+        this._manager.updateRetryCount = this.updateRetryCount;
         GameFrameworkEntry.registerModule(MODULE_ID.RESOURCE, this._manager);
     }
 
-    // ─── 热更新事件绑定 ───────────────────────────────────────────────────────
+    // ─── 热更新事件 ────────────────────────────────────────────────────────────
 
     set onResourceUpdateStart(handler: EventHandler | null) { this._manager.onResourceUpdateStart = handler; }
     set onResourceUpdateChanged(handler: EventHandler | null) { this._manager.onResourceUpdateChanged = handler; }
     set onResourceUpdateSuccess(handler: EventHandler | null) { this._manager.onResourceUpdateSuccess = handler; }
     set onResourceUpdateFailure(handler: EventHandler | null) { this._manager.onResourceUpdateFailure = handler; }
     set onResourceUpdateAllComplete(handler: EventHandler | null) { this._manager.onResourceUpdateAllComplete = handler; }
+
+    // ─── Verify 事件 ──────────────────────────────────────────────────────────
+
+    set onResourceVerifyStart(handler: EventHandler | null) { this._manager.onResourceVerifyStart = handler; }
+    set onResourceVerifySuccess(handler: EventHandler | null) { this._manager.onResourceVerifySuccess = handler; }
+    set onResourceVerifyFailure(handler: EventHandler | null) { this._manager.onResourceVerifyFailure = handler; }
+
+    // ─── Apply 事件 ───────────────────────────────────────────────────────────
+
+    set onResourceApplyStart(handler: EventHandler | null) { this._manager.onResourceApplyStart = handler; }
+    set onResourceApplySuccess(handler: EventHandler | null) { this._manager.onResourceApplySuccess = handler; }
+    set onResourceApplyFailure(handler: EventHandler | null) { this._manager.onResourceApplyFailure = handler; }
 
     // ─── Bundle ───────────────────────────────────────────────────────────────
 
@@ -94,11 +113,31 @@ export class ResourceComponent extends GameFrameworkComponent {
         this._manager.loadAssets(bundleName, assetPaths, assetType, onProgress, onSuccess, onFailure, userData);
     }
 
+    loadDir<T>(
+        bundleName: string,
+        dir: string,
+        assetType: new (...args: any[]) => T,
+        onProgress?: LoadProgressCallback,
+        onSuccess?: LoadSuccessCallback<T[]>,
+        onFailure?: LoadFailureCallback,
+        userData?: object
+    ): void {
+        this._manager.loadDir(bundleName, dir, assetType, onProgress, onSuccess, onFailure, userData);
+    }
+
     unloadAsset(asset: object): void {
         this._manager.unloadAsset(asset);
     }
 
-    hasAsset(bundleName: string, assetPath: string): boolean {
+    unloadUnusedAssets(bundleName: string): void {
+        this._manager.unloadUnusedAssets(bundleName);
+    }
+
+    forceUnloadUnusedAssets(): void {
+        this._manager.forceUnloadUnusedAssets();
+    }
+
+    hasAsset(bundleName: string, assetPath: string): HasAssetResult {
         return this._manager.hasAsset(bundleName, assetPath);
     }
 

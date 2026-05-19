@@ -10,6 +10,7 @@ import { PlaySoundFailureEventArgs } from './PlaySoundFailureEventArgs';
 import { PlaySoundUpdateEventArgs } from './PlaySoundUpdateEventArgs';
 import { PlaySoundDependencyAssetEventArgs } from './PlaySoundDependencyAssetEventArgs';
 import { IResourceManager } from '../Resource/IResourceManager';
+import { ISoundHelper } from './ISoundHelper';
 
 // ---------- PlaySoundInfo (pooled load-request token) ----------
 
@@ -64,6 +65,7 @@ export class SoundAgent implements ISoundAgent {
     }
 
     get serialId(): number { return this._serialId; }
+    get soundAsset(): object | null { return this._soundAsset; }
     get isPlaying(): boolean { return this._doIsPlaying(); }
     get length(): number { return this._doGetLength(); }
     get time(): number { return this._doGetTime(); }
@@ -320,6 +322,7 @@ export class SoundGroup implements ISoundGroup {
 
 export abstract class SoundManager extends GameFrameworkModule implements ISoundManager {
     protected _resourceManager: IResourceManager | null = null;
+    protected _soundHelper: ISoundHelper | null = null;
 
     private _groups: Map<string, SoundGroup> = new Map();
     private _soundsBeingLoaded: Set<number> = new Set();
@@ -336,6 +339,7 @@ export abstract class SoundManager extends GameFrameworkModule implements ISound
     get soundGroupCount(): number { return this._groups.size; }
 
     setResourceManager(rm: IResourceManager): void { this._resourceManager = rm; }
+    setSoundHelper(helper: ISoundHelper): void { this._soundHelper = helper; }
 
     addSoundGroup(
         groupName: string,
@@ -495,14 +499,28 @@ export abstract class SoundManager extends GameFrameworkModule implements ISound
         }
 
         for (const group of this._groups.values()) {
-            if (group.stopSound(serialId, fadeOutSeconds)) return true;
+            for (const agent of group.agents) {
+                if (agent.serialId === serialId) {
+                    const asset = agent.soundAsset;
+                    if (group.stopSound(serialId, fadeOutSeconds)) {
+                        if (asset) this._soundHelper?.releaseSoundAsset(asset);
+                        return true;
+                    }
+                }
+            }
         }
         return false;
     }
 
     stopAllLoadedSounds(fadeOutSeconds: number = 0): void {
         for (const group of this._groups.values()) {
+            const assets: (object | null)[] = group.agents
+                .filter(a => a.serialId >= 0)
+                .map(a => a.soundAsset);
             group.stopAllLoadedSounds(fadeOutSeconds);
+            for (const asset of assets) {
+                if (asset) this._soundHelper?.releaseSoundAsset(asset);
+            }
         }
     }
 

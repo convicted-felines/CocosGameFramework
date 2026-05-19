@@ -1,4 +1,4 @@
-import { _decorator } from 'cc';
+import { _decorator, Camera } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
 import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
@@ -16,6 +16,7 @@ import {
     LoadSceneUpdateEventArgs,
     UnloadSceneSuccessEventArgs,
     UnloadSceneFailureEventArgs,
+    ActiveSceneChangedEventArgs,
 } from '../../GameFramework/Scene/SceneEventArgs';
 
 const { ccclass, property } = _decorator;
@@ -32,6 +33,7 @@ export class SceneComponent extends GameFrameworkComponent {
     static readonly EVENT_LOAD_SCENE_UPDATE = LoadSceneUpdateEventArgs.eventId;
     static readonly EVENT_UNLOAD_SCENE_SUCCESS = UnloadSceneSuccessEventArgs.eventId;
     static readonly EVENT_UNLOAD_SCENE_FAILURE = UnloadSceneFailureEventArgs.eventId;
+    static readonly EVENT_ACTIVE_SCENE_CHANGED = ActiveSceneChangedEventArgs.eventId;
 
     get manager(): CocosSceneManager { return this._manager; }
 
@@ -48,9 +50,13 @@ export class SceneComponent extends GameFrameworkComponent {
         }
     }
 
+    get mainCamera(): Camera | null { return this._manager.mainCamera; }
+    get activeScene(): string { return this._manager.activeScene; }
     get loadedSceneCount(): number { return this._manager.loadedSceneCount; }
     get enableLoadSceneUpdateEvent(): boolean { return this._enableLoadSceneUpdateEvent; }
     set enableLoadSceneUpdateEvent(v: boolean) { this._enableLoadSceneUpdateEvent = v; }
+
+    hasScene(sceneName: string): boolean { return this._manager.hasScene(sceneName); }
 
     loadScene(
         sceneName: string,
@@ -79,6 +85,16 @@ export class SceneComponent extends GameFrameworkComponent {
     ): void {
         this._manager.unloadScene(sceneName, onUnloaded, userData);
     }
+
+    setSceneOrder(sceneName: string, sceneOrder: number): void {
+        this._manager.setSceneOrder(sceneName, sceneOrder);
+    }
+
+    getSceneOrder(sceneName: string): number {
+        return this._manager.getSceneOrder(sceneName);
+    }
+
+    refreshMainCamera(): void { this._manager.refreshMainCamera(); }
 
     sceneIsLoaded(sceneName: string): boolean { return this._manager.sceneIsLoaded(sceneName); }
     sceneIsLoading(sceneName: string): boolean { return this._manager.sceneIsLoading(sceneName); }

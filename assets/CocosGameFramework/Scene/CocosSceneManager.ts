@@ -1,13 +1,12 @@
-import { director, Scene } from 'cc';
+import { director, Camera, Scene } from 'cc';
 import { SceneManager } from '../../GameFramework/Scene/SceneManager';
 
 export class CocosSceneManager extends SceneManager {
-    // additive 模式加载的场景（场景名 -> Scene 节点），用于独立卸载
     private _additiveScenes: Map<string, Scene> = new Map();
+    private _mainCamera: Camera | null = null;
 
-    /**
-     * @param additive 是否以叠加模式加载（不替换当前场景），默认 false
-     */
+    get mainCamera(): Camera | null { return this._mainCamera; }
+
     loadSceneAdditive(
         sceneName: string,
         priority?: number,
@@ -24,13 +23,29 @@ export class CocosSceneManager extends SceneManager {
         onProgress: (name: string, progress: number) => void,
         onFailure: (name: string, msg: string) => void
     ): void {
-        director.loadScene(sceneName, (err) => {
-            if (err) {
-                onFailure(sceneName, err.message ?? String(err));
-            } else {
-                onProgress(sceneName, 1);
+        director.preloadScene(
+            sceneName,
+            (completedCount, totalCount) => {
+                const progress = totalCount > 0 ? completedCount / totalCount : 0;
+                if (progress < 1) {
+                    onProgress(sceneName, progress);
+                }
+            },
+            (err) => {
+                if (err) {
+                    onFailure(sceneName, err.message ?? String(err));
+                    return;
+                }
+                director.loadScene(sceneName, (loadErr) => {
+                    if (loadErr) {
+                        onFailure(sceneName, loadErr.message ?? String(loadErr));
+                    } else {
+                        this.refreshMainCamera();
+                        onProgress(sceneName, 1);
+                    }
+                });
             }
-        });
+        );
     }
 
     protected _doUnloadScene(
@@ -38,7 +53,6 @@ export class CocosSceneManager extends SceneManager {
         onSuccess: (name: string) => void,
         onFailure: (name: string) => void
     ): void {
-        // additive 场景：通过保存的节点引用销毁
         const additiveScene = this._additiveScenes.get(sceneName);
         if (additiveScene) {
             additiveScene.destroy();
@@ -47,14 +61,33 @@ export class CocosSceneManager extends SceneManager {
             return;
         }
 
-        // 非 additive 场景：只能销毁当前活动场景
         const current = director.getScene();
         if (current && current.name === sceneName) {
             current.destroy();
+            this.refreshMainCamera();
             onSuccess(sceneName);
         } else {
             onFailure(sceneName);
         }
+    }
+
+    protected override _doSetActiveScene(sceneName: string): void {
+        if (!sceneName) return;
+        const scene = this._additiveScenes.get(sceneName) ?? director.getScene();
+        if (scene && scene.name === sceneName) {
+            director.runScene(scene);
+            this.refreshMainCamera();
+        }
+    }
+
+    refreshMainCamera(): void {
+        const scene = director.getScene();
+        if (!scene) {
+            this._mainCamera = null;
+            return;
+        }
+        const cameras = scene.getComponentsInChildren(Camera);
+        this._mainCamera = cameras.find(c => c.node.name === 'Main Camera') ?? cameras[0] ?? null;
     }
 
     private _loadAdditiveScene(
@@ -65,7 +98,7 @@ export class CocosSceneManager extends SceneManager {
         userData?: object
     ): void {
         const startTime = Date.now();
-        director.loadScene(sceneName, { additive: true } as any, (err, scene) => {
+        director.loadScene(sceneName, (err: Error | null, scene: Scene) => {
             if (err || !scene) {
                 onFailure?.(sceneName, err?.message ?? String(err), userData);
             } else {
@@ -77,6 +110,7 @@ export class CocosSceneManager extends SceneManager {
 
     override shutdown(): void {
         this._additiveScenes.clear();
+        this._mainCamera = null;
         super.shutdown();
     }
 }

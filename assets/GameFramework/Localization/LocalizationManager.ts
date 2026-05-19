@@ -1,14 +1,21 @@
 import { GameFrameworkModule } from '../Base/GameFrameworkModule';
+import { ILocalizationHelper } from './ILocalizationHelper';
 import { ILocalizationManager } from './ILocalizationManager';
 
 export class LocalizationManager extends GameFrameworkModule implements ILocalizationManager {
     private _dictionary: Map<string, string> = new Map();
     private _language: string = 'zh-CN';
+    private _helper: ILocalizationHelper | null = null;
 
     get priority(): number { return 68; }
     get language(): string { return this._language; }
     set language(value: string) { this._language = value; }
     get dictionaryCount(): number { return this._dictionary.size; }
+    get helper(): ILocalizationHelper | null { return this._helper; }
+
+    setHelper(helper: ILocalizationHelper): void {
+        this._helper = helper;
+    }
 
     loadDictionary(data: Record<string, string> | Array<{ key: string; value: string }>): void {
         if (Array.isArray(data)) {

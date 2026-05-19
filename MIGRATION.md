@@ -13,52 +13,54 @@ Unity GameFramework（C# / UnityGameFramework）移植到 Cocos Creator 3.8.8（
 | 模块 | 核心接口 | Manager 实现 | 状态 |
 |------|----------|-------------|------|
 | Base / Entry | `GameFrameworkModule` `GameFrameworkEntry` `GameFrameworkModuleIds` | — | ✅ 完成 |
-| 基础数据结构 | — | `GameFrameworkLinkedList` `GameFrameworkMultiDictionary` | ✅ 完成 |
-| 日志 | `ILogHelper` `GameFrameworkLog` | — | ✅ 完成 |
-| 任务池 | `ITaskAgent` `TaskBase` | `TaskPool` | ✅ 完成 |
-| 工具集 | — | `Utility`（Path / Text / Json / Converter / Encryption / Random / Verifier） | ✅ 完成 |
-| ReferencePool | `IReference` | `ReferencePool`（静态） | ✅ 完成 |
-| EventManager | `IEventManager` `BaseEventArgs` | `EventManager` | ✅ 完成 |
+| 基础数据结构 | — | `GameFrameworkLinkedList` `GameFrameworkLinkedListRange` `GameFrameworkMultiDictionary` | ✅ 完成 |
+| 日志 | `ILogHelper` `GameFrameworkLog` `GameFrameworkLogLevel` | — | ✅ 完成 |
+| 任务池 | `ITaskAgent` `TaskBase` `TaskInfo` `StartTaskStatus` `TaskStatus` | `TaskPool` | ✅ 完成 |
+| 工具集 | — | `Utility`（Path / Text / Json / Converter / Encryption / Random / Verifier）`BinaryExtension` `StringExtension` | ✅ 完成 |
+| ReferencePool | `IReference` `ReferencePoolInfo` | `ReferencePool`（静态） | ✅ 完成 |
+| EventManager | `IEventManager` `BaseEventArgs` `GameEventArgs` | `EventManager` | ✅ 完成 |
 | FsmManager | `IFsmManager` `IFsm` `FsmState` | `FsmManager` `Fsm` | ✅ 完成 |
 | ProcedureManager | `IProcedureManager` `ProcedureBase` | `ProcedureManager` | ✅ 完成 |
-| ObjectPoolManager | `IObjectPoolManager` `IObjectPool` `ObjectBase` | `ObjectPoolManager` `ObjectPool` | ✅ 完成 |
-| LocalizationManager | `ILocalizationManager` | `LocalizationManager` | ✅ 完成 |
+| ObjectPoolManager | `IObjectPoolManager` `IObjectPool` `ObjectBase` `ObjectInfo` | `ObjectPoolManager` `ObjectPool` | ✅ 完成 |
+| LocalizationManager | `ILocalizationManager` `ILocalizationHelper` | `LocalizationManager` | ✅ 完成 |
 | SettingManager | `ISettingManager` `ISettingHelper` | `SettingManager` | ✅ 完成 |
 | ConfigManager | `IConfigManager` `IConfigHelper` | `ConfigManager` | ✅ 完成 |
-| DataTableManager | `IDataTableManager` `IDataTable` `IDataRow` | `DataTableManager` `DataTable` | ✅ 完成 |
+| DataTableManager | `IDataTableManager` `IDataTable` `IDataRow` `IDataTableHelper` | `DataTableManager` `DataTable` | ✅ 完成 |
 | DataNodeManager | `IDataNodeManager` `IDataNode` | `DataNodeManager` `DataNode` | ✅ 完成 |
-| NetworkManager | `INetworkManager` `INetworkChannel` | `NetworkManager` | ✅ 完成 |
-| WebRequestManager | `IWebRequestManager` | `WebRequestManager` | ✅ 完成 |
-| UIManager | `IUIManager` `IUIGroup` `IUIFormHelper` | `UIManager` | ✅ 完成 |
-| EntityManager | `IEntityManager` `IEntityHelper` | `EntityManager` | ✅ 完成 |
-| SoundManager | `ISoundManager` `ISoundGroup` `ISoundAgent` | `SoundManager` | ✅ 完成 |
-| ResourceManager | `IResourceManager` | — (接口层) | ✅ 完成 |
-| DownloadManager | `IDownloadManager` | `DownloadManager` | ✅ 完成 |
-| SceneManager | — | — (接口层) | ✅ 完成 |
+| NetworkManager | `INetworkManager` `INetworkChannel` `INetworkChannelHelper` `Packet` `NetworkEventArgs` | `NetworkManager` | ✅ 完成 |
+| WebRequestManager | `IWebRequestManager` `WebRequestEventArgs` | `WebRequestManager` | ✅ 完成 |
+| UIManager | `IUIManager` `IUIGroup` `IUIFormHelper` `UIEventArgs` | `UIManager` | ✅ 完成 |
+| EntityManager | `IEntityManager` `IEntityHelper` `EntityEventArgs` | `EntityManager` | ✅ 完成 |
+| SoundManager | `ISoundManager` `ISoundHelper` `PlaySoundParams` `PlaySoundErrorCode` | `SoundManager` | ✅ 完成 |
+| ResourceManager | `IResourceManager` `ResourceEventArgs` | — (接口层) | ✅ 完成 |
+| DownloadManager | `IDownloadManager` `DownloadEventArgs` | `DownloadManager` | ✅ 完成 |
+| SceneManager | `ISceneManager` `SceneEventArgs` | `SceneManager` | ✅ 完成 |
+| FileSystemManager | `IFileSystemManager` `IFileSystem` `IFileSystemHelper` `FileInfo` `FileSystemAccess` | `FileSystemManager` `FileSystem` | ✅ 完成 |
 
 ### 引擎适配层（`assets/CocosGameFramework/`）
 
 | 模块 | Component 包装 | Helper / 具体实现 | 状态 |
 |------|---------------|------------------|------|
-| Base | `GameEntry` `GameFrameworkComponent` `BaseComponent` | — | ✅ 完成 |
+| Base | `GameEntry` `GameFrameworkComponent` `BaseComponent` `ShutdownType` | — | ✅ 完成 |
 | EventComponent | `EventComponent` | — | ✅ 完成 |
 | FsmComponent | `FsmComponent` | — | ✅ 完成 |
 | ProcedureComponent | `ProcedureComponent` | — | ✅ 完成 |
 | ObjectPoolComponent | `ObjectPoolComponent` | — | ✅ 完成 |
 | ReferencePoolComponent | `ReferencePoolComponent` | — | ✅ 完成 |
 | SettingComponent | `SettingComponent` | `SettingHelperBase` `LocalStorageSettingHelper` | ✅ 完成 |
-| ConfigComponent | `ConfigComponent` | `ConfigHelperBase` `DefaultConfigHelper` | ✅ 完成 |
-| LocalizationComponent | `LocalizationComponent` | — | ✅ 完成 |
-| DataTableComponent | `DataTableComponent` | `DataRowBase` | ✅ 完成 |
+| ConfigComponent | `ConfigComponent` | `ConfigHelperBase` `DefaultConfigHelper` `ConfigEventArgs` | ✅ 完成 |
+| LocalizationComponent | `LocalizationComponent` | `LocalizationHelperBase` `DefaultLocalizationHelper` | ✅ 完成 |
+| DataTableComponent | `DataTableComponent` | `DataRowBase` `DataTableHelperBase` `DefaultDataTableHelper` `DataTableEventArgs` | ✅ 完成 |
 | DataNodeComponent | `DataNodeComponent` | — | ✅ 完成 |
-| NetworkComponent | `NetworkComponent` | — | ✅ 完成 |
+| NetworkComponent | `NetworkComponent` | `NetworkChannelHelperBase` `DefaultNetworkChannelHelper` | ✅ 完成 |
 | WebRequestComponent | `WebRequestComponent` | `CocosWebRequestManager` | ✅ 完成 |
 | ResourceComponent | `ResourceComponent` | `CocosResourceManager` | ✅ 完成 |
 | SceneComponent | `SceneComponent` | `CocosSceneManager` | ✅ 完成 |
 | UIComponent | `UIComponent` | `UIFormLogic` `UIFormHelperBase` `DefaultUIFormHelper` | ✅ 完成 |
 | EntityComponent | `EntityComponent` | `EntityLogic` `EntityHelperBase` `DefaultEntityHelper` | ✅ 完成 |
-| SoundComponent | `SoundComponent` | `CocosSoundManager` | ✅ 完成 |
+| SoundComponent | `SoundComponent` | `CocosSoundManager` `SoundHelperBase` `DefaultSoundHelper` `SoundAgentHelperBase` `DefaultSoundAgentHelper` `SoundGroupHelperBase` `DefaultSoundGroupHelper` | ✅ 完成 |
 | DownloadComponent | `DownloadComponent` | `CocosDownloadManager` | ✅ 完成 |
+| FileSystemComponent | `FileSystemComponent` | `FileSystemHelperBase` `DefaultFileSystemHelper` `AndroidFileSystemHelper` | ✅ 完成 |
 
 ### 业务层示例（`assets/Game/`）
 
@@ -78,6 +80,7 @@ Unity GameFramework（C# / UnityGameFramework）移植到 Cocos Creator 3.8.8（
 | 65 | DataTableManager |
 | 62 | ObjectPoolManager |
 | 60 | ResourceManager |
+| 58 | FileSystemManager |
 | 55 | NetworkManager |
 | 50 | UIManager |
 | 45 | SceneManager |
@@ -391,35 +394,39 @@ assets/
 │   │   ├── GameFrameworkEntry.ts
 │   │   ├── GameFrameworkModuleIds.ts
 │   │   ├── GameFrameworkError.ts
-│   │   ├── GameFrameworkLinkedList.ts
-│   │   ├── GameFrameworkMultiDictionary.ts
-│   │   ├── GameFrameworkLog.ts
-│   │   └── TaskPool/            ← ITaskAgent + TaskBase + TaskPool
-│   ├── Utility/                 ← Path / Text / Json / Converter / Encryption / Random / Verifier
-│   ├── ReferencePool/           ← IReference + ReferencePool
-│   ├── Event/                   ← BaseEventArgs + IEventManager + EventManager
+│   │   ├── DataStruct/
+│   │   │   ├── GameFrameworkLinkedList.ts
+│   │   │   ├── GameFrameworkLinkedListRange.ts
+│   │   │   └── GameFrameworkMultiDictionary.ts
+│   │   ├── Log/                 ← ILogHelper + GameFrameworkLog + GameFrameworkLogLevel
+│   │   └── TaskPool/            ← ITaskAgent + TaskBase + TaskPool + TaskInfo + StartTaskStatus + TaskStatus
+│   ├── Utility/                 ← Path / Text / Json / Converter / Encryption / Random / Verifier + BinaryExtension + StringExtension
+│   ├── ReferencePool/           ← IReference + ReferencePool + ReferencePoolInfo
+│   ├── Event/                   ← BaseEventArgs + GameEventArgs + IEventManager + EventManager
 │   ├── FSM/                     ← IFsm + FsmState + Fsm + FsmManager
 │   ├── Procedure/               ← ProcedureBase + ProcedureManager
-│   ├── ObjectPool/              ← ObjectBase + ObjectPool + ObjectPoolManager
-│   ├── Resource/                ← IResourceManager（接口）
+│   ├── ObjectPool/              ← ObjectBase + ObjectInfo + ObjectPool + ObjectPoolManager
+│   ├── Resource/                ← IResourceManager + ResourceEventArgs（接口）
 │   ├── Setting/                 ← ISettingManager + ISettingHelper + SettingManager
 │   ├── Config/                  ← IConfigManager + IConfigHelper + ConfigManager
-│   ├── DataTable/               ← IDataRow + DataTable + DataTableManager
+│   ├── DataTable/               ← IDataRow + IDataTable + IDataTableHelper + DataTable + DataTableManager
 │   ├── DataNode/                ← IDataNode + DataNode + IDataNodeManager + DataNodeManager
-│   ├── Scene/                   ← ISceneManager（接口）
-│   ├── Network/                 ← INetworkManager + INetworkChannel + NetworkManager（fetch + WebSocket）
-│   ├── WebRequest/              ← IWebRequestManager + WebRequestManager
-│   ├── Localization/            ← ILocalizationManager + LocalizationManager
-│   ├── Download/                ← IDownloadManager + DownloadManager
-│   ├── UI/                      ← IUIFormHelper + IUIGroup + IUIManager + UIManager
-│   ├── Entity/                  ← IEntityHelper + IEntityManager + EntityManager
-│   └── Sound/                   ← ISoundManager + ISoundGroup + ISoundAgent + SoundManager
+│   ├── Scene/                   ← ISceneManager + SceneEventArgs + SceneManager
+│   ├── Network/                 ← INetworkManager + INetworkChannel + INetworkChannelHelper + Packet + NetworkEventArgs + NetworkManager
+│   ├── WebRequest/              ← IWebRequestManager + WebRequestEventArgs + WebRequestManager
+│   ├── Localization/            ← ILocalizationManager + ILocalizationHelper + LocalizationManager
+│   ├── Download/                ← IDownloadManager + DownloadEventArgs + DownloadManager
+│   ├── UI/                      ← IUIFormHelper + IUIGroup + IUIManager + UIManager + UIEventArgs
+│   ├── Entity/                  ← IEntityHelper + IEntityManager + EntityEventArgs + EntityManager
+│   ├── Sound/                   ← ISoundManager + ISoundHelper + PlaySoundParams + PlaySoundErrorCode + SoundManager
+│   └── FileSystem/              ← IFileSystemManager + IFileSystem + IFileSystemHelper + FileInfo + FileSystemAccess + FileSystem + FileSystemManager
 │
 ├── CocosGameFramework/          ← 引擎适配层
-│   ├── Entry/GameEntry.ts       ← Component 驱动 + 模块注册门面
 │   ├── Base/
+│   │   ├── GameEntry.ts         ← Component 驱动 + 模块注册门面
 │   │   ├── GameFrameworkComponent.ts
-│   │   └── BaseComponent.ts
+│   │   ├── BaseComponent.ts
+│   │   └── ShutdownType.ts
 │   ├── Event/EventComponent.ts
 │   ├── Fsm/FsmComponent.ts
 │   ├── Procedure/ProcedureComponent.ts
@@ -432,13 +439,23 @@ assets/
 │   ├── Config/
 │   │   ├── ConfigComponent.ts
 │   │   ├── ConfigHelperBase.ts
-│   │   └── DefaultConfigHelper.ts
-│   ├── Localization/LocalizationComponent.ts
+│   │   ├── DefaultConfigHelper.ts
+│   │   └── ConfigEventArgs.ts
+│   ├── Localization/
+│   │   ├── LocalizationComponent.ts
+│   │   ├── LocalizationHelperBase.ts
+│   │   └── DefaultLocalizationHelper.ts
 │   ├── DataTable/
 │   │   ├── DataTableComponent.ts
-│   │   └── DataRowBase.ts
+│   │   ├── DataRowBase.ts
+│   │   ├── DataTableHelperBase.ts
+│   │   ├── DefaultDataTableHelper.ts
+│   │   └── DataTableEventArgs.ts
 │   ├── DataNode/DataNodeComponent.ts
-│   ├── Network/NetworkComponent.ts
+│   ├── Network/
+│   │   ├── NetworkComponent.ts
+│   │   ├── NetworkChannelHelperBase.ts
+│   │   └── DefaultNetworkChannelHelper.ts
 │   ├── WebRequest/
 │   │   ├── WebRequestComponent.ts
 │   │   └── CocosWebRequestManager.ts
@@ -460,10 +477,21 @@ assets/
 │   │   └── DefaultEntityHelper.ts
 │   ├── Sound/
 │   │   ├── SoundComponent.ts
-│   │   └── CocosSoundManager.ts
-│   └── Download/
-│       ├── DownloadComponent.ts
-│       └── CocosDownloadManager.ts
+│   │   ├── CocosSoundManager.ts
+│   │   ├── SoundHelperBase.ts
+│   │   ├── DefaultSoundHelper.ts
+│   │   ├── SoundAgentHelperBase.ts
+│   │   ├── DefaultSoundAgentHelper.ts
+│   │   ├── SoundGroupHelperBase.ts
+│   │   └── DefaultSoundGroupHelper.ts
+│   ├── Download/
+│   │   ├── DownloadComponent.ts
+│   │   └── CocosDownloadManager.ts
+│   └── FileSystem/
+│       ├── FileSystemComponent.ts
+│       ├── FileSystemHelperBase.ts
+│       ├── DefaultFileSystemHelper.ts
+│       └── AndroidFileSystemHelper.ts
 │
 └── Game/                        ← 业务层示例
     └── Procedure/

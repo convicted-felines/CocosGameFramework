@@ -8,11 +8,15 @@ import { IDataRow } from '../../GameFramework/DataTable/IDataRow';
 import { IEventManager } from '../../GameFramework/Event/IEventManager';
 import { IResourceManager } from '../../GameFramework/Resource/IResourceManager';
 import { LoadDataTableSuccessEventArgs, LoadDataTableFailureEventArgs } from './DataTableEventArgs';
+import { DataTableHelperBase } from './DataTableHelperBase';
 
-const { ccclass } = _decorator;
+const { ccclass, property } = _decorator;
 
 @ccclass('DataTableComponent')
 export class DataTableComponent extends GameFrameworkComponent {
+    @property({ type: DataTableHelperBase, tooltip: '数据表辅助器，留空时使用内置解析逻辑' })
+    dataTableHelper: DataTableHelperBase | null = null;
+
     private _manager!: DataTableManager;
     private _eventManager: IEventManager | null = null;
 
@@ -107,7 +111,11 @@ export class DataTableComponent extends GameFrameworkComponent {
                     ? this._manager.getDataTable<T>(rowType, name)!
                     : this._manager.createDataTable<T>(rowType, name);
 
-                table.parseData(text, userData);
+                if (this.dataTableHelper) {
+                    this.dataTableHelper.parseData(table, text, userData);
+                } else {
+                    table.parseData(text, userData);
+                }
 
                 if (this._eventManager) {
                     const duration = (Date.now() - startTime) / 1000;

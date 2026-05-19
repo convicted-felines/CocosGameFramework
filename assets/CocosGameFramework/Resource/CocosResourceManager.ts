@@ -2,7 +2,7 @@ import { assetManager, Asset, director } from 'cc';
 import { GameFrameworkError } from '../../GameFramework/Base/GameFrameworkError';
 import { GameFrameworkModule } from '../../GameFramework/Base/GameFrameworkModule';
 import {
-    IResourceManager, IResourceGroup,
+    IResourceManager, IResourceGroup, HasAssetResult,
     LoadFailureCallback, LoadSuccessCallback, LoadProgressCallback,
     LoadSceneSuccessCallback, LoadSceneFailureCallback,
     UnloadSceneSuccessCallback, UnloadSceneFailureCallback,
@@ -15,6 +15,10 @@ import {
     ResourceUpdateSuccessEventArgs,
     ResourceUpdateFailureEventArgs,
     ResourceUpdateAllCompleteEventArgs,
+    ResourceVerifyStartEventArgs,
+    ResourceVerifySuccessEventArgs,
+    ResourceApplyStartEventArgs,
+    ResourceApplySuccessEventArgs,
     LoadSceneSuccessEventArgs,
     LoadSceneFailureEventArgs,
     UnloadSceneSuccessEventArgs,
@@ -73,20 +77,32 @@ interface UpdateTask {
 export class CocosResourceManager extends GameFrameworkModule implements IResourceManager {
     get priority(): number { return 60; }
 
-    // 对象池配置（Cocos 侧靠 assetManager 的 cacheAsset 机制，这里保留属性供外部配置使用）
     assetAutoReleaseInterval: number = 60;
     assetCapacity: number = 64;
     assetExpireTime: number = 60;
+    updateRetryCount: number = 3;
 
-    // 热更新事件回调
+    private _loadWaitingTaskCount: number = 0;
+    get loadWaitingTaskCount(): number { return this._loadWaitingTaskCount; }
+
+    // ─── 热更新事件 ────────────────────────────────────────────────────────────
     onResourceUpdateStart: EventHandler | null = null;
     onResourceUpdateChanged: EventHandler | null = null;
     onResourceUpdateSuccess: EventHandler | null = null;
     onResourceUpdateFailure: EventHandler | null = null;
     onResourceUpdateAllComplete: EventHandler | null = null;
 
+    // ─── Verify 事件 ──────────────────────────────────────────────────────────
+    onResourceVerifyStart: EventHandler | null = null;
+    onResourceVerifySuccess: EventHandler | null = null;
+    onResourceVerifyFailure: EventHandler | null = null;
+
+    // ─── Apply 事件 ───────────────────────────────────────────────────────────
+    onResourceApplyStart: EventHandler | null = null;
+    onResourceApplySuccess: EventHandler | null = null;
+    onResourceApplyFailure: EventHandler | null = null;
+
     private _resourceGroups: Map<string, ResourceGroup> = new Map();
-    private _updateRetryCount: number = 3;
     private _updateTasks: UpdateTask[] = [];
     private _updatingGroupName: string = '';
     private _isUpdating: boolean = false;
@@ -137,8 +153,10 @@ export class CocosResourceManager extends GameFrameworkModule implements IResour
                 LoadAssetFailureEventArgs.create(assetPath, `Bundle [${bundleName}] not loaded.`, userData));
             return;
         }
+        this._loadWaitingTaskCount++;
         const startTime = Date.now();
         bundle.load(assetPath, assetType as any, (err: Error | null, asset: Asset) => {
+            this._loadWaitingTaskCount--;
             if (err) {
                 onFailure?.(assetPath, err.message, userData);
                 this._fireEvent(this.onResourceUpdateFailure,
@@ -181,14 +199,47 @@ export class CocosResourceManager extends GameFrameworkModule implements IResour
             onFailure?.(bundleName, `Bundle [${bundleName}] not loaded.`, userData);
             return;
         }
+        this._loadWaitingTaskCount++;
         const startTime = Date.now();
         bundle.load(
             assetPaths as any,
             assetType as any,
             (finished: number, total: number) => onProgress?.(finished, total),
             (err: Error | null, assets: Asset[]) => {
+                this._loadWaitingTaskCount--;
                 if (err) {
                     onFailure?.(bundleName, err.message, userData);
+                } else {
+                    onSuccess?.(assets as unknown as T[], (Date.now() - startTime) / 1000, userData);
+                }
+            }
+        );
+    }
+
+    loadDir<T>(
+        bundleName: string,
+        dir: string,
+        assetType: new (...args: any[]) => T,
+        onProgress?: LoadProgressCallback,
+        onSuccess?: LoadSuccessCallback<T[]>,
+        onFailure?: LoadFailureCallback,
+        userData?: object
+    ): void {
+        const bundle = assetManager.getBundle(bundleName);
+        if (!bundle) {
+            onFailure?.(dir, `Bundle [${bundleName}] not loaded.`, userData);
+            return;
+        }
+        this._loadWaitingTaskCount++;
+        const startTime = Date.now();
+        bundle.loadDir(
+            dir,
+            assetType as any,
+            (finished: number, total: number) => onProgress?.(finished, total),
+            (err: Error | null, assets: Asset[]) => {
+                this._loadWaitingTaskCount--;
+                if (err) {
+                    onFailure?.(dir, err.message, userData);
                 } else {
                     onSuccess?.(assets as unknown as T[], (Date.now() - startTime) / 1000, userData);
                 }
@@ -200,10 +251,24 @@ export class CocosResourceManager extends GameFrameworkModule implements IResour
         assetManager.releaseAsset(asset as Asset);
     }
 
-    hasAsset(bundleName: string, assetPath: string): boolean {
+    unloadUnusedAssets(bundleName: string): void {
         const bundle = assetManager.getBundle(bundleName);
-        if (!bundle) return false;
-        return bundle.get(assetPath) !== null;
+        // Cocos Creator 3.x 类型定义缺失此方法，运行时存在
+        (bundle as any)?.releaseUnusedAssets?.();
+    }
+
+    forceUnloadUnusedAssets(): void {
+        assetManager.releaseAll();
+    }
+
+    hasAsset(bundleName: string, assetPath: string): HasAssetResult {
+        const bundle = assetManager.getBundle(bundleName);
+        if (!bundle) return HasAssetResult.BundleNotLoaded;
+        const cached = bundle.get(assetPath);
+        if (cached !== null) return HasAssetResult.Loaded;
+        // bundle 已加载但资源未缓存，检查 bundle 资源清单
+        const info = (bundle as any)._config?.getAssetInfo?.(assetPath);
+        return info ? HasAssetResult.InBundle : HasAssetResult.NotExist;
     }
 
     // ─── 场景 ─────────────────────────────────────────────────────────────────
@@ -235,16 +300,13 @@ export class CocosResourceManager extends GameFrameworkModule implements IResour
         onFailure?: UnloadSceneFailureCallback,
         userData?: object
     ): void {
-        // Cocos Creator 没有直接卸载场景的 API，通过释放场景资产实现
         const scene = director.getScene();
         if (scene && scene.name === sceneAssetName) {
-            // 当前场景不能卸载自身，认为失败
             onFailure?.(sceneAssetName, userData);
             this._fireEvent(this.onResourceUpdateFailure,
                 UnloadSceneFailureEventArgs.create(sceneAssetName, userData));
             return;
         }
-        // 释放场景资产引用
         assetManager.releaseAsset(sceneAssetName as any);
         onSuccess?.(sceneAssetName, userData);
         this._fireEvent(this.onResourceUpdateSuccess,
@@ -265,7 +327,6 @@ export class CocosResourceManager extends GameFrameworkModule implements IResour
         return Array.from(this._resourceGroups.values());
     }
 
-    /** 创建或获取资源组（供外部业务层调用以登记资源组信息） */
     getOrCreateResourceGroup(groupName: string): ResourceGroup {
         let group = this._resourceGroups.get(groupName);
         if (!group) {
@@ -275,14 +336,9 @@ export class CocosResourceManager extends GameFrameworkModule implements IResour
         return group;
     }
 
-    // ─── 热更新（Cocos HotUpdate 适配） ──────────────────────────────────────
-    //
-    // Cocos Creator 的热更新依赖 jsb.AssetsManager（原生平台）或自定义 HTTP 下载逻辑（Web）。
-    // 此处提供统一的接口外壳；具体的 AssetsManager 实例应在 ResourceComponent 中注入。
-    // 以下实现为 Web/编辑器模式下的空壳，原生模式时由子类覆盖。
+    // ─── 热更新 ───────────────────────────────────────────────────────────────
 
     checkUpdate(_manifestUrl: string): Promise<boolean> {
-        // Web/编辑器模式下无热更新，直接返回不需要更新
         return Promise.resolve(false);
     }
 
@@ -306,24 +362,54 @@ export class CocosResourceManager extends GameFrameworkModule implements IResour
         return {
             waitingCount: this._updateTasks.length,
             candidateCount: this._updateTasks.length,
-            updateRetryCount: this._updateRetryCount,
+            updateRetryCount: this.updateRetryCount,
             updatingResourceGroupName: this._updatingGroupName,
         };
     }
 
-    /** 登记需要更新的资源（供 Procedure 层在 checkUpdate 后调用） */
     addUpdateTask(task: UpdateTask): void {
         this._updateTasks.push(task);
     }
 
-    /** 设置当前更新组名 */
     setUpdatingGroupName(name: string): void {
         this._updatingGroupName = name;
     }
 
-    /** 设置更新失败重试上限 */
-    setUpdateRetryCount(count: number): void {
-        this._updateRetryCount = count;
+    // ─── Verify（校验） ────────────────────────────────────────────────────────
+    //
+    // Cocos 平台的资源校验通常由 AssetsManager 处理（原生）或跳过（Web）。
+    // 此处提供统一外壳，供 Procedure 层在需要时触发事件通知 UI。
+
+    verifyResources(resources: Array<{ name: string; length: number }>): void {
+        const totalLength = resources.reduce((sum, r) => sum + r.length, 0);
+        this._fireEvent(this.onResourceVerifyStart,
+            ResourceVerifyStartEventArgs.create(resources.length, totalLength));
+
+        for (const r of resources) {
+            // Web/Editor 模式下视为全部通过；原生模式可在子类重写做真实校验
+            this._fireEvent(this.onResourceVerifySuccess,
+                ResourceVerifySuccessEventArgs.create(r.name, r.length));
+        }
+    }
+
+    // ─── Apply（应用资源包） ───────────────────────────────────────────────────
+    //
+    // 将已下载的资源包内容应用到 ReadWrite 路径（原生平台）。
+    // Web 模式下为空壳；原生平台子类可重写实现真实文件拷贝。
+
+    applyResources(
+        resourcePackPath: string,
+        resources: Array<{ name: string; applyPath: string; compressedLength: number; length: number }>
+    ): void {
+        const totalCompressed = resources.reduce((sum, r) => sum + r.compressedLength, 0);
+        const totalLength = resources.reduce((sum, r) => sum + r.length, 0);
+        this._fireEvent(this.onResourceApplyStart,
+            ResourceApplyStartEventArgs.create(resourcePackPath, resources.length, totalCompressed, totalLength));
+
+        for (const r of resources) {
+            this._fireEvent(this.onResourceApplySuccess,
+                ResourceApplySuccessEventArgs.create(r.name, r.applyPath, resourcePackPath, r.compressedLength, r.length));
+        }
     }
 
     // ─── 内部 ─────────────────────────────────────────────────────────────────
@@ -387,21 +473,18 @@ export class CocosResourceManager extends GameFrameworkModule implements IResour
     private _handleUpdateFailure(task: UpdateTask, attempt: number, reason: string, onComplete?: (success: boolean) => void): void {
         this._fireEvent(this.onResourceUpdateFailure,
             ResourceUpdateFailureEventArgs.create(
-                task.name, task.downloadUri, attempt + 1, this._updateRetryCount, reason));
+                task.name, task.downloadUri, attempt + 1, this.updateRetryCount, reason));
 
-        if (attempt + 1 < this._updateRetryCount) {
+        if (attempt + 1 < this.updateRetryCount) {
             this._downloadTask(task, attempt + 1, onComplete);
         } else {
-            // 超过重试次数，跳过此任务继续
             this._updateTasks.shift();
             this._processNextUpdateTask(onComplete);
         }
     }
 
     private _fireEvent(handler: EventHandler | null, args: object): void {
-        if (handler) {
-            handler(this, args as any);
-        }
+        handler?.(this, args as any);
     }
 
     // ─── GameFrameworkModule ──────────────────────────────────────────────────
@@ -412,10 +495,17 @@ export class CocosResourceManager extends GameFrameworkModule implements IResour
         this._resourceGroups.clear();
         this._updateTasks.length = 0;
         this._isUpdating = false;
+        this._loadWaitingTaskCount = 0;
         this.onResourceUpdateStart = null;
         this.onResourceUpdateChanged = null;
         this.onResourceUpdateSuccess = null;
         this.onResourceUpdateFailure = null;
         this.onResourceUpdateAllComplete = null;
+        this.onResourceVerifyStart = null;
+        this.onResourceVerifySuccess = null;
+        this.onResourceVerifyFailure = null;
+        this.onResourceApplyStart = null;
+        this.onResourceApplySuccess = null;
+        this.onResourceApplyFailure = null;
     }
 }

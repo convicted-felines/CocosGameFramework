@@ -176,6 +176,113 @@ export class UnloadSceneFailureEventArgs extends BaseEventArgs {
     clear(): void { this.sceneAssetName = ''; this.userData = undefined; }
 }
 
+// ─── Verify 校验事件 ─────────────────────────────────────────────────────────
+
+export class ResourceVerifyStartEventArgs extends BaseEventArgs {
+    static readonly eventId = 'resource.verify.start';
+    get id(): string { return ResourceVerifyStartEventArgs.eventId; }
+
+    count!: number;
+    totalLength!: number;
+
+    static create(count: number, totalLength: number): ResourceVerifyStartEventArgs {
+        const e = ReferencePool.acquire(ResourceVerifyStartEventArgs);
+        e.count = count; e.totalLength = totalLength;
+        return e;
+    }
+
+    clear(): void { this.count = 0; this.totalLength = 0; }
+}
+
+export class ResourceVerifySuccessEventArgs extends BaseEventArgs {
+    static readonly eventId = 'resource.verify.success';
+    get id(): string { return ResourceVerifySuccessEventArgs.eventId; }
+
+    name!: string;
+    length!: number;
+
+    static create(name: string, length: number): ResourceVerifySuccessEventArgs {
+        const e = ReferencePool.acquire(ResourceVerifySuccessEventArgs);
+        e.name = name; e.length = length;
+        return e;
+    }
+
+    clear(): void { this.name = ''; this.length = 0; }
+}
+
+export class ResourceVerifyFailureEventArgs extends BaseEventArgs {
+    static readonly eventId = 'resource.verify.failure';
+    get id(): string { return ResourceVerifyFailureEventArgs.eventId; }
+
+    name!: string;
+
+    static create(name: string): ResourceVerifyFailureEventArgs {
+        const e = ReferencePool.acquire(ResourceVerifyFailureEventArgs);
+        e.name = name;
+        return e;
+    }
+
+    clear(): void { this.name = ''; }
+}
+
+// ─── Apply 应用事件 ───────────────────────────────────────────────────────────
+
+export class ResourceApplyStartEventArgs extends BaseEventArgs {
+    static readonly eventId = 'resource.apply.start';
+    get id(): string { return ResourceApplyStartEventArgs.eventId; }
+
+    resourcePackPath!: string;
+    count!: number;
+    totalCompressedLength!: number;
+    totalLength!: number;
+
+    static create(resourcePackPath: string, count: number, totalCompressedLength: number, totalLength: number): ResourceApplyStartEventArgs {
+        const e = ReferencePool.acquire(ResourceApplyStartEventArgs);
+        e.resourcePackPath = resourcePackPath; e.count = count;
+        e.totalCompressedLength = totalCompressedLength; e.totalLength = totalLength;
+        return e;
+    }
+
+    clear(): void { this.resourcePackPath = ''; this.count = 0; this.totalCompressedLength = 0; this.totalLength = 0; }
+}
+
+export class ResourceApplySuccessEventArgs extends BaseEventArgs {
+    static readonly eventId = 'resource.apply.success';
+    get id(): string { return ResourceApplySuccessEventArgs.eventId; }
+
+    name!: string;
+    applyPath!: string;
+    resourcePackPath!: string;
+    compressedLength!: number;
+    length!: number;
+
+    static create(name: string, applyPath: string, resourcePackPath: string, compressedLength: number, length: number): ResourceApplySuccessEventArgs {
+        const e = ReferencePool.acquire(ResourceApplySuccessEventArgs);
+        e.name = name; e.applyPath = applyPath; e.resourcePackPath = resourcePackPath;
+        e.compressedLength = compressedLength; e.length = length;
+        return e;
+    }
+
+    clear(): void { this.name = ''; this.applyPath = ''; this.resourcePackPath = ''; this.compressedLength = 0; this.length = 0; }
+}
+
+export class ResourceApplyFailureEventArgs extends BaseEventArgs {
+    static readonly eventId = 'resource.apply.failure';
+    get id(): string { return ResourceApplyFailureEventArgs.eventId; }
+
+    name!: string;
+    resourcePackPath!: string;
+    errorMessage!: string;
+
+    static create(name: string, resourcePackPath: string, errorMessage: string): ResourceApplyFailureEventArgs {
+        const e = ReferencePool.acquire(ResourceApplyFailureEventArgs);
+        e.name = name; e.resourcePackPath = resourcePackPath; e.errorMessage = errorMessage;
+        return e;
+    }
+
+    clear(): void { this.name = ''; this.resourcePackPath = ''; this.errorMessage = ''; }
+}
+
 // ─── 资产加载事件 ────────────────────────────────────────────────────────────
 
 export class LoadAssetSuccessEventArgs extends BaseEventArgs {

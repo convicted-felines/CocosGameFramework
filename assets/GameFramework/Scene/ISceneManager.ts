@@ -1,5 +1,8 @@
 export interface ISceneManager {
     readonly loadedSceneCount: number;
+    readonly activeScene: string;
+
+    hasScene(sceneName: string): boolean;
 
     loadScene(
         sceneName: string,
@@ -22,6 +25,9 @@ export interface ISceneManager {
     getLoadedSceneNames(): string[];
     getLoadingSceneNames(): string[];
     getUnloadingSceneNames(): string[];
+
+    setSceneOrder(sceneName: string, sceneOrder: number): void;
+    getSceneOrder(sceneName: string): number;
 }
 
 export type SceneLoadedCallback = (sceneName: string, duration: number, userData?: object) => void;

@@ -20,6 +20,7 @@ import { CocosSoundManager } from '../Sound/CocosSoundManager';
 import { CocosSceneManager } from '../Scene/CocosSceneManager';
 import { CocosDownloadManager } from '../Download/CocosDownloadManager';
 import { DataNodeManager } from '../../GameFramework/DataNode/DataNodeManager';
+import { FileSystemManager } from '../../GameFramework/FileSystem/FileSystemManager';
 
 import { BaseComponent } from './BaseComponent';
 import { EventComponent } from '../Event/EventComponent';
@@ -37,6 +38,7 @@ import { EntityComponent } from '../Entity/EntityComponent';
 import { SoundComponent } from '../Sound/SoundComponent';
 import { DownloadComponent } from '../Download/DownloadComponent';
 import { DataNodeComponent } from '../DataNode/DataNodeComponent';
+import { FileSystemComponent } from '../FileSystem/FileSystemComponent';
 
 import { ProcedureLaunch } from '../../Game/Procedure/ProcedureLaunch';
 import { ProcedurePreload } from '../../Game/Procedure/ProcedurePreload';
@@ -165,6 +167,10 @@ export class GameEntry extends Component {
         return GameFrameworkEntry.getModule(DataNodeManager, MODULE_ID.DATANODE);
     }
 
+    static get FileSystem(): FileSystemManager {
+        return GameFrameworkEntry.getModule(FileSystemManager, MODULE_ID.FILESYSTEM);
+    }
+
     // ---- 便捷访问子节点 Component（可选，业务层也可自行 getComponent） ----
 
     get eventComp(): EventComponent { return this.getComponentInChildren(EventComponent)!; }
@@ -183,6 +189,7 @@ export class GameEntry extends Component {
     get dataTableComp(): DataTableComponent { return this.getComponentInChildren(DataTableComponent)!; }
     get objectPoolComp(): ObjectPoolComponent { return this.getComponentInChildren(ObjectPoolComponent)!; }
     get dataNodeComp(): DataNodeComponent { return this.getComponentInChildren(DataNodeComponent)!; }
+    get fileSystemComp(): FileSystemComponent { return this.getComponentInChildren(FileSystemComponent)!; }
 
     // ---- 生命周期 ----
 

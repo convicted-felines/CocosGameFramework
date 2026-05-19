@@ -12,19 +12,29 @@ import {
     LoadSceneUpdateEventArgs,
     UnloadSceneSuccessEventArgs,
     UnloadSceneFailureEventArgs,
+    ActiveSceneChangedEventArgs,
 } from './SceneEventArgs';
 
 export abstract class SceneManager extends GameFrameworkModule implements ISceneManager {
     private _loadedScenes: Set<string> = new Set();
     private _loadingScenes: Set<string> = new Set();
     private _unloadingScenes: Set<string> = new Set();
+    private _sceneOrder: Map<string, number> = new Map();
+    private _activeScene: string = '';
     private _eventManager: IEventManager | null = null;
 
     get priority(): number { return 2; }
     get loadedSceneCount(): number { return this._loadedScenes.size; }
+    get activeScene(): string { return this._activeScene; }
 
     setEventManager(eventManager: IEventManager): void {
         this._eventManager = eventManager;
+    }
+
+    hasScene(sceneName: string): boolean {
+        return this._loadedScenes.has(sceneName)
+            || this._loadingScenes.has(sceneName)
+            || this._unloadingScenes.has(sceneName);
     }
 
     loadScene(
@@ -36,6 +46,7 @@ export abstract class SceneManager extends GameFrameworkModule implements IScene
     ): void {
         if (this._loadingScenes.has(sceneName) || this._unloadingScenes.has(sceneName)) return;
         this._loadingScenes.add(sceneName);
+        this._sceneOrder.set(sceneName, 0);
         const startTime = Date.now();
         this._doLoadScene(
             sceneName,
@@ -46,6 +57,7 @@ export abstract class SceneManager extends GameFrameworkModule implements IScene
                 } else {
                     this._loadingScenes.delete(name);
                     this._loadedScenes.add(name);
+                    this._refreshSceneOrder();
                     const duration = (Date.now() - startTime) / 1000;
                     onLoaded?.(name, duration, userData);
                     this._eventManager?.fire(this, LoadSceneSuccessEventArgs.create(name, duration, userData));
@@ -53,6 +65,7 @@ export abstract class SceneManager extends GameFrameworkModule implements IScene
             },
             (name, msg) => {
                 this._loadingScenes.delete(name);
+                this._sceneOrder.delete(name);
                 onFailure?.(name, msg, userData);
                 this._eventManager?.fire(this, LoadSceneFailureEventArgs.create(name, msg, userData));
             }
@@ -66,11 +79,13 @@ export abstract class SceneManager extends GameFrameworkModule implements IScene
     ): void {
         if (!this._loadedScenes.has(sceneName) || this._unloadingScenes.has(sceneName)) return;
         this._unloadingScenes.add(sceneName);
+        this._sceneOrder.delete(sceneName);
         this._doUnloadScene(
             sceneName,
             (name) => {
                 this._unloadingScenes.delete(name);
                 this._loadedScenes.delete(name);
+                this._refreshSceneOrder();
                 onUnloaded?.(name, userData);
                 this._eventManager?.fire(this, UnloadSceneSuccessEventArgs.create(name, userData));
             },
@@ -81,6 +96,22 @@ export abstract class SceneManager extends GameFrameworkModule implements IScene
         );
     }
 
+    setSceneOrder(sceneName: string, sceneOrder: number): void {
+        if (this._loadingScenes.has(sceneName)) {
+            this._sceneOrder.set(sceneName, sceneOrder);
+            return;
+        }
+        if (this._loadedScenes.has(sceneName)) {
+            this._sceneOrder.set(sceneName, sceneOrder);
+            this._refreshSceneOrder();
+            return;
+        }
+    }
+
+    getSceneOrder(sceneName: string): number {
+        return this._sceneOrder.get(sceneName) ?? 0;
+    }
+
     sceneIsLoaded(sceneName: string): boolean { return this._loadedScenes.has(sceneName); }
     sceneIsLoading(sceneName: string): boolean { return this._loadingScenes.has(sceneName); }
     sceneIsUnloading(sceneName: string): boolean { return this._unloadingScenes.has(sceneName); }
@@ -88,8 +119,27 @@ export abstract class SceneManager extends GameFrameworkModule implements IScene
     getLoadingSceneNames(): string[] { return Array.from(this._loadingScenes); }
     getUnloadingSceneNames(): string[] { return Array.from(this._unloadingScenes); }
 
+    protected _refreshSceneOrder(): void {
+        let maxName = '';
+        let maxOrder = -Infinity;
+        for (const [name, order] of this._sceneOrder) {
+            if (this._loadingScenes.has(name)) continue;
+            if (order > maxOrder) {
+                maxOrder = order;
+                maxName = name;
+            }
+        }
+        const newActive = maxName;
+        if (newActive !== this._activeScene) {
+            const last = this._activeScene;
+            this._activeScene = newActive;
+            this._doSetActiveScene(newActive);
+            this._eventManager?.fire(this, ActiveSceneChangedEventArgs.create(last, newActive));
+        }
+    }
+
     /**
-     * @param onProgress progress < 1 时为进度回调，=== 1 时为成功回调
+     * @param onProgress progress < 1 为进度回调，=== 1 为成功回调
      */
     protected abstract _doLoadScene(
         sceneName: string,
@@ -104,12 +154,16 @@ export abstract class SceneManager extends GameFrameworkModule implements IScene
         onFailure: (name: string) => void
     ): void;
 
+    protected _doSetActiveScene(_sceneName: string): void {}
+
     update(_e: number, _r: number): void {}
 
     shutdown(): void {
         this._loadedScenes.clear();
         this._loadingScenes.clear();
         this._unloadingScenes.clear();
+        this._sceneOrder.clear();
+        this._activeScene = '';
         this._eventManager = null;
     }
 }

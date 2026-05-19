@@ -10,6 +10,7 @@ import { PlaySoundSuccessEventArgs } from '../../GameFramework/Sound/PlaySoundSu
 import { PlaySoundFailureEventArgs } from '../../GameFramework/Sound/PlaySoundFailureEventArgs';
 import { PlaySoundUpdateEventArgs } from '../../GameFramework/Sound/PlaySoundUpdateEventArgs';
 import { PlaySoundDependencyAssetEventArgs } from '../../GameFramework/Sound/PlaySoundDependencyAssetEventArgs';
+import { SoundHelperBase } from './SoundHelperBase';
 
 const { ccclass, property } = _decorator;
 
@@ -36,6 +37,9 @@ export class SoundComponent extends GameFrameworkComponent {
     @property({ type: Node, tooltip: '挂载 AudioSource 的节点' })
     audioNode: Node | null = null;
 
+    @property({ type: SoundHelperBase, tooltip: '声音辅助器（用于释放声音资源），留空则不自动释放）' })
+    soundHelper: SoundHelperBase | null = null;
+
     @property({ type: SoundGroupConfig, tooltip: '音效分组配置列表' })
     soundGroups: SoundGroupConfig[] = [
         Object.assign(new SoundGroupConfig(), { name: 'Music', volume: 0.8, agentCount: 1 }),
@@ -61,6 +65,10 @@ export class SoundComponent extends GameFrameworkComponent {
 
         if (this.audioNode) {
             this._manager.setAudioNode(this.audioNode);
+        }
+
+        if (this.soundHelper) {
+            this._manager.setSoundHelper(this.soundHelper);
         }
 
         for (const cfg of this.soundGroups) {

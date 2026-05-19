@@ -109,3 +109,23 @@ export class UnloadSceneFailureEventArgs extends BaseEventArgs {
         this.userData = undefined;
     }
 }
+
+export class ActiveSceneChangedEventArgs extends BaseEventArgs {
+    static readonly eventId = 'scene.active.changed';
+    get id(): string { return ActiveSceneChangedEventArgs.eventId; }
+
+    lastActiveScene!: string;
+    activeScene!: string;
+
+    static create(lastActiveScene: string, activeScene: string): ActiveSceneChangedEventArgs {
+        const e = ReferencePool.acquire(ActiveSceneChangedEventArgs);
+        e.lastActiveScene = lastActiveScene;
+        e.activeScene = activeScene;
+        return e;
+    }
+
+    clear(): void {
+        this.lastActiveScene = '';
+        this.activeScene = '';
+    }
+}

@@ -7,6 +7,7 @@ import { EventManager } from '../../GameFramework/Event/EventManager';
 import { INetworkChannel } from '../../GameFramework/Network/INetworkChannel';
 import { INetworkChannelHelper } from '../../GameFramework/Network/INetworkChannelHelper';
 import { Packet } from '../../GameFramework/Network/Packet';
+import { NetworkChannelHelperBase } from './NetworkChannelHelperBase';
 import {
     IHttpRequestParams,
     IHttpResponse,
@@ -29,6 +30,10 @@ export class NetworkComponent extends GameFrameworkComponent {
     /** HTTP 请求默认超时时间（毫秒） */
     @property({ tooltip: 'HTTP 请求默认超时时间（毫秒）' })
     defaultTimeout: number = 10000;
+
+    /** 默认网络频道辅助器，调用 createNetworkChannel 时未传入 helper 则使用此辅助器。 */
+    @property({ type: NetworkChannelHelperBase, tooltip: '默认网络频道辅助器，留空则不附加辅助器' })
+    networkChannelHelper: NetworkChannelHelperBase | null = null;
 
     private _manager!: NetworkManager;
 
@@ -64,7 +69,7 @@ export class NetworkComponent extends GameFrameworkComponent {
     }
 
     createNetworkChannel(name: string, helper?: INetworkChannelHelper): INetworkChannel {
-        return this._manager.createNetworkChannel(name, helper);
+        return this._manager.createNetworkChannel(name, helper ?? this.networkChannelHelper ?? undefined);
     }
 
     destroyNetworkChannel(name: string): boolean {

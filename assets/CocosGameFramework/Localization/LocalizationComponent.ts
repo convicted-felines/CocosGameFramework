@@ -3,6 +3,8 @@ import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
 import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
 import { LocalizationManager } from '../../GameFramework/Localization/LocalizationManager';
+import { LocalizationHelperBase } from './LocalizationHelperBase';
+import { DefaultLocalizationHelper } from './DefaultLocalizationHelper';
 
 const { ccclass, property } = _decorator;
 
@@ -12,6 +14,9 @@ export class LocalizationComponent extends GameFrameworkComponent {
     @property({ tooltip: '默认语言标签（如 zh-CN、en-US）' })
     defaultLanguage: string = 'zh-CN';
 
+    @property({ type: LocalizationHelperBase, tooltip: '本地化辅助器，留空则使用 DefaultLocalizationHelper' })
+    localizationHelper: LocalizationHelperBase | null = null;
+
     private _manager!: LocalizationManager;
 
     get manager(): LocalizationManager { return this._manager; }
@@ -20,6 +25,10 @@ export class LocalizationComponent extends GameFrameworkComponent {
         super.onLoad();
         this._manager = new LocalizationManager();
         this._manager.language = this.defaultLanguage;
+
+        const helper = this.localizationHelper ?? this.addComponent(DefaultLocalizationHelper)!;
+        this._manager.setHelper(helper);
+
         GameFrameworkEntry.registerModule(MODULE_ID.LOCALIZATION, this._manager);
     }
 
