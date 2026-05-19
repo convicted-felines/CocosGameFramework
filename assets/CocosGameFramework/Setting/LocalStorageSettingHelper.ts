@@ -1,7 +1,10 @@
-import { sys } from 'cc';
-import { ISettingHelper } from '../../GameFramework/Setting/ISettingHelper';
+import { sys, _decorator } from 'cc';
+import { SettingHelperBase } from './SettingHelperBase';
 
-export class LocalStorageSettingHelper implements ISettingHelper {
+const { ccclass } = _decorator;
+
+@ccclass('LocalStorageSettingHelper')
+export class LocalStorageSettingHelper extends SettingHelperBase {
     private _storage: any = sys.localStorage;
 
     get count(): number {

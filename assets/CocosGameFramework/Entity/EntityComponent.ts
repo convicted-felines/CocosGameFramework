@@ -13,6 +13,7 @@ import {
 } from '../../GameFramework/Entity/EntityEventArgs';
 import { EventManager } from '../../GameFramework/Event/EventManager';
 import { CocosResourceManager } from '../Resource/CocosResourceManager';
+import { EntityHelperBase } from './EntityHelperBase';
 import { DefaultEntityHelper } from './DefaultEntityHelper';
 import { EntityLogic } from './EntityLogic';
 
@@ -42,11 +43,14 @@ export class EntityComponent extends GameFrameworkComponent {
     @property({ type: Node, tooltip: '所有实体分组节点的挂载根节点' })
     entityRoot: Node | null = null;
 
+    @property({ type: EntityHelperBase, tooltip: '实体辅助器，留空则自动使用 DefaultEntityHelper' })
+    entityHelper: EntityHelperBase | null = null;
+
     @property({ type: [EntityGroupConfig], tooltip: '实体分组配置列表' })
     entityGroupConfigs: EntityGroupConfig[] = [new EntityGroupConfig()];
 
     private _manager!: EntityManager;
-    private _helper!: DefaultEntityHelper;
+    private _helper!: EntityHelperBase;
     private _eventMgr: EventManager | null = null;
 
     get manager(): EntityManager { return this._manager; }
@@ -61,7 +65,9 @@ export class EntityComponent extends GameFrameworkComponent {
         this._manager.setResourceManager(resourceMgr);
 
         const root = this.entityRoot ?? this.node;
-        this._helper = new DefaultEntityHelper(root);
+
+        // 优先使用 Inspector 中指定的 helper，否则在自身节点添加默认实现
+        this._helper = this.entityHelper ?? this.node.addComponent(DefaultEntityHelper);
         this._manager.setHelper(this._helper);
 
         // 为每个分组创建独立子节点并注册

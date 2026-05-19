@@ -4,6 +4,89 @@ Unity GameFramework（C# / UnityGameFramework）移植到 Cocos Creator 3.8.8（
 
 ---
 
+## 迁移进度总览
+
+> 最后更新：2026-05-19
+
+### 核心层（`assets/GameFramework/`）
+
+| 模块 | 核心接口 | Manager 实现 | 状态 |
+|------|----------|-------------|------|
+| Base / Entry | `GameFrameworkModule` `GameFrameworkEntry` `GameFrameworkModuleIds` | — | ✅ 完成 |
+| 基础数据结构 | — | `GameFrameworkLinkedList` `GameFrameworkMultiDictionary` | ✅ 完成 |
+| 日志 | `ILogHelper` `GameFrameworkLog` | — | ✅ 完成 |
+| 任务池 | `ITaskAgent` `TaskBase` | `TaskPool` | ✅ 完成 |
+| 工具集 | — | `Utility`（Path / Text / Json / Converter / Encryption / Random / Verifier） | ✅ 完成 |
+| ReferencePool | `IReference` | `ReferencePool`（静态） | ✅ 完成 |
+| EventManager | `IEventManager` `BaseEventArgs` | `EventManager` | ✅ 完成 |
+| FsmManager | `IFsmManager` `IFsm` `FsmState` | `FsmManager` `Fsm` | ✅ 完成 |
+| ProcedureManager | `IProcedureManager` `ProcedureBase` | `ProcedureManager` | ✅ 完成 |
+| ObjectPoolManager | `IObjectPoolManager` `IObjectPool` `ObjectBase` | `ObjectPoolManager` `ObjectPool` | ✅ 完成 |
+| LocalizationManager | `ILocalizationManager` | `LocalizationManager` | ✅ 完成 |
+| SettingManager | `ISettingManager` `ISettingHelper` | `SettingManager` | ✅ 完成 |
+| ConfigManager | `IConfigManager` `IConfigHelper` | `ConfigManager` | ✅ 完成 |
+| DataTableManager | `IDataTableManager` `IDataTable` `IDataRow` | `DataTableManager` `DataTable` | ✅ 完成 |
+| DataNodeManager | `IDataNodeManager` `IDataNode` | `DataNodeManager` `DataNode` | ✅ 完成 |
+| NetworkManager | `INetworkManager` `INetworkChannel` | `NetworkManager` | ✅ 完成 |
+| WebRequestManager | `IWebRequestManager` | `WebRequestManager` | ✅ 完成 |
+| UIManager | `IUIManager` `IUIGroup` `IUIFormHelper` | `UIManager` | ✅ 完成 |
+| EntityManager | `IEntityManager` `IEntityHelper` | `EntityManager` | ✅ 完成 |
+| SoundManager | `ISoundManager` `ISoundGroup` `ISoundAgent` | `SoundManager` | ✅ 完成 |
+| ResourceManager | `IResourceManager` | — (接口层) | ✅ 完成 |
+| DownloadManager | `IDownloadManager` | `DownloadManager` | ✅ 完成 |
+| SceneManager | — | — (接口层) | ✅ 完成 |
+
+### 引擎适配层（`assets/CocosGameFramework/`）
+
+| 模块 | Component 包装 | Helper / 具体实现 | 状态 |
+|------|---------------|------------------|------|
+| Base | `GameEntry` `GameFrameworkComponent` `BaseComponent` | — | ✅ 完成 |
+| EventComponent | `EventComponent` | — | ✅ 完成 |
+| FsmComponent | `FsmComponent` | — | ✅ 完成 |
+| ProcedureComponent | `ProcedureComponent` | — | ✅ 完成 |
+| ObjectPoolComponent | `ObjectPoolComponent` | — | ✅ 完成 |
+| ReferencePoolComponent | `ReferencePoolComponent` | — | ✅ 完成 |
+| SettingComponent | `SettingComponent` | `SettingHelperBase` `LocalStorageSettingHelper` | ✅ 完成 |
+| ConfigComponent | `ConfigComponent` | `ConfigHelperBase` `DefaultConfigHelper` | ✅ 完成 |
+| LocalizationComponent | `LocalizationComponent` | — | ✅ 完成 |
+| DataTableComponent | `DataTableComponent` | `DataRowBase` | ✅ 完成 |
+| DataNodeComponent | `DataNodeComponent` | — | ✅ 完成 |
+| NetworkComponent | `NetworkComponent` | — | ✅ 完成 |
+| WebRequestComponent | `WebRequestComponent` | `CocosWebRequestManager` | ✅ 完成 |
+| ResourceComponent | `ResourceComponent` | `CocosResourceManager` | ✅ 完成 |
+| SceneComponent | `SceneComponent` | `CocosSceneManager` | ✅ 完成 |
+| UIComponent | `UIComponent` | `UIFormLogic` `UIFormHelperBase` `DefaultUIFormHelper` | ✅ 完成 |
+| EntityComponent | `EntityComponent` | `EntityLogic` `EntityHelperBase` `DefaultEntityHelper` | ✅ 完成 |
+| SoundComponent | `SoundComponent` | `CocosSoundManager` | ✅ 完成 |
+| DownloadComponent | `DownloadComponent` | `CocosDownloadManager` | ✅ 完成 |
+
+### 业务层示例（`assets/Game/`）
+
+| 模块 | 文件 | 状态 |
+|------|------|------|
+| Procedure | `ProcedureLaunch` `ProcedurePreload` `ProcedureMain` | ✅ 完成 |
+
+### 模块 Update 优先级（高 → 低）
+
+| 优先级 | 模块 |
+|--------|------|
+| 100 | EventManager |
+| 90 | FsmManager |
+| 80 | ProcedureManager |
+| 70 | SettingManager |
+| 68 | LocalizationManager |
+| 65 | DataTableManager |
+| 62 | ObjectPoolManager |
+| 60 | ResourceManager |
+| 55 | NetworkManager |
+| 50 | UIManager |
+| 45 | SceneManager |
+| 40 | EntityManager |
+| 30 | SoundManager |
+| 25 | DownloadManager |
+
+---
+
 ## 架构对比
 
 | 层级 | Unity GameFramework | CocosGameFramework (Cocos) |
@@ -307,41 +390,150 @@ assets/
 │   │   ├── GameFrameworkModule.ts
 │   │   ├── GameFrameworkEntry.ts
 │   │   ├── GameFrameworkModuleIds.ts
-│   │   └── GameFrameworkError.ts
+│   │   ├── GameFrameworkError.ts
+│   │   ├── GameFrameworkLinkedList.ts
+│   │   ├── GameFrameworkMultiDictionary.ts
+│   │   ├── GameFrameworkLog.ts
+│   │   └── TaskPool/            ← ITaskAgent + TaskBase + TaskPool
+│   ├── Utility/                 ← Path / Text / Json / Converter / Encryption / Random / Verifier
 │   ├── ReferencePool/           ← IReference + ReferencePool
 │   ├── Event/                   ← BaseEventArgs + IEventManager + EventManager
 │   ├── FSM/                     ← IFsm + FsmState + Fsm + FsmManager
 │   ├── Procedure/               ← ProcedureBase + ProcedureManager
 │   ├── ObjectPool/              ← ObjectBase + ObjectPool + ObjectPoolManager
 │   ├── Resource/                ← IResourceManager（接口）
-│   ├── Setting/                 ← ISettingManager + SettingManager（sys.localStorage）
+│   ├── Setting/                 ← ISettingManager + ISettingHelper + SettingManager
+│   ├── Config/                  ← IConfigManager + IConfigHelper + ConfigManager
 │   ├── DataTable/               ← IDataRow + DataTable + DataTableManager
-│   ├── Scene/                   ← ISceneManager + SceneManager（抽象）
-│   ├── Network/                 ← INetworkManager + NetworkManager（fetch + WebSocket）
+│   ├── DataNode/                ← IDataNode + DataNode + IDataNodeManager + DataNodeManager
+│   ├── Scene/                   ← ISceneManager（接口）
+│   ├── Network/                 ← INetworkManager + INetworkChannel + NetworkManager（fetch + WebSocket）
+│   ├── WebRequest/              ← IWebRequestManager + WebRequestManager
 │   ├── Localization/            ← ILocalizationManager + LocalizationManager
-│   ├── Download/                ← IDownloadManager + DownloadManager（抽象）
-│   ├── UI/                      ← IUIFormHelper + IUIManager + UIManager
+│   ├── Download/                ← IDownloadManager + DownloadManager
+│   ├── UI/                      ← IUIFormHelper + IUIGroup + IUIManager + UIManager
 │   ├── Entity/                  ← IEntityHelper + IEntityManager + EntityManager
-│   └── Sound/                   ← ISoundManager + SoundManager（抽象）
+│   └── Sound/                   ← ISoundManager + ISoundGroup + ISoundAgent + SoundManager
 │
 ├── CocosGameFramework/          ← 引擎适配层
 │   ├── Entry/GameEntry.ts       ← Component 驱动 + 模块注册门面
-│   ├── Resource/CocosResourceManager.ts
-│   ├── Scene/CocosSceneManager.ts
-│   ├── Download/CocosDownloadManager.ts
+│   ├── Base/
+│   │   ├── GameFrameworkComponent.ts
+│   │   └── BaseComponent.ts
+│   ├── Event/EventComponent.ts
+│   ├── Fsm/FsmComponent.ts
+│   ├── Procedure/ProcedureComponent.ts
+│   ├── ObjectPool/ObjectPoolComponent.ts
+│   ├── ReferencePool/ReferencePoolComponent.ts
+│   ├── Setting/
+│   │   ├── SettingComponent.ts
+│   │   ├── SettingHelperBase.ts
+│   │   └── LocalStorageSettingHelper.ts
+│   ├── Config/
+│   │   ├── ConfigComponent.ts
+│   │   ├── ConfigHelperBase.ts
+│   │   └── DefaultConfigHelper.ts
+│   ├── Localization/LocalizationComponent.ts
+│   ├── DataTable/
+│   │   ├── DataTableComponent.ts
+│   │   └── DataRowBase.ts
+│   ├── DataNode/DataNodeComponent.ts
+│   ├── Network/NetworkComponent.ts
+│   ├── WebRequest/
+│   │   ├── WebRequestComponent.ts
+│   │   └── CocosWebRequestManager.ts
+│   ├── Resource/
+│   │   ├── ResourceComponent.ts
+│   │   └── CocosResourceManager.ts
+│   ├── Scene/
+│   │   ├── SceneComponent.ts
+│   │   └── CocosSceneManager.ts
 │   ├── UI/
+│   │   ├── UIComponent.ts
 │   │   ├── UIFormLogic.ts       ← Prefab 上的 Component 基类
+│   │   ├── UIFormHelperBase.ts
 │   │   └── DefaultUIFormHelper.ts
 │   ├── Entity/
+│   │   ├── EntityComponent.ts
 │   │   ├── EntityLogic.ts       ← Prefab 上的 Component 基类
+│   │   ├── EntityHelperBase.ts
 │   │   └── DefaultEntityHelper.ts
-│   └── Sound/CocosSoundManager.ts
+│   ├── Sound/
+│   │   ├── SoundComponent.ts
+│   │   └── CocosSoundManager.ts
+│   └── Download/
+│       ├── DownloadComponent.ts
+│       └── CocosDownloadManager.ts
 │
 └── Game/                        ← 业务层示例
     └── Procedure/
         ├── ProcedureLaunch.ts
         ├── ProcedurePreload.ts
         └── ProcedureMain.ts
+```
+
+---
+
+### ConfigManager
+
+| 特性 | C# | TypeScript |
+|------|-----|-----------|
+| 读取值 | `GetConfig<T>(key)` | `getConfig(key)` / `getBool/getInt/getFloat/getString(key)` |
+| Helper 注入 | `SetConfigHelper()` | `configMgr.setHelper(new DefaultConfigHelper())` |
+| 解析 | 字节流 / CSV | `DefaultConfigHelper` 解析 JSON / CSV |
+| 引擎层 | `ConfigComponent` + Helper | `ConfigComponent` + `ConfigHelperBase` + `DefaultConfigHelper` |
+
+```typescript
+// 注入 Helper 并加载配置
+GameEntry.Config.setHelper(new DefaultConfigHelper());
+await GameEntry.Resource.loadAssetAsync('resources', 'Config/GameConfig', TextAsset)
+    .then(asset => GameEntry.Config.parseData(asset.text));
+
+// 读取
+const maxLevel = GameEntry.Config.getInt('MaxLevel');
+const serverUrl = GameEntry.Config.getString('ServerUrl');
+```
+
+### DataNodeManager
+
+| 特性 | C# | TypeScript |
+|------|-----|-----------|
+| 数据结构 | — | 树形层级节点（斜线路径访问） |
+| 获取节点 | — | `getNode('Player/HP')` |
+| 读写值 | — | `getInt/setInt` `getString/setString` `getObject/setObject` |
+| 节点创建 | — | 访问路径时自动创建中间节点 |
+
+```typescript
+// 按路径存取（支持 bool / int / float / string / object）
+GameEntry.DataNode.setInt('Player/HP', 100);
+GameEntry.DataNode.setString('Player/Name', 'Hero');
+const hp = GameEntry.DataNode.getInt('Player/HP');
+
+// 树形嵌套
+GameEntry.DataNode.setObject('Game/Config', { difficulty: 2 });
+```
+
+### WebRequestManager
+
+| 特性 | C# | TypeScript (Cocos) |
+|------|-----|---------------------|
+| 对应原版 | `WebRequestComponent` | `WebRequestManager` + `CocosWebRequestManager` |
+| 发起 GET | `AddGetWebRequest(url, callbacks)` | `sendGetRequest(url, params?)` |
+| 发起 POST | `AddPostWebRequest(url, body, callbacks)` | `sendPostRequest(url, body, params?)` |
+| Promise 支持 | 无 | `sendGetRequestAsync / sendPostRequestAsync` |
+| 任务队列 | Agent 池 + 优先级 | 同，基于 `TaskPool` |
+| Priority | — | 50（与 UIManager 相邻） |
+
+```typescript
+// GET
+const res = await GameEntry.WebRequest.sendGetRequestAsync('https://api.example.com/data');
+
+// POST（JSON body）
+GameEntry.WebRequest.sendPostRequest(
+    'https://api.example.com/login',
+    { username: 'player', password: '123' },
+    { onSuccess: (res) => console.log(res.data) }
+);
 ```
 
 ---

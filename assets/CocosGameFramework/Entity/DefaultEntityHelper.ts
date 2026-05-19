@@ -1,14 +1,13 @@
-import { Node, Prefab, instantiate } from 'cc';
-import { IEntityHelper, IEntityInfo } from '../../GameFramework/Entity/IEntityHelper';
+import { Node, Prefab, instantiate, _decorator } from 'cc';
+import { IEntityInfo } from '../../GameFramework/Entity/IEntityHelper';
 import { EntityLogic } from './EntityLogic';
+import { EntityHelperBase } from './EntityHelperBase';
 
-export class DefaultEntityHelper implements IEntityHelper {
-    private _entityRoot: Node;
+const { ccclass } = _decorator;
+
+@ccclass('DefaultEntityHelper')
+export class DefaultEntityHelper extends EntityHelperBase {
     private _groupRoots: Map<string, Node> = new Map();
-
-    constructor(entityRoot: Node) {
-        this._entityRoot = entityRoot;
-    }
 
     setGroupRoot(groupName: string, groupRoot: object): void {
         this._groupRoots.set(groupName, groupRoot as Node);
@@ -22,7 +21,7 @@ export class DefaultEntityHelper implements IEntityHelper {
 
     createEntity(entityInstance: object, info: IEntityInfo): void {
         const node = entityInstance as Node;
-        const groupRoot = this._groupRoots.get(info.entityGroupName) ?? this._entityRoot;
+        const groupRoot = this._groupRoots.get(info.entityGroupName) ?? this.node;
         groupRoot.addChild(node);
         const logic = node.getComponent(EntityLogic);
         logic?.__init(info);
@@ -41,7 +40,7 @@ export class DefaultEntityHelper implements IEntityHelper {
     reactivateEntity(entityInstance: object, info: IEntityInfo): void {
         const node = entityInstance as Node;
         // 确保节点挂在正确的分组根节点下（可能因 attach 而改变了父级）
-        const groupRoot = this._groupRoots.get(info.entityGroupName) ?? this._entityRoot;
+        const groupRoot = this._groupRoots.get(info.entityGroupName) ?? this.node;
         if (node.parent !== groupRoot) {
             groupRoot.addChild(node);
         }
@@ -99,8 +98,8 @@ export class DefaultEntityHelper implements IEntityHelper {
         // 将子实体节点归还到它所属的分组根节点
         const groupName = childLogic?.entityGroupName;
         const groupRoot = groupName
-            ? (this._groupRoots.get(groupName) ?? this._entityRoot)
-            : this._entityRoot;
+            ? (this._groupRoots.get(groupName) ?? this.node)
+            : this.node;
         groupRoot.addChild(childNode);
 
         childLogic?.__onDetachFrom(parentLogic, userData);

@@ -1,5 +1,8 @@
-import { IConfigHelper } from '../../GameFramework/Config/IConfigHelper';
+import { _decorator } from 'cc';
 import { IConfigManager } from '../../GameFramework/Config/IConfigManager';
+import { ConfigHelperBase } from './ConfigHelperBase';
+
+const { ccclass } = _decorator;
 
 /**
  * 默认配置解析器。
@@ -10,7 +13,8 @@ import { IConfigManager } from '../../GameFramework/Config/IConfigManager';
  *
  * 解析后通过 configManager.addConfig(name, value) 写入配置管理器。
  */
-export class DefaultConfigHelper implements IConfigHelper {
+@ccclass('DefaultConfigHelper')
+export class DefaultConfigHelper extends ConfigHelperBase {
     private _configManager: IConfigManager | null = null;
 
     setConfigManager(manager: IConfigManager): void {

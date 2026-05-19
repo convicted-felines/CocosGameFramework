@@ -3,12 +3,16 @@ import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
 import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
 import { SettingManager } from '../../GameFramework/Setting/SettingManager';
+import { SettingHelperBase } from './SettingHelperBase';
 import { LocalStorageSettingHelper } from './LocalStorageSettingHelper';
 
-const { ccclass } = _decorator;
+const { ccclass, property } = _decorator;
 
 @ccclass('SettingComponent')
 export class SettingComponent extends GameFrameworkComponent {
+    @property({ type: SettingHelperBase, tooltip: '设置辅助器，留空则自动使用 LocalStorageSettingHelper' })
+    settingHelper: SettingHelperBase | null = null;
+
     private _manager!: SettingManager;
 
     get manager(): SettingManager { return this._manager; }
@@ -18,7 +22,8 @@ export class SettingComponent extends GameFrameworkComponent {
     onLoad(): void {
         super.onLoad();
         this._manager = new SettingManager();
-        this._manager.setSettingHelper(new LocalStorageSettingHelper());
+        const helper = this.settingHelper ?? this.node.addComponent(LocalStorageSettingHelper);
+        this._manager.setSettingHelper(helper);
         GameFrameworkEntry.registerModule(MODULE_ID.SETTING, this._manager);
         this._manager.load();
     }

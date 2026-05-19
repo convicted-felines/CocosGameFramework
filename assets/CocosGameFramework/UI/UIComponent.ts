@@ -11,6 +11,7 @@ import {
 } from '../../GameFramework/UI/UIEventArgs';
 import { EventManager } from '../../GameFramework/Event/EventManager';
 import { CocosResourceManager } from '../Resource/CocosResourceManager';
+import { UIFormHelperBase } from './UIFormHelperBase';
 import { DefaultUIFormHelper } from './DefaultUIFormHelper';
 import { UIFormLogic } from './UIFormLogic';
 
@@ -29,6 +30,9 @@ class UIGroupConfigData {
 export class UIComponent extends GameFrameworkComponent {
     @property({ type: Node, tooltip: 'UI 根节点' })
     uiRoot: Node | null = null;
+
+    @property({ type: UIFormHelperBase, tooltip: 'UI 界面辅助器，留空则自动使用 DefaultUIFormHelper' })
+    uiFormHelper: UIFormHelperBase | null = null;
 
     @property({ type: [UIGroupConfigData], tooltip: 'UI 分组列表' })
     uiGroups: UIGroupConfigData[] = [
@@ -61,9 +65,12 @@ export class UIComponent extends GameFrameworkComponent {
         const resourceMgr = GameFrameworkEntry.getModule(CocosResourceManager, MODULE_ID.RESOURCE);
         this._manager.setResourceManager(resourceMgr);
 
-        if (this.uiRoot) {
-            this._manager.setHelper(new DefaultUIFormHelper(this.uiRoot));
+        // 优先使用 Inspector 中指定的 helper，否则在自身节点添加默认实现
+        const helper = this.uiFormHelper ?? this.node.addComponent(DefaultUIFormHelper);
+        if (helper instanceof DefaultUIFormHelper && this.uiRoot) {
+            helper.setUIRoot(this.uiRoot);
         }
+        this._manager.setHelper(helper);
 
         this._manager.instanceCapacity = this.instanceCapacity;
         this._manager.instanceExpireTime = this.instanceExpireTime;

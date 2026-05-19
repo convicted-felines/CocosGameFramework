@@ -1,12 +1,15 @@
-import { Node, Prefab, instantiate } from 'cc';
-import { IUIFormHelper } from '../../GameFramework/UI/IUIFormHelper';
+import { Node, Prefab, instantiate, _decorator } from 'cc';
 import { IUIGroup } from '../../GameFramework/UI/IUIGroup';
 import { UIFormLogic } from './UIFormLogic';
+import { UIFormHelperBase } from './UIFormHelperBase';
 
-export class DefaultUIFormHelper implements IUIFormHelper {
-    private _uiRoot: Node;
+const { ccclass } = _decorator;
 
-    constructor(uiRoot: Node) {
+@ccclass('DefaultUIFormHelper')
+export class DefaultUIFormHelper extends UIFormHelperBase {
+    private _uiRoot: Node | null = null;
+
+    setUIRoot(uiRoot: Node): void {
         this._uiRoot = uiRoot;
     }
 
@@ -15,7 +18,8 @@ export class DefaultUIFormHelper implements IUIFormHelper {
     }
 
     createUIForm(uiFormInstance: Node, uiGroup: IUIGroup, _userData?: object): void {
-        this._uiRoot.addChild(uiFormInstance);
+        const root = this._uiRoot ?? this.node;
+        root.addChild(uiFormInstance);
         uiFormInstance.setSiblingIndex(uiGroup.depth);
         uiFormInstance.active = false;
     }
