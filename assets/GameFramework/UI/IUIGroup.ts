@@ -1,12 +1,3 @@
-// UI 组接口（管理同一层级的所有 UIForm）
-export interface IUIGroup {
-    readonly name: string;
-    depth: number;
-    pause: boolean;
-    readonly uiFormCount: number;
-    readonly currentUIForm: IUIFormInfo | null;
-}
-
 export interface IUIFormInfo {
     readonly serialId: number;
     readonly uiFormAssetName: string;
@@ -14,4 +5,19 @@ export interface IUIFormInfo {
     readonly isPaused: boolean;
     readonly isCovered: boolean;
     readonly uiFormInstance: object | null;
+}
+
+export interface IUIGroup {
+    readonly name: string;
+    depth: number;
+    pause: boolean;
+    readonly uiFormCount: number;
+    readonly currentUIForm: IUIFormInfo | null;
+
+    hasUIForm(serialId: number): boolean;
+    hasUIFormByAsset(uiFormAssetName: string): boolean;
+    getUIForm(serialId: number): IUIFormInfo | null;
+    getUIFormByAsset(uiFormAssetName: string): IUIFormInfo | null;
+    getUIForms(uiFormAssetName: string): IUIFormInfo[];
+    getAllUIForms(): IUIFormInfo[];
 }
