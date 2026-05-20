@@ -1,21 +1,40 @@
 import { ProcedureBase } from '../../GameFramework/Procedure/ProcedureBase';
 import { IFsm } from '../../GameFramework/FSM/IFsm';
 import { ProcedureManager } from '../../GameFramework/Procedure/ProcedureManager';
+import { ProcedureChangeScene } from './ProcedureChangeScene';
+import { GameFrameworkLog } from '../../GameFramework/Base/Log/GameFrameworkLog';
 
-// 主游戏流程：游戏正式运行阶段
+const GAMEOVER_DELAY_SECONDS = 2;
+
 export class ProcedureMain extends ProcedureBase {
-    onEnter(fsm: IFsm<ProcedureManager>): void {
-        console.log('[Procedure] Main: Enter — game started!');
+    private _gotoMenu = false;
+    private _gotoMenuCountdown = 0;
 
-        // 示例：打开主界面 UI
-        // GameEntry.UI.openUIForm('Prefabs/UI/MainUI', 'resources', 'Default', false);
+    onEnter(_fsm: IFsm<ProcedureManager>): void {
+        this._gotoMenu = false;
+        this._gotoMenuCountdown = 0;
+        GameFrameworkLog.info('[ProcedureMain] Game started.');
+        // TODO: GameEntry.UI.openUIForm('GameForm', ...)
     }
 
-    onUpdate(fsm: IFsm<ProcedureManager>, elapseSeconds: number, realElapseSeconds: number): void {
-        // 主流程常驻，通过事件或按钮触发子流程切换
+    onUpdate(fsm: IFsm<ProcedureManager>, _elapseSeconds: number, realElapseSeconds: number): void {
+        if (this._gotoMenu) {
+            this._gotoMenuCountdown -= realElapseSeconds;
+            if (this._gotoMenuCountdown <= 0) {
+                fsm.setData('NextSceneName', 'Menu');
+                this.changeState(fsm, ProcedureChangeScene);
+            }
+        }
     }
 
-    onLeave(fsm: IFsm<ProcedureManager>, isShutdown: boolean): void {
-        console.log('[Procedure] Main: Leave');
+    onLeave(_fsm: IFsm<ProcedureManager>, _isShutdown: boolean): void {
+        // TODO: 清理游戏逻辑、关闭游戏 UI
+    }
+
+    /** 游戏结束后调用，延迟 2 秒返回菜单 */
+    gotoMenu(): void {
+        if (this._gotoMenu) return;
+        this._gotoMenu = true;
+        this._gotoMenuCountdown = GAMEOVER_DELAY_SECONDS;
     }
 }

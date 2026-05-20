@@ -105,7 +105,7 @@ export class NetworkComponent extends GameFrameworkComponent {
     static get EventCustomError(): string { return NetworkCustomErrorEventArgs.eventId; }
 
     private _fireEvent(sender: object, e: BaseEventArgs): void {
-        const eventMgr = GameFrameworkEntry.getModule(EventManager, MODULE_ID.EVENT);
-        eventMgr.fire(sender, e);
+        if (!GameFrameworkEntry.hasModule(MODULE_ID.EVENT)) return;
+        GameFrameworkEntry.getModule(EventManager, MODULE_ID.EVENT).fire(sender, e);
     }
 }

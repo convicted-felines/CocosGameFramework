@@ -16,10 +16,11 @@ const { ccclass } = _decorator;
 export class DefaultSoundHelper extends SoundHelperBase {
     private _resourceManager: CocosResourceManager | null = null;
 
-    onLoad(): void {
-        this._resourceManager = GameFrameworkEntry.getModule(CocosResourceManager, MODULE_ID.RESOURCE);
-        if (!this._resourceManager) {
-            console.error('[DefaultSoundHelper] ResourceManager is invalid.');
+    start(): void {
+        try {
+            this._resourceManager = GameFrameworkEntry.getModule(CocosResourceManager, MODULE_ID.RESOURCE);
+        } catch {
+            console.warn('[DefaultSoundHelper] ResourceComponent not found — sound assets will not be unloaded.');
         }
     }
 

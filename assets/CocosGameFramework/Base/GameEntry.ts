@@ -3,6 +3,7 @@ import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry'
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
 import { GameFrameworkComponent } from './GameFrameworkComponent';
 import { ShutdownType } from './ShutdownType';
+import { ProcedureBase } from '../../GameFramework/Procedure/ProcedureBase';
 
 import { EventManager } from '../../GameFramework/Event/EventManager';
 import { FsmManager } from '../../GameFramework/FSM/FsmManager';
@@ -14,85 +15,56 @@ import { LocalizationManager } from '../../GameFramework/Localization/Localizati
 import { NetworkManager } from '../../GameFramework/Network/NetworkManager';
 import { UIManager } from '../../GameFramework/UI/UIManager';
 import { EntityManager } from '../../GameFramework/Entity/EntityManager';
-
+import { DataNodeManager } from '../../GameFramework/DataNode/DataNodeManager';
+import { FileSystemManager } from '../../GameFramework/FileSystem/FileSystemManager';
 import { CocosResourceManager } from '../Resource/CocosResourceManager';
 import { CocosSoundManager } from '../Sound/CocosSoundManager';
 import { CocosSceneManager } from '../Scene/CocosSceneManager';
 import { CocosDownloadManager } from '../Download/CocosDownloadManager';
-import { DataNodeManager } from '../../GameFramework/DataNode/DataNodeManager';
-import { FileSystemManager } from '../../GameFramework/FileSystem/FileSystemManager';
-
-import { BaseComponent } from './BaseComponent';
-import { EventComponent } from '../Event/EventComponent';
-import { FsmComponent } from '../FSM/FsmComponent';
-import { ProcedureComponent } from '../Procedure/ProcedureComponent';
-import { SettingComponent } from '../Setting/SettingComponent';
-import { DataTableComponent } from '../DataTable/DataTableComponent';
-import { ObjectPoolComponent } from '../ObjectPool/ObjectPoolComponent';
-import { LocalizationComponent } from '../Localization/LocalizationComponent';
-import { NetworkComponent } from '../Network/NetworkComponent';
-import { ResourceComponent } from '../Resource/ResourceComponent';
-import { SceneComponent } from '../Scene/SceneComponent';
-import { UIComponent } from '../UI/UIComponent';
-import { EntityComponent } from '../Entity/EntityComponent';
-import { SoundComponent } from '../Sound/SoundComponent';
-import { DownloadComponent } from '../Download/DownloadComponent';
-import { DataNodeComponent } from '../DataNode/DataNodeComponent';
-import { FileSystemComponent } from '../FileSystem/FileSystemComponent';
-
-import { ProcedureLaunch } from '../../Game/Procedure/ProcedureLaunch';
-import { ProcedurePreload } from '../../Game/Procedure/ProcedurePreload';
-import { ProcedureMain } from '../../Game/Procedure/ProcedureMain';
 
 const { ccclass } = _decorator;
 
 /**
- * 框架入口 Component，挂在场景根节点。
+ * 框架入口 Component 基类，挂在场景根节点。
  *
- * 场景节点层级示例：
- * GameEntry (此 Component)
- * ├── BaseNode       → BaseComponent   ← 游戏速度 / 帧率 / 日志助手
- * ├── EventNode      → EventComponent
- * ├── FsmNode        → FsmComponent
- * ├── ProcedureNode  → ProcedureComponent
- * ├── SettingNode    → SettingComponent
- * ├── DataTableNode  → DataTableComponent
- * ├── ObjectPoolNode → ObjectPoolComponent
+ * 游戏层通过继承本类并覆盖 createProcedures() 来注入游戏专属流程，
+ * 对应 C# UnityGameFramework 中 partial class GameEntry 的模式。
+ *
+ * 子类需声明自己的 @ccclass，场景中挂载的是子类 Component。
+ *
+ * 场景节点层级示例（子类场景）：
+ * GameEntry (游戏层子类 Component)
+ * ├── BaseNode         → BaseComponent
+ * ├── EventNode        → EventComponent
+ * ├── FsmNode          → FsmComponent
+ * ├── ProcedureNode    → ProcedureComponent
+ * ├── SettingNode      → SettingComponent
+ * ├── DataTableNode    → DataTableComponent
+ * ├── ObjectPoolNode   → ObjectPoolComponent
  * ├── LocalizationNode → LocalizationComponent
- * ├── NetworkNode    → NetworkComponent
- * ├── DownloadNode   → DownloadComponent
- * ├── ResourceNode   → ResourceComponent
- * ├── SceneNode      → SceneComponent
- * ├── UIRoot         → UIComponent
- * ├── EntityRoot     → EntityComponent
- * └── AudioNode      → SoundComponent
+ * ├── NetworkNode      → NetworkComponent
+ * ├── DownloadNode     → DownloadComponent
+ * ├── ResourceNode     → ResourceComponent
+ * ├── SceneNode        → SceneComponent
+ * ├── UIRoot           → UIComponent
+ * ├── EntityRoot       → EntityComponent
+ * ├── AudioNode        → SoundComponent
+ * └── BuiltinDataNode  → BuiltinDataComponent (游戏层自定义)
  */
-@ccclass('GameEntry')
+@ccclass('GFGameEntry')
 export class GameEntry extends Component {
     private _lastRealMs: number = 0;
 
-    // 由 BaseComponent.setGameSpeed() 驱动，无需直接导入 BaseComponent，避免循环依赖
     private static _gameSpeed: number = 1;
 
-    /** 由 BaseComponent 调用，同步游戏速度。 */
     static setGameSpeed(speed: number): void {
         GameEntry._gameSpeed = Math.max(0, speed);
     }
 
-    /**
-     * 按组件类型检索已注册的框架组件。
-     * 等价于 Unity 的 GameEntry.GetComponent<T>()。
-     */
     static getComponent<T extends GameFrameworkComponent>(type: new (...args: any[]) => T): T | null {
         return GameFrameworkComponent.getComponent(type);
     }
 
-    /**
-     * 关闭框架，支持三种模式：
-     *  - ShutdownType.None    — 仅关闭框架模块
-     *  - ShutdownType.Restart — 关闭后重新加载当前场景
-     *  - ShutdownType.Quit   — 关闭后退出应用
-     */
     static shutdown(type: ShutdownType = ShutdownType.None): void {
         GameFrameworkEntry.shutdown();
         switch (type) {
@@ -105,7 +77,7 @@ export class GameEntry extends Component {
         }
     }
 
-    // ---- 模块静态访问门面（通过 GameFrameworkEntry 直接取已注册实例） ----
+    // ---- 内置管理器静态访问门面 ----
 
     static get Event(): EventManager {
         return GameFrameworkEntry.getModule(EventManager, MODULE_ID.EVENT);
@@ -171,34 +143,20 @@ export class GameEntry extends Component {
         return GameFrameworkEntry.getModule(FileSystemManager, MODULE_ID.FILESYSTEM);
     }
 
-    // ---- 便捷访问子节点 Component（可选，业务层也可自行 getComponent） ----
-
-    get eventComp(): EventComponent { return this.getComponentInChildren(EventComponent)!; }
-    get baseComp(): BaseComponent { return this.getComponentInChildren(BaseComponent)!; }
-    get fsmComp(): FsmComponent { return this.getComponentInChildren(FsmComponent)!; }
-    get procedureComp(): ProcedureComponent { return this.getComponentInChildren(ProcedureComponent)!; }
-    get resourceComp(): ResourceComponent { return this.getComponentInChildren(ResourceComponent)!; }
-    get uiComp(): UIComponent { return this.getComponentInChildren(UIComponent)!; }
-    get entityComp(): EntityComponent { return this.getComponentInChildren(EntityComponent)!; }
-    get soundComp(): SoundComponent { return this.getComponentInChildren(SoundComponent)!; }
-    get sceneComp(): SceneComponent { return this.getComponentInChildren(SceneComponent)!; }
-    get networkComp(): NetworkComponent { return this.getComponentInChildren(NetworkComponent)!; }
-    get downloadComp(): DownloadComponent { return this.getComponentInChildren(DownloadComponent)!; }
-    get localizationComp(): LocalizationComponent { return this.getComponentInChildren(LocalizationComponent)!; }
-    get settingComp(): SettingComponent { return this.getComponentInChildren(SettingComponent)!; }
-    get dataTableComp(): DataTableComponent { return this.getComponentInChildren(DataTableComponent)!; }
-    get objectPoolComp(): ObjectPoolComponent { return this.getComponentInChildren(ObjectPoolComponent)!; }
-    get dataNodeComp(): DataNodeComponent { return this.getComponentInChildren(DataNodeComponent)!; }
-    get fileSystemComp(): FileSystemComponent { return this.getComponentInChildren(FileSystemComponent)!; }
-
     // ---- 生命周期 ----
 
     onLoad(): void {
-        // 子节点 Component 的 onLoad 先执行，各模块已完成 registerModule。
-        // GameEntry 只负责：持久化、启动流程、驱动 update。
+        // 持久化根节点必须在 onLoad 中完成，早于任何场景切换。
+        // 此时子节点的 onLoad 尚未执行，模块还未注册，不在这里启动流程。
         director.addPersistRootNode(this.node);
-        this._startProcedure();
+    }
+
+    start(): void {
+        // start() 在所有节点的 onLoad() 全部完成后才执行，
+        // 等价于 Unity StarForce.GameEntry.Start() → InitBuiltinComponents()。
+        // 此时子节点的 XxxComponent.onLoad() 已跑完，所有模块已注册。
         this._lastRealMs = performance.now();
+        this._startProcedure();
         console.log('[GameFramework] Started.');
     }
 
@@ -214,14 +172,25 @@ export class GameEntry extends Component {
         console.log('[GameFramework] Shutdown.');
     }
 
+    // ---- 流程注入钩子 ----
+
+    /**
+     * 子类覆盖此方法，返回游戏所需的全部流程实例（按启动顺序排列）。
+     * 第一个元素为初始流程。
+     */
+    protected createProcedures(): ProcedureBase[] {
+        return [];
+    }
+
     private _startProcedure(): void {
+        const procedures = this.createProcedures();
+        if (procedures.length === 0) {
+            console.warn('[GameFramework] createProcedures() returned empty — no procedure started.');
+            return;
+        }
         const fsmMgr = GameFrameworkEntry.getModule(FsmManager, MODULE_ID.FSM);
         const procMgr = GameFrameworkEntry.getModule(ProcedureManager, MODULE_ID.PROCEDURE);
-        procMgr.initialize(fsmMgr, [
-            new ProcedureLaunch(),
-            new ProcedurePreload(),
-            new ProcedureMain(),
-        ]);
-        procMgr.startProcedure(ProcedureLaunch);
+        procMgr.initialize(fsmMgr, procedures);
+        procMgr.startProcedure(procedures[0].constructor as new () => ProcedureBase);
     }
 }

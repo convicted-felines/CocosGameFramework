@@ -63,7 +63,7 @@ class ResourceGroup implements IResourceGroup {
 
 // ─── UpdateTask 内部结构 ──────────────────────────────────────────────────────
 
-interface UpdateTask {
+export interface UpdateTask {
     name: string;
     downloadPath: string;
     downloadUri: string;

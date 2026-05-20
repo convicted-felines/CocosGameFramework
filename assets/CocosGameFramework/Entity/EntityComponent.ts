@@ -61,16 +61,10 @@ export class EntityComponent extends GameFrameworkComponent {
         super.onLoad();
         this._manager = new EntityManager();
 
-        const resourceMgr = GameFrameworkEntry.getModule(CocosResourceManager, MODULE_ID.RESOURCE);
-        this._manager.setResourceManager(resourceMgr);
-
         const root = this.entityRoot ?? this.node;
-
-        // 优先使用 Inspector 中指定的 helper，否则在自身节点添加默认实现
         this._helper = this.entityHelper ?? this.node.addComponent(DefaultEntityHelper);
         this._manager.setHelper(this._helper);
 
-        // 为每个分组创建独立子节点并注册
         for (const cfg of this.entityGroupConfigs) {
             const trimmed = cfg.name.trim();
             if (!trimmed) continue;
@@ -80,14 +74,19 @@ export class EntityComponent extends GameFrameworkComponent {
             this._manager.addEntityGroup(trimmed, cfg.autoReleaseInterval, cfg.capacity, cfg.expireTime, cfg.priority);
         }
 
-        // 绑定事件回调（EventManager 可能尚未就绪，延迟到 start 中获取）
         this._bindCallbacks();
-
         GameFrameworkEntry.registerModule(MODULE_ID.ENTITY, this._manager);
     }
 
     start(): void {
-        // start 时所有模块已注册完毕，可以安全获取 EventManager
+        // start() 时所有模块已注册完毕，安全获取跨模块依赖。
+        try {
+            this._manager.setResourceManager(
+                GameFrameworkEntry.getModule(CocosResourceManager, MODULE_ID.RESOURCE)
+            );
+        } catch {
+            console.warn('[EntityComponent] ResourceComponent not found.');
+        }
         try {
             this._eventMgr = GameFrameworkEntry.getModule(EventManager, MODULE_ID.EVENT);
         } catch {

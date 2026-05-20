@@ -60,9 +60,6 @@ export class SoundComponent extends GameFrameworkComponent {
         super.onLoad();
         this._manager = new CocosSoundManager();
 
-        const resourceMgr = GameFrameworkEntry.getModule(CocosResourceManager, MODULE_ID.RESOURCE);
-        this._manager.setResourceManager(resourceMgr);
-
         if (this.audioNode) {
             this._manager.setAudioNode(this.audioNode);
         }
@@ -76,6 +73,16 @@ export class SoundComponent extends GameFrameworkComponent {
         }
 
         GameFrameworkEntry.registerModule(MODULE_ID.SOUND, this._manager);
+    }
+
+    start(): void {
+        try {
+            this._manager.setResourceManager(
+                GameFrameworkEntry.getModule(CocosResourceManager, MODULE_ID.RESOURCE)
+            );
+        } catch {
+            console.warn('[SoundComponent] ResourceComponent not found.');
+        }
     }
 
     // ---------- event wiring ----------

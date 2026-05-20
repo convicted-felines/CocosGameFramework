@@ -11,13 +11,16 @@ export class GameFrameworkEntry {
     private static _moduleMap: Map<string, GameFrameworkModule> = new Map();
     private static _head: ModuleNode | null = null;
 
-    // 懒加载并注册模块，调用方式：GameFrameworkEntry.getModule(CocosResourceManager, MODULE_ID.RESOURCE)
+    // 获取已注册的模块；若未注册则抛出，避免返回无 Helper 的裸实例。
+    // 所有模块由各 XxxComponent.onLoad() 通过 registerModule() 注册，
+    // 确保在 GameEntry.start() 之前完成。
     static getModule<T extends GameFrameworkModule>(ctor: new () => T, moduleId: string): T {
-        let m = this._moduleMap.get(moduleId) as T | undefined;
+        const m = this._moduleMap.get(moduleId) as T | undefined;
         if (!m) {
-            m = new ctor();
-            this._moduleMap.set(moduleId, m);
-            this._insertModuleSorted(m);
+            throw new GameFrameworkError(
+                `Module [${moduleId}] is not registered. ` +
+                `Make sure the corresponding XxxComponent is attached to the scene and its onLoad() has run.`
+            );
         }
         return m;
     }

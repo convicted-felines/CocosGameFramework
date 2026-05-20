@@ -1,21 +1,38 @@
 import { ProcedureBase } from '../../GameFramework/Procedure/ProcedureBase';
 import { IFsm } from '../../GameFramework/FSM/IFsm';
 import { ProcedureManager } from '../../GameFramework/Procedure/ProcedureManager';
-import { ProcedurePreload } from './ProcedurePreload';
+import { ProcedureSplash } from './ProcedureSplash';
+import { GameEntry } from '../Base/GameEntry';
+import { Constant } from '../Definition/Constant';
+import { GameFrameworkLog } from '../../GameFramework/Base/Log/GameFrameworkLog';
 
-// 启动流程：执行一次性初始化（分析设备、加载基础配置）然后立即进入预加载
 export class ProcedureLaunch extends ProcedureBase {
-    onEnter(fsm: IFsm<ProcedureManager>): void {
-        console.log('[Procedure] Launch: Enter');
-        // 执行首帧初始化工作（同步）
+    onEnter(_fsm: IFsm<ProcedureManager>): void {
+        GameEntry.BuiltinData.initBuildInfo();
+        GameEntry.BuiltinData.initDefaultDictionary(GameEntry.Localization);
+
+        // 从持久化设置中恢复音量
+        const musicMuted    = GameEntry.Setting.getBool(Constant.Setting.MusicMuted, false);
+        const musicVolume   = GameEntry.Setting.getFloat(Constant.Setting.MusicVolume, 0.3);
+        const soundMuted    = GameEntry.Setting.getBool(Constant.Setting.SoundMuted, false);
+        const soundVolume   = GameEntry.Setting.getFloat(Constant.Setting.SoundVolume, 1.0);
+        const uiSoundMuted  = GameEntry.Setting.getBool(Constant.Setting.UISoundMuted, false);
+        const uiSoundVolume = GameEntry.Setting.getFloat(Constant.Setting.UISoundVolume, 1.0);
+
+        GameEntry.Sound.setMuted('Music',   musicMuted);
+        GameEntry.Sound.setMuted('Sound',   soundMuted);
+        GameEntry.Sound.setMuted('UISound', uiSoundMuted);
+        GameEntry.Sound.setVolume('Music',   musicVolume);
+        GameEntry.Sound.setVolume('Sound',   soundVolume);
+        GameEntry.Sound.setVolume('UISound', uiSoundVolume);
+
+        GameFrameworkLog.info(
+            `[ProcedureLaunch] v${GameEntry.BuiltinData.buildInfo?.gameVersion ?? '?'}, ` +
+            `resVer=${GameEntry.BuiltinData.buildInfo?.internalResourceVersion ?? 0}`
+        );
     }
 
-    onUpdate(fsm: IFsm<ProcedureManager>, elapseSeconds: number, _r: number): void {
-        // 下一帧即切换，给引擎一帧时间完成初始化
-        this.changeState(fsm, ProcedurePreload);
-    }
-
-    onLeave(fsm: IFsm<ProcedureManager>, isShutdown: boolean): void {
-        console.log('[Procedure] Launch: Leave');
+    onUpdate(fsm: IFsm<ProcedureManager>, _e: number, _r: number): void {
+        this.changeState(fsm, ProcedureSplash);
     }
 }

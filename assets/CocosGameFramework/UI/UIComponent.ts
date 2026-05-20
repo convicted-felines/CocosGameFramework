@@ -62,10 +62,6 @@ export class UIComponent extends GameFrameworkComponent {
         super.onLoad();
         this._manager = new UIManager();
 
-        const resourceMgr = GameFrameworkEntry.getModule(CocosResourceManager, MODULE_ID.RESOURCE);
-        this._manager.setResourceManager(resourceMgr);
-
-        // 优先使用 Inspector 中指定的 helper，否则在自身节点添加默认实现
         const helper = this.uiFormHelper ?? this.node.addComponent(DefaultUIFormHelper);
         if (helper instanceof DefaultUIFormHelper && this.uiRoot) {
             helper.setUIRoot(this.uiRoot);
@@ -82,11 +78,17 @@ export class UIComponent extends GameFrameworkComponent {
         }
 
         this._bindCallbacks();
-
         GameFrameworkEntry.registerModule(MODULE_ID.UI, this._manager);
     }
 
     start(): void {
+        try {
+            this._manager.setResourceManager(
+                GameFrameworkEntry.getModule(CocosResourceManager, MODULE_ID.RESOURCE)
+            );
+        } catch {
+            console.warn('[UIComponent] ResourceComponent not found.');
+        }
         try {
             this._eventMgr = GameFrameworkEntry.getModule(EventManager, MODULE_ID.EVENT);
         } catch {
