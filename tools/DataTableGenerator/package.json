@@ -1,0 +1,13 @@
+{
+  "name": "cocos-datatable-generator",
+  "version": "1.0.0",
+  "description": "DataTable generator for CocosGameFramework",
+  "scripts": {
+    "excel": "node DataTableGenerator.js excel",
+    "code": "node DataTableGenerator.js code",
+    "all": "node DataTableGenerator.js all"
+  },
+  "dependencies": {
+    "jszip": "^3.10.1"
+  }
+}

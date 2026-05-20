@@ -1,0 +1,6 @@
+#	场景配置
+#	Id	AssetName	BackgroundMusicId
+#	id	string	int
+#	编号	资源名称	背景音乐编号
+	1	Menu	1001
+	2	Main	1002
