@@ -6,7 +6,7 @@ Unity GameFramework（C# / UnityGameFramework）移植到 Cocos Creator 3.8.8（
 
 ## 迁移进度总览
 
-> 最后更新：2026-05-19
+> 最后更新：2026-05-20
 
 ### 核心层（`assets/GameFramework/`）
 
@@ -16,7 +16,8 @@ Unity GameFramework（C# / UnityGameFramework）移植到 Cocos Creator 3.8.8（
 | 基础数据结构 | — | `GameFrameworkLinkedList` `GameFrameworkLinkedListRange` `GameFrameworkMultiDictionary` | ✅ 完成 |
 | 日志 | `ILogHelper` `GameFrameworkLog` `GameFrameworkLogLevel` | — | ✅ 完成 |
 | 任务池 | `ITaskAgent` `TaskBase` `TaskInfo` `StartTaskStatus` `TaskStatus` | `TaskPool` | ✅ 完成 |
-| 工具集 | — | `Utility`（Path / Text / Json / Converter / Encryption / Random / Verifier）`BinaryExtension` `StringExtension` | ✅ 完成 |
+| 工具集 | `IJsonHelper` `ITextHelper` `ICompressionHelper` | `Utility`（Path / Text / Json / Converter / Encryption / Random / Verifier / **Compression**）`BinaryExtension` `StringExtension` | ✅ 完成 |
+| Variable | `Variable<T>`（泛型基类） | `VarBoolean` `VarInt8/16/32/64` `VarUInt8/16/32/64` `VarFloat` `VarDouble` `VarChar` `VarString` `VarByteArray` `VarCharArray` `VarDateTime` `VarObject` `VarVec2/3/4` `VarQuat` `VarColor` `VarRect` | ✅ 完成 |
 | ReferencePool | `IReference` `ReferencePoolInfo` | `ReferencePool`（静态） | ✅ 完成 |
 | EventManager | `IEventManager` `BaseEventArgs` `GameEventArgs` | `EventManager` | ✅ 完成 |
 | FsmManager | `IFsmManager` `IFsm` `FsmState` | `FsmManager` `Fsm` | ✅ 完成 |
@@ -27,11 +28,11 @@ Unity GameFramework（C# / UnityGameFramework）移植到 Cocos Creator 3.8.8（
 | ConfigManager | `IConfigManager` `IConfigHelper` | `ConfigManager` | ✅ 完成 |
 | DataTableManager | `IDataTableManager` `IDataTable` `IDataRow` `IDataTableHelper` | `DataTableManager` `DataTable` | ✅ 完成 |
 | DataNodeManager | `IDataNodeManager` `IDataNode` | `DataNodeManager` `DataNode` | ✅ 完成 |
-| NetworkManager | `INetworkManager` `INetworkChannel` `INetworkChannelHelper` `Packet` `NetworkEventArgs` | `NetworkManager` | ✅ 完成 |
+| NetworkManager | `INetworkManager` `INetworkChannel` `INetworkChannelHelper` `IPacketHeader` `IPacketHandler` `Packet` `NetworkEventArgs` `AddressFamily` `ServiceType` `NetworkErrorCode` | `NetworkManager` | ✅ 完成 |
 | WebRequestManager | `IWebRequestManager` `WebRequestEventArgs` | `WebRequestManager` | ✅ 完成 |
-| UIManager | `IUIManager` `IUIGroup` `IUIFormHelper` `UIEventArgs` | `UIManager` | ✅ 完成 |
-| EntityManager | `IEntityManager` `IEntityHelper` `EntityEventArgs` | `EntityManager` | ✅ 完成 |
-| SoundManager | `ISoundManager` `ISoundHelper` `PlaySoundParams` `PlaySoundErrorCode` | `SoundManager` | ✅ 完成 |
+| UIManager | `IUIManager` `IUIForm` `IUIGroup` `IUIGroupHelper` `IUIFormHelper` `UIEventArgs` | `UIManager` | ✅ 完成 |
+| EntityManager | `IEntityManager` `IEntity` `IEntityGroup` `IEntityGroupHelper` `IEntityHelper` `EntityStatus` `EntityEventArgs` | `EntityManager` | ✅ 完成 |
+| SoundManager | `ISoundManager` `ISoundGroup` `ISoundAgent` `ISoundHelper` `PlaySoundParams` `PlaySoundErrorCode` | `SoundManager` | ✅ 完成 |
 | ResourceManager | `IResourceManager` `ResourceEventArgs` | — (接口层) | ✅ 完成 |
 | DownloadManager | `IDownloadManager` `DownloadEventArgs` | `DownloadManager` | ✅ 完成 |
 | SceneManager | `ISceneManager` `SceneEventArgs` | `SceneManager` | ✅ 完成 |
@@ -400,7 +401,8 @@ assets/
 │   │   │   └── GameFrameworkMultiDictionary.ts
 │   │   ├── Log/                 ← ILogHelper + GameFrameworkLog + GameFrameworkLogLevel
 │   │   └── TaskPool/            ← ITaskAgent + TaskBase + TaskPool + TaskInfo + StartTaskStatus + TaskStatus
-│   ├── Utility/                 ← Path / Text / Json / Converter / Encryption / Random / Verifier + BinaryExtension + StringExtension
+│   ├── Utility/                 ← Path / Text / Json / Converter / Encryption / Random / Verifier / Compression + BinaryExtension + StringExtension
+│   ├── Variable/                ← Variable<T>(基类) + VarBoolean/VarInt8~64/VarUInt8~64/VarFloat/VarDouble/VarChar/VarString/VarByteArray/VarCharArray/VarDateTime/VarObject/VarVec2/VarVec3/VarVec4/VarQuat/VarColor/VarRect
 │   ├── ReferencePool/           ← IReference + ReferencePool + ReferencePoolInfo
 │   ├── Event/                   ← BaseEventArgs + GameEventArgs + IEventManager + EventManager
 │   ├── FSM/                     ← IFsm + FsmState + Fsm + FsmManager
@@ -412,12 +414,12 @@ assets/
 │   ├── DataTable/               ← IDataRow + IDataTable + IDataTableHelper + DataTable + DataTableManager
 │   ├── DataNode/                ← IDataNode + DataNode + IDataNodeManager + DataNodeManager
 │   ├── Scene/                   ← ISceneManager + SceneEventArgs + SceneManager
-│   ├── Network/                 ← INetworkManager + INetworkChannel + INetworkChannelHelper + Packet + NetworkEventArgs + NetworkManager
+│   ├── Network/                 ← INetworkManager + INetworkChannel + INetworkChannelHelper + IPacketHeader + IPacketHandler + Packet + NetworkEventArgs + AddressFamily + ServiceType + NetworkErrorCode + NetworkManager
 │   ├── WebRequest/              ← IWebRequestManager + WebRequestEventArgs + WebRequestManager
 │   ├── Localization/            ← ILocalizationManager + ILocalizationHelper + LocalizationManager
 │   ├── Download/                ← IDownloadManager + DownloadEventArgs + DownloadManager
-│   ├── UI/                      ← IUIFormHelper + IUIGroup + IUIManager + UIManager + UIEventArgs
-│   ├── Entity/                  ← IEntityHelper + IEntityManager + EntityEventArgs + EntityManager
+│   ├── UI/                      ← IUIForm + IUIFormHelper + IUIGroup + IUIGroupHelper + IUIManager + UIManager + UIEventArgs
+│   ├── Entity/                  ← IEntity + IEntityGroup + IEntityGroupHelper + IEntityHelper + IEntityManager + EntityStatus + EntityEventArgs + EntityManager
 │   ├── Sound/                   ← ISoundManager + ISoundHelper + PlaySoundParams + PlaySoundErrorCode + SoundManager
 │   └── FileSystem/              ← IFileSystemManager + IFileSystem + IFileSystemHelper + FileInfo + FileSystemAccess + FileSystem + FileSystemManager
 │
@@ -703,4 +705,127 @@ const serialId = GameEntry.Download.addDownload(
 
 // 取消全部补丁下载
 GameEntry.Download.removeDownloadsByTag('patch');
+```
+
+---
+
+### Variable 模块
+
+对应 `UnityGameFramework/Scripts/Runtime/Variable/`，提供类型化变量包装，配合 **ReferencePool** 使用，可安全存入 FSM `setData` 或 DataNode。
+
+| 类型 | TS 类 | 对应 C# 类 | 备注 |
+|------|--------|-----------|------|
+| 布尔 | `VarBoolean` | `VarBoolean` | — |
+| 整数 | `VarInt8` `VarUInt8` `VarInt16` `VarUInt16` `VarInt32` `VarUInt32` | `VarSByte` `VarByte` `VarInt16` `VarUInt16` `VarInt32` `VarUInt32` | — |
+| 长整数 | `VarInt64`（number）`VarUInt64`（bigint） | `VarInt64` `VarUInt64` | TS number 精度有限，超大数用 `VarUInt64` |
+| 浮点 | `VarFloat` `VarDouble` | `VarSingle` `VarDouble` | — |
+| 字符串 | `VarChar` `VarString` | `VarChar` `VarString` | — |
+| 字节数组 | `VarByteArray` `VarCharArray` | `VarByteArray` `VarCharArray` | — |
+| 日期 | `VarDateTime` | `VarDateTime` | — |
+| 通用对象 | `VarObject` | `VarObject` | — |
+| 向量 | `VarVec2` `VarVec3` `VarVec4` | `VarVector2/3/4` | 存 `{x,y[,z[,w]]}` 纯值对象，无引擎依赖 |
+| 四元数 | `VarQuat` | `VarQuaternion` | 默认 `{x:0,y:0,z:0,w:1}` |
+| 颜色 | `VarColor` | `VarColor` `VarColor32` | 存 `{r,g,b,a}`（0-255） |
+| 矩形 | `VarRect` | `VarRect` | 存 `{x,y,width,height}` |
+
+> **Unity 特有类型**（`VarGameObject / VarTransform / VarMaterial / VarTexture / VarUnityObject`）在 Cocos 中用 `VarObject` 替代，引擎层直接将 `Node / Component / Asset` 等赋给 `.value` 即可。
+
+```typescript
+// FSM 中存取变量
+import { VarInt32, VarString, VarVec3 } from 'GameFramework/Variable/Variable';
+
+// 存入
+fsm.setData(VarInt32, 'score', VarInt32.create(100));
+fsm.setData(VarString, 'playerName', VarString.create('Hero'));
+fsm.setData(VarVec3, 'spawnPos', VarVec3.create(0, 1, 0));
+
+// 取出（取完后 release 回池）
+const scoreVar = fsm.getData(VarInt32, 'score');
+const score = scoreVar?.value ?? 0;
+ReferencePool.release(scoreVar);
+```
+
+---
+
+### Utility.Compression
+
+| 特性 | C# | TypeScript |
+|------|----|-----------|
+| 接口 | `ICompressionHelper` | `ICompressionHelper`（compress / decompress） |
+| 注入 | `GameFrameworkEntry.SetCompressionHelper()` | `Utility.Compression.setCompressionHelper(helper)` |
+| 调用 | `Utility.Compression.Compress(bytes)` | `Utility.Compression.compress(bytes)` |
+| 默认实现 | 内置 Deflate | TS 无内置，需业务层注入（如 pako / fflate） |
+
+```typescript
+import { UtilityCompression } from 'GameFramework/Utility/Utility.Compression';
+
+// 注入第三方压缩库（如 pako）
+UtilityCompression.setCompressionHelper({
+    compress: (data) => pako.deflate(data),
+    decompress: (data) => pako.inflate(data),
+});
+
+// 使用
+const compressed = Utility.Compression.compress(rawBytes);
+const raw = Utility.Compression.decompress(compressed);
+```
+
+---
+
+### Network 枚举与接口补充
+
+| 新增文件 | 内容 |
+|---------|------|
+| `AddressFamily.ts` | `Unknown=0` `IPv4=2` `IPv6=23` |
+| `ServiceType.ts` | `Tcp=0` `TcpWithSyncReceive=1` `WebSocket=2` |
+| `NetworkErrorCode.ts` | 0~10，含 ConnectError / PacketError / HeartBeatTimeout 等 |
+| `IPacketHeader.ts` | `id` `packetLength` `isValid` 三个只读属性 |
+| `IPacketHandler.ts` | `id` + `handle(header, body): Packet \| null` |
+
+`IPacketHandler` 用于业务层注册自定义消息处理器，在 `INetworkChannelHelper` 的消息分发中调用：
+
+```typescript
+class LoginResponseHandler implements IPacketHandler {
+    readonly id = 1001;
+    handle(header: IPacketHeader, body: Uint8Array): Packet | null {
+        // 解析 body 并返回 Packet 实例
+        const loginResp = new LoginResponsePacket();
+        loginResp.parseFrom(body);
+        return loginResp;
+    }
+}
+```
+
+---
+
+### IUIForm 接口
+
+`IUIForm` 定义了 UI 窗体完整生命周期，`UIFormLogic`（引擎层）实现此接口：
+
+```
+onInit → onOpen → onPause/onResume → onCover/onReveal → onRefocus → onUpdate → onClose → onRecycle
+```
+
+`IUIGroupHelper` 由引擎层实现，负责调整 Canvas 子节点顺序以反映 `depth` 变化。
+
+---
+
+### IEntity 与 IEntityGroupHelper 接口
+
+`IEntity` 定义实体完整生命周期，`EntityLogic`（引擎层）实现此接口：
+
+```
+onInit → onShow → onAttached/onDetached → onAttachChild/onDetachChild → onUpdate → onHide → onRecycle
+```
+
+`IEntityGroupHelper` 负责在引擎层为每个分组创建根节点（对应 Unity 中 `EntityGroup` 下的空 GameObject）：
+
+```typescript
+class DefaultEntityGroupHelper implements IEntityGroupHelper {
+    createEntityGroupRoot(entityGroupName: string): object {
+        const node = new Node(entityGroupName);
+        this.entityRootNode.addChild(node);
+        return node;
+    }
+}
 ```

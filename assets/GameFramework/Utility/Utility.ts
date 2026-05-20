@@ -5,6 +5,10 @@ export { UtilityJson } from './Utility.Json';
 export { UtilityText } from './Utility.Text';
 export { UtilityConverter } from './Utility.Converter';
 export { UtilityPath } from './Utility.Path';
+export { UtilityCompression } from './Utility.Compression';
+export type { ICompressionHelper } from './Utility.Compression';
+export type { IJsonHelper } from './Utility.Json';
+export type { ITextHelper } from './Utility.Text';
 
 import { UtilityVerifier } from './Utility.Verifier';
 import { UtilityEncryption } from './Utility.Encryption';
@@ -13,6 +17,7 @@ import { UtilityJson } from './Utility.Json';
 import { UtilityText } from './Utility.Text';
 import { UtilityConverter } from './Utility.Converter';
 import { UtilityPath } from './Utility.Path';
+import { UtilityCompression } from './Utility.Compression';
 
 export const Utility = {
     Verifier: UtilityVerifier,
@@ -22,4 +27,5 @@ export const Utility = {
     Text: UtilityText,
     Converter: UtilityConverter,
     Path: UtilityPath,
+    Compression: UtilityCompression,
 };
