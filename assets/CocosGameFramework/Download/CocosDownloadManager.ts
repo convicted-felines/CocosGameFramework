@@ -1,63 +1,22 @@
-import { DownloadManager, DownloadTask } from '../../GameFramework/Download/DownloadManager';
+import { Node } from 'cc';
+import { DownloadManager } from '../../GameFramework/Download/DownloadManager';
+import { HelperRegistry } from '../Base/HelperRegistry';
+import { DefaultDownloadAgentHelper } from './DefaultDownloadAgentHelper';
+import { DownloadAgentHelperBase } from './DownloadAgentHelperBase';
 
 export class CocosDownloadManager extends DownloadManager {
-    private _xhrs: Map<number, XMLHttpRequest> = new Map();
-
-    protected _doDownload(task: DownloadTask): void {
-        const xhr = new XMLHttpRequest();
-        this._xhrs.set(task.serialId, xhr);
-
-        xhr.responseType = 'arraybuffer';
-        xhr.timeout = this.timeout * 1000;
-
-        let lastLoaded = 0;
-
-        xhr.onloadstart = () => {
-            this._onDownloadStart(task.serialId);
-        };
-
-        xhr.onprogress = (evt) => {
-            if (evt.lengthComputable) {
-                const delta = evt.loaded - lastLoaded;
-                lastLoaded = evt.loaded;
-                this._onDownloadProgress(task.serialId, delta, evt.loaded);
-            }
-        };
-
-        xhr.onload = () => {
-            this._xhrs.delete(task.serialId);
-            if (xhr.status >= 200 && xhr.status < 300) {
-                this._onDownloadSuccess(task.serialId, xhr.response as ArrayBuffer);
-            } else {
-                this._onDownloadFailure(task.serialId, `HTTP ${xhr.status}`);
-            }
-        };
-
-        xhr.onerror = () => {
-            this._xhrs.delete(task.serialId);
-            this._onDownloadFailure(task.serialId, 'Network error');
-        };
-
-        xhr.ontimeout = () => {
-            this._xhrs.delete(task.serialId);
-            this._onDownloadFailure(task.serialId, `Timeout after ${this.timeout}s`);
-        };
-
-        xhr.open('GET', task.downloadUri);
-        xhr.send();
-    }
-
-    protected _doCancelDownload(serialId: number): void {
-        const xhr = this._xhrs.get(serialId);
-        if (xhr) {
-            xhr.abort();
-            this._xhrs.delete(serialId);
+    /**
+     * 根据辅助器类型名和数量，在指定父节点下创建辅助器实例并注入管理器。
+     * 由 DownloadComponent.onLoad() 调用。
+     */
+    createAndAddHelpers(parent: Node, helperTypeName: string, count: number): void {
+        for (let i = 0; i < count; i++) {
+            const helper = HelperRegistry.createHelper(
+                parent,
+                helperTypeName,
+                DefaultDownloadAgentHelper,
+            ) as DownloadAgentHelperBase;
+            this.addDownloadAgentHelper(helper);
         }
-    }
-
-    shutdown(): void {
-        this._xhrs.forEach(xhr => xhr.abort());
-        this._xhrs.clear();
-        super.shutdown();
     }
 }

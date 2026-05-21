@@ -67,14 +67,17 @@ export class DownloadSuccessEventArgs extends BaseEventArgs {
     downloadPath!: string;
     downloadUri!: string;
     currentLength!: number;
+    /** 完整下载内容（包含断点续传的新增部分） */
+    data!: ArrayBuffer;
     userData?: object;
 
-    static create(serialId: number, downloadPath: string, downloadUri: string, currentLength: number, userData?: object): DownloadSuccessEventArgs {
+    static create(serialId: number, downloadPath: string, downloadUri: string, currentLength: number, data: ArrayBuffer, userData?: object): DownloadSuccessEventArgs {
         const e = ReferencePool.acquire(DownloadSuccessEventArgs);
         e.serialId = serialId;
         e.downloadPath = downloadPath;
         e.downloadUri = downloadUri;
         e.currentLength = currentLength;
+        e.data = data;
         e.userData = userData;
         return e;
     }
@@ -84,6 +87,7 @@ export class DownloadSuccessEventArgs extends BaseEventArgs {
         this.downloadPath = '';
         this.downloadUri = '';
         this.currentLength = 0;
+        this.data = new ArrayBuffer(0);
         this.userData = undefined;
     }
 }

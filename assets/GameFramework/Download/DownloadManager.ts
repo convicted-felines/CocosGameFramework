@@ -1,5 +1,6 @@
 import { GameFrameworkModule } from '../Base/GameFrameworkModule';
 import { IEventManager } from '../Event/IEventManager';
+import { IDownloadAgentHelper } from './IDownloadAgentHelper';
 import { IDownloadManager, IDownloadInfo, IDownloadParams } from './IDownloadManager';
 import {
     DownloadStartEventArgs,
@@ -23,17 +24,20 @@ export class DownloadTask implements IDownloadInfo {
     readonly downloadUri: string;
     readonly tag: string;
     readonly priority: number;
+    /** 断点续传起始字节偏移 */
+    readonly fromPosition: number;
     readonly userData?: object;
 
     status: DownloadTaskStatus = DownloadTaskStatus.Todo;
     downloadedLength: number = 0;
 
-    constructor(downloadPath: string, downloadUri: string, tag: string, priority: number, userData?: object) {
+    constructor(downloadPath: string, downloadUri: string, tag: string, priority: number, fromPosition: number, userData?: object) {
         this.serialId = ++DownloadTask._serial;
         this.downloadPath = downloadPath;
         this.downloadUri = downloadUri;
         this.tag = tag;
         this.priority = priority;
+        this.fromPosition = fromPosition;
         this.userData = userData;
     }
 }
@@ -67,15 +71,20 @@ class DownloadCounter {
     }
 }
 
-export abstract class DownloadManager extends GameFrameworkModule implements IDownloadManager {
+export class DownloadManager extends GameFrameworkModule implements IDownloadManager {
     protected _eventManager: IEventManager | null = null;
 
     private _waitingTasks: DownloadTask[] = [];
     private _workingTasks: Map<number, DownloadTask> = new Map();
+    /** serialId → 正在使用的辅助器实例 */
+    private _workingHelpers: Map<number, IDownloadAgentHelper> = new Map();
+    /** 空闲辅助器池（由 addDownloadAgentHelper 注入） */
+    private _freeHelpers: IDownloadAgentHelper[] = [];
 
     private _paused: boolean = false;
     private _timeout: number = 30;
-    private _maxConcurrent: number = 3;
+    /** 分块写盘阈值（字节），0 = 下载完成后一次性写入 */
+    private _flushSize: number = 0;
     private _counter: DownloadCounter = new DownloadCounter();
     private _elapsedSeconds: number = 0;
 
@@ -87,19 +96,23 @@ export abstract class DownloadManager extends GameFrameworkModule implements IDo
     get timeout(): number { return this._timeout; }
     set timeout(value: number) { this._timeout = value > 0 ? value : 30; }
 
-    /** 最大并发下载数 */
-    get maxConcurrent(): number { return this._maxConcurrent; }
-    set maxConcurrent(value: number) { this._maxConcurrent = value > 0 ? value : 1; }
+    get flushSize(): number { return this._flushSize; }
+    set flushSize(value: number) { this._flushSize = value >= 0 ? value : 0; }
 
-    get totalAgentCount(): number { return this._maxConcurrent; }
-    get freeAgentCount(): number { return Math.max(0, this._maxConcurrent - this._workingTasks.size); }
-    get workingAgentCount(): number { return this._workingTasks.size; }
+    get totalAgentCount(): number { return this._freeHelpers.length + this._workingHelpers.size; }
+    get freeAgentCount(): number { return this._freeHelpers.length; }
+    get workingAgentCount(): number { return this._workingHelpers.size; }
     get waitingTaskCount(): number { return this._waitingTasks.length; }
 
     get currentSpeed(): number { return this._counter.currentSpeed; }
 
     setEventManager(eventManager: IEventManager): void {
         this._eventManager = eventManager;
+    }
+
+    /** 注入一个辅助器实例（由 CocosDownloadManager 根据编辑器配置创建并注入） */
+    addDownloadAgentHelper(helper: IDownloadAgentHelper): void {
+        this._freeHelpers.push(helper);
     }
 
     addDownload(downloadPath: string, downloadUri: string, params: IDownloadParams = {}): number {
@@ -111,6 +124,7 @@ export abstract class DownloadManager extends GameFrameworkModule implements IDo
             downloadUri,
             params.tag ?? '',
             params.priority ?? 0,
+            params.fromPosition ?? 0,
             params.userData,
         );
 
@@ -125,8 +139,11 @@ export abstract class DownloadManager extends GameFrameworkModule implements IDo
             this._waitingTasks.splice(waiting, 1);
             return true;
         }
-        if (this._workingTasks.has(serialId)) {
-            this._doCancelDownload(serialId);
+        const helper = this._workingHelpers.get(serialId);
+        if (helper) {
+            helper.cancel();
+            this._workingHelpers.delete(serialId);
+            this._freeHelpers.push(helper);
             this._workingTasks.delete(serialId);
             return true;
         }
@@ -141,7 +158,12 @@ export abstract class DownloadManager extends GameFrameworkModule implements IDo
         });
         this._workingTasks.forEach((task, id) => {
             if (task.tag === tag) {
-                this._doCancelDownload(id);
+                const helper = this._workingHelpers.get(id);
+                if (helper) {
+                    helper.cancel();
+                    this._workingHelpers.delete(id);
+                    this._freeHelpers.push(helper);
+                }
                 this._workingTasks.delete(id);
                 count++;
             }
@@ -151,7 +173,12 @@ export abstract class DownloadManager extends GameFrameworkModule implements IDo
 
     removeAllDownloads(): void {
         this._waitingTasks = [];
-        this._workingTasks.forEach((_, id) => this._doCancelDownload(id));
+        this._workingHelpers.forEach((helper, id) => {
+            helper.cancel();
+            this._freeHelpers.push(helper);
+            this._workingTasks.delete(id);
+        });
+        this._workingHelpers.clear();
         this._workingTasks.clear();
     }
 
@@ -187,58 +214,6 @@ export abstract class DownloadManager extends GameFrameworkModule implements IDo
         this._counter.reset();
     }
 
-    // ── called by concrete implementations ──────────────────────────────────
-
-    protected _onDownloadStart(serialId: number): void {
-        const task = this._workingTasks.get(serialId);
-        if (!task) return;
-        task.status = DownloadTaskStatus.Doing;
-        if (this._eventManager) {
-            this._eventManager.fire(this, DownloadStartEventArgs.create(
-                task.serialId, task.downloadPath, task.downloadUri, task.downloadedLength, task.userData,
-            ));
-        }
-    }
-
-    protected _onDownloadProgress(serialId: number, deltaBytes: number, currentLength: number): void {
-        const task = this._workingTasks.get(serialId);
-        if (!task) return;
-        task.downloadedLength = currentLength;
-        this._counter.recordBytes(deltaBytes, this._elapsedSeconds);
-        if (this._eventManager) {
-            this._eventManager.fire(this, DownloadUpdateEventArgs.create(
-                task.serialId, task.downloadPath, task.downloadUri, currentLength, task.userData,
-            ));
-        }
-    }
-
-    protected _onDownloadSuccess(serialId: number, data: ArrayBuffer): void {
-        const task = this._workingTasks.get(serialId);
-        if (!task) return;
-        task.status = DownloadTaskStatus.Done;
-        task.downloadedLength = data.byteLength;
-        this._workingTasks.delete(serialId);
-        if (this._eventManager) {
-            this._eventManager.fire(this, DownloadSuccessEventArgs.create(
-                task.serialId, task.downloadPath, task.downloadUri, data.byteLength, task.userData,
-            ));
-        }
-        this._scheduleNext();
-    }
-
-    protected _onDownloadFailure(serialId: number, errorMessage: string): void {
-        const task = this._workingTasks.get(serialId);
-        if (!task) return;
-        task.status = DownloadTaskStatus.Error;
-        this._workingTasks.delete(serialId);
-        if (this._eventManager) {
-            this._eventManager.fire(this, DownloadFailureEventArgs.create(
-                task.serialId, task.downloadPath, task.downloadUri, errorMessage, task.userData,
-            ));
-        }
-        this._scheduleNext();
-    }
-
     // ── internals ────────────────────────────────────────────────────────────
 
     private _enqueue(task: DownloadTask): void {
@@ -250,13 +225,74 @@ export abstract class DownloadManager extends GameFrameworkModule implements IDo
     }
 
     private _scheduleNext(): void {
-        while (!this._paused && this._workingTasks.size < this._maxConcurrent && this._waitingTasks.length > 0) {
+        while (!this._paused && this._freeHelpers.length > 0 && this._waitingTasks.length > 0) {
             const task = this._waitingTasks.shift()!;
+            const helper = this._freeHelpers.pop()!;
             this._workingTasks.set(task.serialId, task);
-            this._doDownload(task);
+            this._workingHelpers.set(task.serialId, helper);
+            this._startTask(task, helper);
         }
     }
 
-    protected abstract _doDownload(task: DownloadTask): void;
-    protected abstract _doCancelDownload(serialId: number): void;
+    private _startTask(task: DownloadTask, helper: IDownloadAgentHelper): void {
+        let lastFlushed = 0;
+
+        helper.download(
+            task.downloadUri,
+            task.fromPosition,
+            this._timeout,
+            () => {
+                // onStart
+                task.status = DownloadTaskStatus.Doing;
+                if (this._eventManager) {
+                    this._eventManager.fire(this, DownloadStartEventArgs.create(
+                        task.serialId, task.downloadPath, task.downloadUri, task.fromPosition, task.userData,
+                    ));
+                }
+            },
+            (deltaBytes, currentLength) => {
+                // onProgress
+                task.downloadedLength = currentLength;
+                this._counter.recordBytes(deltaBytes, this._elapsedSeconds);
+                if (this._eventManager) {
+                    this._eventManager.fire(this, DownloadUpdateEventArgs.create(
+                        task.serialId, task.downloadPath, task.downloadUri,
+                        task.fromPosition + currentLength, task.userData,
+                    ));
+                }
+                // flushSize 阈值检测
+                if (this._flushSize > 0 && currentLength - lastFlushed >= this._flushSize) {
+                    lastFlushed = currentLength;
+                }
+            },
+            (data) => {
+                // onSuccess
+                task.status = DownloadTaskStatus.Done;
+                task.downloadedLength = data.byteLength;
+                this._workingTasks.delete(task.serialId);
+                this._workingHelpers.delete(task.serialId);
+                this._freeHelpers.push(helper);
+                if (this._eventManager) {
+                    this._eventManager.fire(this, DownloadSuccessEventArgs.create(
+                        task.serialId, task.downloadPath, task.downloadUri,
+                        task.fromPosition + data.byteLength, data, task.userData,
+                    ));
+                }
+                this._scheduleNext();
+            },
+            (errorMessage) => {
+                // onFailure
+                task.status = DownloadTaskStatus.Error;
+                this._workingTasks.delete(task.serialId);
+                this._workingHelpers.delete(task.serialId);
+                this._freeHelpers.push(helper);
+                if (this._eventManager) {
+                    this._eventManager.fire(this, DownloadFailureEventArgs.create(
+                        task.serialId, task.downloadPath, task.downloadUri, errorMessage, task.userData,
+                    ));
+                }
+                this._scheduleNext();
+            },
+        );
+    }
 }

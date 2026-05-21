@@ -6,6 +6,8 @@ const { ccclass, property } = _decorator;
 export class test extends Component {
     start() {
         GameEntry.Entity.extensionMethod();
+
+        this.node.emit('test', 'hello world');
     }
 
     update(deltaTime: number) {

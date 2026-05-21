@@ -10,6 +10,8 @@ export interface IDownloadInfo {
 export interface IDownloadParams {
     tag?: string;
     priority?: number;
+    /** 断点续传起始字节偏移 */
+    fromPosition?: number;
     userData?: object;
 }
 
@@ -26,6 +28,8 @@ export interface IDownloadManager {
     readonly waitingTaskCount: number;
     /** 超时时长（秒） */
     timeout: number;
+    /** 将缓冲区写入磁盘的字节阈值（0 = 下载完成后一次性写入） */
+    flushSize: number;
     /** 当前下载速度（字节/秒） */
     readonly currentSpeed: number;
 

@@ -1,4 +1,4 @@
-import { _decorator } from 'cc';
+import { _decorator, Enum } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
 import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
@@ -11,36 +11,50 @@ import {
     DownloadFailureEventArgs,
 } from '../../GameFramework/Download/DownloadEventArgs';
 import { CocosDownloadManager } from './CocosDownloadManager';
+import { DownloadAgentHelperType } from './DownloadAgentHelperType';
+import { DefaultDownloadAgentHelper } from './DefaultDownloadAgentHelper';
 
 const { ccclass, property } = _decorator;
 
+// 确保 DefaultDownloadAgentHelper 已向 HelperRegistry 完成注册
+void DefaultDownloadAgentHelper;
+
 @ccclass('DownloadComponent')
 export class DownloadComponent extends GameFrameworkComponent {
-    @property({ tooltip: '最大并发下载数' })
-    maxConcurrent: number = 3;
+    @property({ type: Enum(DownloadAgentHelperType), tooltip: '下载代理辅助器类型' })
+    downloadAgentHelperType: DownloadAgentHelperType = DownloadAgentHelperType.DefaultDownloadAgentHelper;
+
+    @property({ tooltip: '下载代理数量（并发上限）', min: 1 })
+    downloadAgentHelperCount: number = 3;
 
     @property({ tooltip: '下载超时时长（秒）' })
     timeout: number = 30;
 
+    @property({ tooltip: '分块落盘阈值（字节），0 = 下载完成后一次性写入' })
+    flushSize: number = 0;
+
     private _manager!: CocosDownloadManager;
-    private _eventMgr: EventManager | null = null;
 
     get manager(): CocosDownloadManager { return this._manager; }
 
     // ---- 生命周期 ----
 
-    onLoad(): void {
+    protected override onLoad(): void {
         super.onLoad();
         this._manager = new CocosDownloadManager();
-        this._manager.maxConcurrent = this.maxConcurrent;
         this._manager.timeout = this.timeout;
+        this._manager.flushSize = this.flushSize;
+
+        const helperTypeName = DownloadAgentHelperType[this.downloadAgentHelperType];
+        this._manager.createAndAddHelpers(this.node, helperTypeName, this.downloadAgentHelperCount);
+
         GameFrameworkEntry.registerModule(MODULE_ID.DOWNLOAD, this._manager);
     }
 
     start(): void {
         try {
-            this._eventMgr = GameFrameworkEntry.getModule(EventManager, MODULE_ID.EVENT);
-            this._manager.setEventManager(this._eventMgr);
+            const eventMgr = GameFrameworkEntry.getModule(EventManager, MODULE_ID.EVENT);
+            this._manager.setEventManager(eventMgr);
         } catch {
             // EventComponent 未挂载时静默忽略，回调仍可用
         }
