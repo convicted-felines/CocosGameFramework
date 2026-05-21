@@ -2,7 +2,7 @@
 // 生成时间：2026/5/20 15:35:49
 // 数据表：Weapon
 
-import { IDataRow } from '../../GameFramework/DataTable/IDataRow';
+import { IDataRow } from 'db://assets/GameFramework/DataTable/IDataRow';
 
 /** 武器配置 */
 export class DRWeapon implements IDataRow {

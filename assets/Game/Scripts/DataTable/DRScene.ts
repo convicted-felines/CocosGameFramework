@@ -2,7 +2,7 @@
 // 生成时间：2026/5/20 15:35:49
 // 数据表：Scene
 
-import { IDataRow } from '../../GameFramework/DataTable/IDataRow';
+import { IDataRow } from 'db://assets/GameFramework/DataTable/IDataRow';
 
 /** 场景配置 */
 export class DRScene implements IDataRow {

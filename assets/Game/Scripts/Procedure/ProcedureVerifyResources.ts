@@ -1,14 +1,14 @@
-import { ProcedureBase } from '../../GameFramework/Procedure/ProcedureBase';
-import { IFsm } from '../../GameFramework/FSM/IFsm';
-import { ProcedureManager } from '../../GameFramework/Procedure/ProcedureManager';
+import { ProcedureBase } from 'db://assets/GameFramework/Procedure/ProcedureBase';
+import { IFsm } from 'db://assets/GameFramework/FSM/IFsm';
+import { ProcedureManager } from 'db://assets/GameFramework/Procedure/ProcedureManager';
 import { ProcedureCheckResources } from './ProcedureCheckResources';
-import { GameEntry } from '../Base/GameEntry';
-import { GameFrameworkLog } from '../../GameFramework/Base/Log/GameFrameworkLog';
+import { GameEntry } from 'db://assets/Game/Scripts/Base/GameEntry';
+import { GameFrameworkLog } from 'db://assets/GameFramework/Base/Log/GameFrameworkLog';
 import {
     ResourceVerifyStartEventArgs,
     ResourceVerifySuccessEventArgs,
     ResourceVerifyFailureEventArgs,
-} from '../../GameFramework/Resource/ResourceEventArgs';
+} from 'db://assets/GameFramework/Resource/ResourceEventArgs';
 
 export class ProcedureVerifyResources extends ProcedureBase {
     private _complete = false;

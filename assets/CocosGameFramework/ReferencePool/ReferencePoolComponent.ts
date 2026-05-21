@@ -1,19 +1,22 @@
-import { _decorator, Component } from 'cc';
+import { _decorator } from 'cc';
+import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
 import { ReferencePool } from '../../GameFramework/ReferencePool/ReferencePool';
 import { ReferencePoolInfo } from '../../GameFramework/ReferencePool/ReferencePoolInfo';
 
 const { ccclass, property } = _decorator;
 
 @ccclass('ReferencePoolComponent')
-export class ReferencePoolComponent extends Component {
+export class ReferencePoolComponent extends GameFrameworkComponent {
     @property({ tooltip: '启用严格检查（会降低性能，建议仅在开发时开启）' })
     private _enableStrictCheck: boolean = false;
 
-    onLoad(): void {
+    protected override onLoad(): void {
+        super.onLoad();
         ReferencePool.enableStrictCheck = this._enableStrictCheck;
     }
 
-    onDestroy(): void {
+    protected override onDestroy(): void {
+        super.onDestroy();
         ReferencePool.clearAll();
     }
 

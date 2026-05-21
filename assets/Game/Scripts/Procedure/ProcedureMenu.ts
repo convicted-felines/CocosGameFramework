@@ -1,9 +1,9 @@
-import { ProcedureBase } from '../../GameFramework/Procedure/ProcedureBase';
-import { IFsm } from '../../GameFramework/FSM/IFsm';
-import { ProcedureManager } from '../../GameFramework/Procedure/ProcedureManager';
+import { ProcedureBase } from 'db://assets/GameFramework/Procedure/ProcedureBase';
+import { IFsm } from 'db://assets/GameFramework/FSM/IFsm';
+import { ProcedureManager } from 'db://assets/GameFramework/Procedure/ProcedureManager';
 import { ProcedureChangeScene } from './ProcedureChangeScene';
-import { GameEntry } from '../Base/GameEntry';
-import { GameFrameworkLog } from '../../GameFramework/Base/Log/GameFrameworkLog';
+import { GameEntry } from 'db://assets/Game/Scripts/Base/GameEntry';
+import { GameFrameworkLog } from 'db://assets/GameFramework/Base/Log/GameFrameworkLog';
 
 export class ProcedureMenu extends ProcedureBase {
     private _startGame = false;

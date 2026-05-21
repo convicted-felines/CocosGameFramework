@@ -1,11 +1,11 @@
-import { ProcedureBase } from '../../GameFramework/Procedure/ProcedureBase';
-import { IFsm } from '../../GameFramework/FSM/IFsm';
-import { ProcedureManager } from '../../GameFramework/Procedure/ProcedureManager';
+import { ProcedureBase } from 'db://assets/GameFramework/Procedure/ProcedureBase';
+import { IFsm } from 'db://assets/GameFramework/FSM/IFsm';
+import { ProcedureManager } from 'db://assets/GameFramework/Procedure/ProcedureManager';
 import { ProcedurePreload } from './ProcedurePreload';
 import { ProcedureInitResources } from './ProcedureInitResources';
 import { ProcedureCheckVersion } from './ProcedureCheckVersion';
-import { GameEntry } from '../Base/GameEntry';
-import { ResourceMode } from '../Definition/Constant';
+import { GameEntry } from 'db://assets/Game/Scripts/Base/GameEntry';
+import { ResourceMode } from 'db://assets/Game/Scripts/Definition/Constant';
 
 export class ProcedureSplash extends ProcedureBase {
     onEnter(_fsm: IFsm<ProcedureManager>): void {

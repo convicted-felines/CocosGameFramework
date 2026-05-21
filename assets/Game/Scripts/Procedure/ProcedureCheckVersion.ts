@@ -1,10 +1,10 @@
-import { ProcedureBase } from '../../GameFramework/Procedure/ProcedureBase';
-import { IFsm } from '../../GameFramework/FSM/IFsm';
-import { ProcedureManager } from '../../GameFramework/Procedure/ProcedureManager';
+import { ProcedureBase } from 'db://assets/GameFramework/Procedure/ProcedureBase';
+import { IFsm } from 'db://assets/GameFramework/FSM/IFsm';
+import { ProcedureManager } from 'db://assets/GameFramework/Procedure/ProcedureManager';
 import { ProcedureUpdateVersion } from './ProcedureUpdateVersion';
 import { ProcedureVerifyResources } from './ProcedureVerifyResources';
-import { GameEntry } from '../Base/GameEntry';
-import { GameFrameworkLog } from '../../GameFramework/Base/Log/GameFrameworkLog';
+import { GameEntry } from 'db://assets/Game/Scripts/Base/GameEntry';
+import { GameFrameworkLog } from 'db://assets/GameFramework/Base/Log/GameFrameworkLog';
 
 export interface VersionInfo {
     latestGameVersion: string;

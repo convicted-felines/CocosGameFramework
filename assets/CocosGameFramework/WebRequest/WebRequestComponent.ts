@@ -1,4 +1,5 @@
-import { _decorator, Component } from 'cc';
+import { _decorator } from 'cc';
+import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
 import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
 import { EventManager } from '../../GameFramework/Event/EventManager';
@@ -13,7 +14,7 @@ import { CocosWebRequestManager } from './CocosWebRequestManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('WebRequestComponent')
-export class WebRequestComponent extends Component {
+export class WebRequestComponent extends GameFrameworkComponent {
     @property({ tooltip: '最大并发请求数' })
     maxConcurrent: number = 1;
 
@@ -26,7 +27,8 @@ export class WebRequestComponent extends Component {
 
     // ---- 生命周期 ----
 
-    onLoad(): void {
+    protected override onLoad(): void {
+        super.onLoad();
         this._manager = new CocosWebRequestManager();
         this._manager.maxConcurrent = this.maxConcurrent;
         this._manager.timeout = this.timeout;
