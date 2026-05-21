@@ -1,4 +1,4 @@
-import { _decorator, Node } from 'cc';
+import { _decorator, Node, Enum } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
 import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
@@ -10,7 +10,9 @@ import { PlaySoundSuccessEventArgs } from '../../GameFramework/Sound/PlaySoundSu
 import { PlaySoundFailureEventArgs } from '../../GameFramework/Sound/PlaySoundFailureEventArgs';
 import { PlaySoundUpdateEventArgs } from '../../GameFramework/Sound/PlaySoundUpdateEventArgs';
 import { PlaySoundDependencyAssetEventArgs } from '../../GameFramework/Sound/PlaySoundDependencyAssetEventArgs';
-import { SoundHelperBase } from './SoundHelperBase';
+import { DefaultSoundHelper } from './DefaultSoundHelper';
+import { HelperRegistry } from '../Base/HelperRegistry';
+import { SoundHelperType } from './SoundHelperType';
 
 const { ccclass, property } = _decorator;
 
@@ -37,8 +39,8 @@ export class SoundComponent extends GameFrameworkComponent {
     @property({ type: Node, tooltip: '挂载 AudioSource 的节点' })
     audioNode: Node | null = null;
 
-    @property({ type: SoundHelperBase, tooltip: '声音辅助器（用于释放声音资源），留空则不自动释放）' })
-    soundHelper: SoundHelperBase | null = null;
+    @property({ type: Enum(SoundHelperType), tooltip: '声音辅助器类型（用于释放声音资源）' })
+    soundHelperType: SoundHelperType = SoundHelperType.DefaultSoundHelper;
 
     @property({ type: SoundGroupConfig, tooltip: '音效分组配置列表' })
     soundGroups: SoundGroupConfig[] = [
@@ -64,8 +66,10 @@ export class SoundComponent extends GameFrameworkComponent {
             this._manager.setAudioNode(this.audioNode);
         }
 
-        if (this.soundHelper) {
-            this._manager.setSoundHelper(this.soundHelper);
+        if (this.soundHelperType !== undefined) {
+            this._manager.setSoundHelper(
+                HelperRegistry.createHelper(this.node, SoundHelperType[this.soundHelperType], DefaultSoundHelper)
+            );
         }
 
         for (const cfg of this.soundGroups) {

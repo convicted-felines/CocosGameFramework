@@ -1,17 +1,18 @@
-import { _decorator } from 'cc';
+import { _decorator, Enum } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
 import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
 import { SettingManager } from '../../GameFramework/Setting/SettingManager';
-import { SettingHelperBase } from './SettingHelperBase';
 import { LocalStorageSettingHelper } from './LocalStorageSettingHelper';
+import { HelperRegistry } from '../Base/HelperRegistry';
+import { SettingHelperType } from './SettingHelperType';
 
 const { ccclass, property } = _decorator;
 
 @ccclass('SettingComponent')
 export class SettingComponent extends GameFrameworkComponent {
-    @property({ type: SettingHelperBase, tooltip: '设置辅助器，留空则自动使用 LocalStorageSettingHelper' })
-    settingHelper: SettingHelperBase | null = null;
+    @property({ type: Enum(SettingHelperType), tooltip: '设置辅助器类型' })
+    settingHelperType: SettingHelperType = SettingHelperType.LocalStorageSettingHelper;
 
     private _manager!: SettingManager;
 
@@ -22,7 +23,7 @@ export class SettingComponent extends GameFrameworkComponent {
     onLoad(): void {
         super.onLoad();
         this._manager = new SettingManager();
-        const helper = this.settingHelper ?? this.node.addComponent(LocalStorageSettingHelper);
+        const helper = HelperRegistry.createHelper(this.node, SettingHelperType[this.settingHelperType], LocalStorageSettingHelper);
         this._manager.setSettingHelper(helper);
         GameFrameworkEntry.registerModule(MODULE_ID.SETTING, this._manager);
         this._manager.load();

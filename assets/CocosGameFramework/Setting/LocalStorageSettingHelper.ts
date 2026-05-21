@@ -1,5 +1,6 @@
 import { sys, _decorator } from 'cc';
 import { SettingHelperBase } from './SettingHelperBase';
+import { HelperRegistry } from '../Base/HelperRegistry';
 
 const { ccclass } = _decorator;
 
@@ -99,3 +100,5 @@ export class LocalStorageSettingHelper extends SettingHelperBase {
         this._storage.setItem(settingName, JSON.stringify(obj));
     }
 }
+
+HelperRegistry.register('LocalStorageSettingHelper', LocalStorageSettingHelper);

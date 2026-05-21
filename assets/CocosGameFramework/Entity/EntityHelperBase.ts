@@ -7,7 +7,8 @@ const { ccclass } = _decorator;
  * 实体辅助器基类。
  *
  * 继承此类并实现抽象方法，即可替换框架的实体创建/销毁策略。
- * 将具体实现组件挂载到场景节点后，在 EntityComponent 的 entityHelper 属性处拖入该节点即可。
+ * 子类需在文件末尾调用 HelperRegistry.register('MyEntityHelper', MyEntityHelper) 完成注册，
+ * 并在 EntityHelperType 枚举中添加对应条目，之后 EntityComponent Inspector 下拉即可选择。
  */
 @ccclass('EntityHelperBase')
 export abstract class EntityHelperBase extends Component implements IEntityHelper {

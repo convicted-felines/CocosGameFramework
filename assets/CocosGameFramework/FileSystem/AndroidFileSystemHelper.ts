@@ -2,6 +2,7 @@ import { sys, _decorator } from 'cc';
 import { FileSystemAccess } from '../../GameFramework/FileSystem/FileSystemAccess';
 import { FileSystemStream, SeekOrigin } from '../../GameFramework/FileSystem/FileSystemStream';
 import { FileSystemHelperBase } from './FileSystemHelperBase';
+import { HelperRegistry } from '../Base/HelperRegistry';
 
 const { ccclass } = _decorator;
 
@@ -112,6 +113,8 @@ export class AndroidFileSystemHelper extends FileSystemHelperBase {
         return new AndroidNativeFileSystemStream(fileUtils, path, writable, createNew);
     }
 }
+
+HelperRegistry.register('AndroidFileSystemHelper', AndroidFileSystemHelper);
 
 // ---- 精简 Native 流（Android 持久化目录） ----
 

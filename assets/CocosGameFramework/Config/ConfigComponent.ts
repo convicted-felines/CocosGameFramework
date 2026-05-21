@@ -1,4 +1,4 @@
-import { _decorator } from 'cc';
+import { _decorator, Enum } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
 import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
@@ -8,13 +8,15 @@ import { DefaultConfigHelper } from './DefaultConfigHelper';
 import { IEventManager } from '../../GameFramework/Event/IEventManager';
 import { IResourceManager } from '../../GameFramework/Resource/IResourceManager';
 import { LoadConfigSuccessEventArgs, LoadConfigFailureEventArgs } from './ConfigEventArgs';
+import { HelperRegistry } from '../Base/HelperRegistry';
+import { ConfigHelperType } from './ConfigHelperType';
 
 const { ccclass, property } = _decorator;
 
 @ccclass('ConfigComponent')
 export class ConfigComponent extends GameFrameworkComponent {
-    @property({ type: ConfigHelperBase, tooltip: '配置辅助器，留空则自动使用 DefaultConfigHelper' })
-    configHelper: ConfigHelperBase | null = null;
+    @property({ type: Enum(ConfigHelperType), tooltip: '配置辅助器类型' })
+    configHelperType: ConfigHelperType = ConfigHelperType.DefaultConfigHelper;
 
     private _manager!: ConfigManager;
     private _helper!: ConfigHelperBase;
@@ -24,7 +26,7 @@ export class ConfigComponent extends GameFrameworkComponent {
 
     onLoad(): void {
         super.onLoad();
-        this._helper = this.configHelper ?? this.node.addComponent(DefaultConfigHelper);
+        this._helper = HelperRegistry.createHelper(this.node, ConfigHelperType[this.configHelperType], DefaultConfigHelper);
         this._manager = new ConfigManager();
         this._helper.setConfigManager(this._manager);
         this._manager.setConfigHelper(this._helper);

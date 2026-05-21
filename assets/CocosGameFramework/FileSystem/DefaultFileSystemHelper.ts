@@ -2,6 +2,7 @@ import { sys, _decorator } from 'cc';
 import { FileSystemAccess } from '../../GameFramework/FileSystem/FileSystemAccess';
 import { FileSystemStream, SeekOrigin } from '../../GameFramework/FileSystem/FileSystemStream';
 import { FileSystemHelperBase } from './FileSystemHelperBase';
+import { HelperRegistry } from '../Base/HelperRegistry';
 
 const { ccclass } = _decorator;
 
@@ -197,3 +198,5 @@ export class DefaultFileSystemHelper extends FileSystemHelperBase {
         return new WebFileSystemStream(fullPath, writable, initial);
     }
 }
+
+HelperRegistry.register('DefaultFileSystemHelper', DefaultFileSystemHelper);

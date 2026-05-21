@@ -3,6 +3,7 @@ import { SoundHelperBase } from './SoundHelperBase';
 import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
 import { CocosResourceManager } from '../Resource/CocosResourceManager';
+import { HelperRegistry } from '../Base/HelperRegistry';
 
 const { ccclass } = _decorator;
 
@@ -28,3 +29,5 @@ export class DefaultSoundHelper extends SoundHelperBase {
         this._resourceManager?.unloadAsset(soundAsset);
     }
 }
+
+HelperRegistry.register('DefaultSoundHelper', DefaultSoundHelper);

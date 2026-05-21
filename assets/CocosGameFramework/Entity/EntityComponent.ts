@@ -1,4 +1,4 @@
-import { _decorator, Node } from 'cc';
+import { _decorator, Node, Enum } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
 import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
@@ -16,6 +16,8 @@ import { CocosResourceManager } from '../Resource/CocosResourceManager';
 import { EntityHelperBase } from './EntityHelperBase';
 import { DefaultEntityHelper } from './DefaultEntityHelper';
 import { EntityLogic } from './EntityLogic';
+import { HelperRegistry } from '../Base/HelperRegistry';
+import { EntityHelperType } from './EntityHelperType';
 
 const { ccclass, property } = _decorator;
 
@@ -43,8 +45,8 @@ export class EntityComponent extends GameFrameworkComponent {
     @property({ type: Node, tooltip: '所有实体分组节点的挂载根节点' })
     entityRoot: Node | null = null;
 
-    @property({ type: EntityHelperBase, tooltip: '实体辅助器，留空则自动使用 DefaultEntityHelper' })
-    entityHelper: EntityHelperBase | null = null;
+    @property({ type: Enum(EntityHelperType), tooltip: '实体辅助器类型' })
+    entityHelperType: EntityHelperType = EntityHelperType.DefaultEntityHelper;
 
     @property({ type: [EntityGroupConfig], tooltip: '实体分组配置列表' })
     entityGroupConfigs: EntityGroupConfig[] = [new EntityGroupConfig()];
@@ -62,7 +64,7 @@ export class EntityComponent extends GameFrameworkComponent {
         this._manager = new EntityManager();
 
         const root = this.entityRoot ?? this.node;
-        this._helper = this.entityHelper ?? this.node.addComponent(DefaultEntityHelper);
+        this._helper = HelperRegistry.createHelper(this.node, EntityHelperType[this.entityHelperType], DefaultEntityHelper);
         this._manager.setHelper(this._helper);
 
         for (const cfg of this.entityGroupConfigs) {

@@ -1,4 +1,4 @@
-import { _decorator } from 'cc';
+import { _decorator, Enum } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
 import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
@@ -9,15 +9,19 @@ import { IEventManager } from '../../GameFramework/Event/IEventManager';
 import { IResourceManager } from '../../GameFramework/Resource/IResourceManager';
 import { LoadDataTableSuccessEventArgs, LoadDataTableFailureEventArgs } from './DataTableEventArgs';
 import { DataTableHelperBase } from './DataTableHelperBase';
+import { DefaultDataTableHelper } from './DefaultDataTableHelper';
+import { HelperRegistry } from '../Base/HelperRegistry';
+import { DataTableHelperType } from './DataTableHelperType';
 
 const { ccclass, property } = _decorator;
 
 @ccclass('DataTableComponent')
 export class DataTableComponent extends GameFrameworkComponent {
-    @property({ type: DataTableHelperBase, tooltip: '数据表辅助器，留空时使用内置解析逻辑' })
-    dataTableHelper: DataTableHelperBase | null = null;
+    @property({ type: Enum(DataTableHelperType), tooltip: '数据表辅助器类型' })
+    dataTableHelperType: DataTableHelperType = DataTableHelperType.DefaultDataTableHelper;
 
     private _manager!: DataTableManager;
+    private _helper!: DataTableHelperBase;
     private _eventManager: IEventManager | null = null;
 
     get manager(): DataTableManager { return this._manager; }
@@ -25,10 +29,10 @@ export class DataTableComponent extends GameFrameworkComponent {
     onLoad(): void {
         super.onLoad();
         this._manager = new DataTableManager();
+        this._helper = HelperRegistry.createHelper(this.node, DataTableHelperType[this.dataTableHelperType], DefaultDataTableHelper);
         GameFrameworkEntry.registerModule(MODULE_ID.DATATABLE, this._manager);
         if (GameFrameworkEntry.hasModule(MODULE_ID.EVENT)) {
             this._eventManager = GameFrameworkEntry.getModule(
-                // EventManager is registered externally; retrieve by id cast
                 null as any,
                 MODULE_ID.EVENT
             ) as unknown as IEventManager;
@@ -111,8 +115,8 @@ export class DataTableComponent extends GameFrameworkComponent {
                     ? this._manager.getDataTable<T>(rowType, name)!
                     : this._manager.createDataTable<T>(rowType, name);
 
-                if (this.dataTableHelper) {
-                    this.dataTableHelper.parseData(table, text, userData);
+                if (this._helper) {
+                    this._helper.parseData(table, text, userData);
                 } else {
                     table.parseData(text, userData);
                 }

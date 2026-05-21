@@ -1,4 +1,4 @@
-import { _decorator } from 'cc';
+import { _decorator, Enum } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
 import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
@@ -8,6 +8,7 @@ import { INetworkChannel } from '../../GameFramework/Network/INetworkChannel';
 import { INetworkChannelHelper } from '../../GameFramework/Network/INetworkChannelHelper';
 import { Packet } from '../../GameFramework/Network/Packet';
 import { NetworkChannelHelperBase } from './NetworkChannelHelperBase';
+import { DefaultNetworkChannelHelper } from './DefaultNetworkChannelHelper';
 import {
     IHttpRequestParams,
     IHttpResponse,
@@ -22,18 +23,18 @@ import {
     NetworkCustomErrorEventArgs,
 } from '../../GameFramework/Network/NetworkEventArgs';
 import { BaseEventArgs } from '../../GameFramework/Event/BaseEventArgs';
+import { HelperRegistry } from '../Base/HelperRegistry';
+import { NetworkChannelHelperType } from './NetworkChannelHelperType';
 
 const { ccclass, property } = _decorator;
 
 @ccclass('NetworkComponent')
 export class NetworkComponent extends GameFrameworkComponent {
-    /** HTTP 请求默认超时时间（毫秒） */
     @property({ tooltip: 'HTTP 请求默认超时时间（毫秒）' })
     defaultTimeout: number = 10000;
 
-    /** 默认网络频道辅助器，调用 createNetworkChannel 时未传入 helper 则使用此辅助器。 */
-    @property({ type: NetworkChannelHelperBase, tooltip: '默认网络频道辅助器，留空则不附加辅助器' })
-    networkChannelHelper: NetworkChannelHelperBase | null = null;
+    @property({ type: Enum(NetworkChannelHelperType), tooltip: '默认网络频道辅助器类型' })
+    networkChannelHelperType: NetworkChannelHelperType = NetworkChannelHelperType.DefaultNetworkChannelHelper;
 
     private _manager!: NetworkManager;
 
@@ -69,7 +70,12 @@ export class NetworkComponent extends GameFrameworkComponent {
     }
 
     createNetworkChannel(name: string, helper?: INetworkChannelHelper): INetworkChannel {
-        return this._manager.createNetworkChannel(name, helper ?? this.networkChannelHelper ?? undefined);
+        const resolved = helper ?? HelperRegistry.createHelper(
+            this.node,
+            NetworkChannelHelperType[this.networkChannelHelperType],
+            DefaultNetworkChannelHelper,
+        );
+        return this._manager.createNetworkChannel(name, resolved);
     }
 
     destroyNetworkChannel(name: string): boolean {

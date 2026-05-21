@@ -2,6 +2,7 @@ import { Node, Prefab, instantiate, _decorator } from 'cc';
 import { IUIGroup } from '../../GameFramework/UI/IUIGroup';
 import { UIFormLogic } from './UIFormLogic';
 import { UIFormHelperBase } from './UIFormHelperBase';
+import { HelperRegistry } from '../Base/HelperRegistry';
 
 const { ccclass } = _decorator;
 
@@ -95,3 +96,5 @@ export class DefaultUIFormHelper extends UIFormHelperBase {
         uiFormInstance.destroy();
     }
 }
+
+HelperRegistry.register('DefaultUIFormHelper', DefaultUIFormHelper);

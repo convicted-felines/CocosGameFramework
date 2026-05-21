@@ -3,6 +3,7 @@ import { IPacketHeader } from '../../GameFramework/Network/INetworkChannelHelper
 import { INetworkChannel } from '../../GameFramework/Network/INetworkChannel';
 import { Packet } from '../../GameFramework/Network/Packet';
 import { NetworkChannelHelperBase } from './NetworkChannelHelperBase';
+import { HelperRegistry } from '../Base/HelperRegistry';
 
 const { ccclass, property } = _decorator;
 
@@ -111,6 +112,8 @@ export class DefaultNetworkChannelHelper extends NetworkChannelHelperBase {
         return result;
     }
 }
+
+HelperRegistry.register('DefaultNetworkChannelHelper', DefaultNetworkChannelHelper);
 
 /** 心跳发送占位包：直接携带已编码帧数据，由 NetworkChannel 原样写入 WebSocket。 */
 export class HeartBeatPacket extends Packet {

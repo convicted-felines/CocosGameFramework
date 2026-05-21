@@ -1,22 +1,20 @@
-import { _decorator } from 'cc';
+import { _decorator, Enum } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
 import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
 import { FileSystemManager } from '../../GameFramework/FileSystem/FileSystemManager';
 import { FileSystemAccess } from '../../GameFramework/FileSystem/FileSystemAccess';
 import { IFileSystem } from '../../GameFramework/FileSystem/IFileSystem';
-import { FileSystemHelperBase } from './FileSystemHelperBase';
 import { DefaultFileSystemHelper } from './DefaultFileSystemHelper';
+import { HelperRegistry } from '../Base/HelperRegistry';
+import { FileSystemHelperType } from './FileSystemHelperType';
 
 const { ccclass, property } = _decorator;
 
 @ccclass('FileSystemComponent')
 export class FileSystemComponent extends GameFrameworkComponent {
-    @property({
-        type: FileSystemHelperBase,
-        tooltip: '文件系统辅助器，留空则自动使用 DefaultFileSystemHelper',
-    })
-    fileSystemHelper: FileSystemHelperBase | null = null;
+    @property({ type: Enum(FileSystemHelperType), tooltip: '文件系统辅助器类型' })
+    fileSystemHelperType: FileSystemHelperType = FileSystemHelperType.DefaultFileSystemHelper;
 
     private _manager!: FileSystemManager;
 
@@ -26,7 +24,7 @@ export class FileSystemComponent extends GameFrameworkComponent {
         super.onLoad();
         this._manager = new FileSystemManager();
 
-        const helper = this.fileSystemHelper ?? this.node.addComponent(DefaultFileSystemHelper);
+        const helper = HelperRegistry.createHelper(this.node, FileSystemHelperType[this.fileSystemHelperType], DefaultFileSystemHelper);
         this._manager.setFileSystemHelper(helper);
 
         GameFrameworkEntry.registerModule(MODULE_ID.FILESYSTEM, this._manager);

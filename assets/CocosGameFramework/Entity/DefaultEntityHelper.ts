@@ -2,6 +2,7 @@ import { Node, Prefab, instantiate, _decorator } from 'cc';
 import { IEntityInfo } from '../../GameFramework/Entity/IEntityHelper';
 import { EntityLogic } from './EntityLogic';
 import { EntityHelperBase } from './EntityHelperBase';
+import { HelperRegistry } from '../Base/HelperRegistry';
 
 const { ccclass } = _decorator;
 
@@ -108,3 +109,5 @@ export class DefaultEntityHelper extends EntityHelperBase {
         }
     }
 }
+
+HelperRegistry.register('DefaultEntityHelper', DefaultEntityHelper);

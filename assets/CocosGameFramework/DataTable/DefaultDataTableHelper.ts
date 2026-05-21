@@ -2,6 +2,7 @@ import { _decorator } from 'cc';
 import { IDataTable } from '../../GameFramework/DataTable/IDataTable';
 import { IDataRow } from '../../GameFramework/DataTable/IDataRow';
 import { DataTableHelperBase } from './DataTableHelperBase';
+import { HelperRegistry } from '../Base/HelperRegistry';
 
 const { ccclass } = _decorator;
 
@@ -32,3 +33,5 @@ export class DefaultDataTableHelper extends DataTableHelperBase {
         // Cocos Creator 通过 ResourceManager.releaseAsset 统一释放，此处无需额外操作。
     }
 }
+
+HelperRegistry.register('DefaultDataTableHelper', DefaultDataTableHelper);

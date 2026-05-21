@@ -1,6 +1,7 @@
 import { sys, _decorator } from 'cc';
 import { ILocalizationManager } from '../../GameFramework/Localization/ILocalizationManager';
 import { LocalizationHelperBase } from './LocalizationHelperBase';
+import { HelperRegistry } from '../Base/HelperRegistry';
 
 const { ccclass } = _decorator;
 
@@ -79,3 +80,5 @@ export class DefaultLocalizationHelper extends LocalizationHelperBase {
         return true;
     }
 }
+
+HelperRegistry.register('DefaultLocalizationHelper', DefaultLocalizationHelper);

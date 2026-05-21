@@ -1,4 +1,4 @@
-import { _decorator, Node } from 'cc';
+import { _decorator, Node, Enum } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
 import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
@@ -11,9 +11,10 @@ import {
 } from '../../GameFramework/UI/UIEventArgs';
 import { EventManager } from '../../GameFramework/Event/EventManager';
 import { CocosResourceManager } from '../Resource/CocosResourceManager';
-import { UIFormHelperBase } from './UIFormHelperBase';
 import { DefaultUIFormHelper } from './DefaultUIFormHelper';
 import { UIFormLogic } from './UIFormLogic';
+import { HelperRegistry } from '../Base/HelperRegistry';
+import { UIFormHelperType } from './UIFormHelperType';
 
 const { ccclass, property } = _decorator;
 
@@ -31,8 +32,8 @@ export class UIComponent extends GameFrameworkComponent {
     @property({ type: Node, tooltip: 'UI 根节点' })
     uiRoot: Node | null = null;
 
-    @property({ type: UIFormHelperBase, tooltip: 'UI 界面辅助器，留空则自动使用 DefaultUIFormHelper' })
-    uiFormHelper: UIFormHelperBase | null = null;
+    @property({ type: Enum(UIFormHelperType), tooltip: 'UI 界面辅助器类型' })
+    uiFormHelperType: UIFormHelperType = UIFormHelperType.DefaultUIFormHelper;
 
     @property({ type: [UIGroupConfigData], tooltip: 'UI 分组列表' })
     uiGroups: UIGroupConfigData[] = [
@@ -62,7 +63,7 @@ export class UIComponent extends GameFrameworkComponent {
         super.onLoad();
         this._manager = new UIManager();
 
-        const helper = this.uiFormHelper ?? this.node.addComponent(DefaultUIFormHelper);
+        const helper = HelperRegistry.createHelper(this.node, UIFormHelperType[this.uiFormHelperType], DefaultUIFormHelper);
         if (helper instanceof DefaultUIFormHelper && this.uiRoot) {
             helper.setUIRoot(this.uiRoot);
         }
