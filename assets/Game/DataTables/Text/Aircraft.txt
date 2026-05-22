@@ -1,7 +1,0 @@
-#	飞机配置
-#	Id	Name	MaxHP	ThrusterId	WeaponId0	WeaponId1	ArmorId
-#	id	string	int	int	int	int	int
-#	编号	名称	最大血量	推进器编号	武器0编号	武器1编号	护甲编号
-	10000	Player	1000	30001	20001	20002	40001
-	10001	EnemyA	200	30002	20003	0	0
-	10002	EnemyB	500	30002	20004	20005	40003

@@ -33,7 +33,7 @@ const ROOT = path.resolve(__dirname, '../../');
 const EXCEL_FOLDER  = path.join(ROOT, 'assets/Game/DataTables/Excel');
 const TEXT_FOLDER   = path.join(ROOT, 'assets/Game/DataTables/Text');
 const BYTES_FOLDER  = path.join(ROOT, 'assets/resources/DataTables');
-const CODE_FOLDER   = path.join(ROOT, 'assets/Game/DataTable');
+const CODE_FOLDER   = path.join(ROOT, 'assets/Game/Scripts/DataTable');
 const TEMPLATE_FILE = path.join(__dirname, 'DataTableCodeTemplate.ts');
 
 // ─── txt 文件行索引 ──────────────────────────────────────────────────────────

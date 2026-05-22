@@ -22,3 +22,5 @@ node_modules/
 # WebStorm
 #//////////////////////////
 .idea/
+# 忽略Excel的临时文件
+~$*.xls*

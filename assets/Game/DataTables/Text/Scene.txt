@@ -1,6 +1,7 @@
-#	场景配置
-#	Id	AssetName	BackgroundMusicId
-#	id	string	int
-#	编号	资源名称	背景音乐编号
-	1	Menu	1001
-	2	Main	1002
+#	场景配置表
+#	Id		AssetName	BackgroundMusicId	ProcedureId
+#	int		string	int	int
+#	场景编号	策划备注	资源名称	背景音乐编号（没有为0）	流程id
+	1	菜单	Menu	1	0
+	2	场景	Main	2	0
+	3	偷水果模式	SpikeCave	0	0

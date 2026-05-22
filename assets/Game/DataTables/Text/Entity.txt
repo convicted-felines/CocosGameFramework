@@ -1,0 +1,10 @@
+#	实体表
+#	Id		AssetName
+#	int		string
+#	实体编号	策划备注	资源名称
+	1000	战斗小猫	BattleCatty
+	1001	巨魔农夫	OgreFarmer
+	1002	第三人称摄像机	ThirdPersonCamera
+	1003	伤害测试盒子	DamageBox
+	1004	树	Tree
+	1005	血条	TopInfoBar
