@@ -6,7 +6,7 @@ Unity GameFramework（C# / UnityGameFramework）移植到 Cocos Creator 3.8.8（
 
 ## 迁移进度总览
 
-> 最后更新：2026-05-20
+> 最后更新：2026-05-25
 
 ### 核心层（`assets/GameFramework/`）
 
@@ -43,31 +43,36 @@ Unity GameFramework（C# / UnityGameFramework）移植到 Cocos Creator 3.8.8（
 | 模块 | Component 包装 | Helper / 具体实现 | 状态 |
 |------|---------------|------------------|------|
 | Base | `GameEntry` `GameFrameworkComponent` `BaseComponent` `ShutdownType` | — | ✅ 完成 |
+| **Utility（新）** | — | `HelperRegistry` `Log` `LogHelperBase` `DefaultLogHelper` `LogHelperType` | ✅ 完成 |
 | EventComponent | `EventComponent` | — | ✅ 完成 |
 | FsmComponent | `FsmComponent` | — | ✅ 完成 |
 | ProcedureComponent | `ProcedureComponent` | — | ✅ 完成 |
 | ObjectPoolComponent | `ObjectPoolComponent` | — | ✅ 完成 |
 | ReferencePoolComponent | `ReferencePoolComponent` | — | ✅ 完成 |
-| SettingComponent | `SettingComponent` | `SettingHelperBase` `LocalStorageSettingHelper` | ✅ 完成 |
-| ConfigComponent | `ConfigComponent` | `ConfigHelperBase` `DefaultConfigHelper` `ConfigEventArgs` | ✅ 完成 |
-| LocalizationComponent | `LocalizationComponent` | `LocalizationHelperBase` `DefaultLocalizationHelper` | ✅ 完成 |
-| DataTableComponent | `DataTableComponent` | `DataRowBase` `DataTableHelperBase` `DefaultDataTableHelper` `DataTableEventArgs` | ✅ 完成 |
+| SettingComponent | `SettingComponent` | `SettingHelperBase` `SettingHelperType` `LocalStorageSettingHelper` | ✅ 完成 |
+| ConfigComponent | `ConfigComponent` | `ConfigHelperBase` `ConfigHelperType` `DefaultConfigHelper` `ConfigEventArgs` | ✅ 完成 |
+| LocalizationComponent | `LocalizationComponent` | `LocalizationHelperBase` `LocalizationHelperType` `DefaultLocalizationHelper` | ✅ 完成 |
+| DataTableComponent | `DataTableComponent` | `DataRowBase` `DataTableHelperBase` `DataTableHelperType` `DefaultDataTableHelper` `DataTableEventArgs` | ✅ 完成 |
 | DataNodeComponent | `DataNodeComponent` | — | ✅ 完成 |
-| NetworkComponent | `NetworkComponent` | `NetworkChannelHelperBase` `DefaultNetworkChannelHelper` | ✅ 完成 |
+| NetworkComponent | `NetworkComponent` | `NetworkChannelHelperBase` `NetworkChannelHelperType` `DefaultNetworkChannelHelper` | ✅ 完成 |
 | WebRequestComponent | `WebRequestComponent` | `CocosWebRequestManager` | ✅ 完成 |
 | ResourceComponent | `ResourceComponent` | `CocosResourceManager` | ✅ 完成 |
 | SceneComponent | `SceneComponent` | `CocosSceneManager` | ✅ 完成 |
-| UIComponent | `UIComponent` | `UIFormLogic` `UIFormHelperBase` `DefaultUIFormHelper` | ✅ 完成 |
-| EntityComponent | `EntityComponent` | `EntityLogic` `EntityHelperBase` `DefaultEntityHelper` | ✅ 完成 |
-| SoundComponent | `SoundComponent` | `CocosSoundManager` `SoundHelperBase` `DefaultSoundHelper` `SoundAgentHelperBase` `DefaultSoundAgentHelper` `SoundGroupHelperBase` `DefaultSoundGroupHelper` | ✅ 完成 |
-| DownloadComponent | `DownloadComponent` | `CocosDownloadManager` | ✅ 完成 |
-| FileSystemComponent | `FileSystemComponent` | `FileSystemHelperBase` `DefaultFileSystemHelper` `AndroidFileSystemHelper` | ✅ 完成 |
+| UIComponent | `UIComponent` | `UIFormLogic` `UIFormHelperBase` `UIFormHelperType` `DefaultUIFormHelper` `DefaultUIGroupHelper` | ✅ 完成 |
+| EntityComponent | `EntityComponent` | `EntityLogic` `EntityHelperBase` `EntityHelperType` `DefaultEntityHelper` `DefaultEntityGroupHelper` | ✅ 完成 |
+| SoundComponent | `SoundComponent` | `CocosSoundManager` `SoundHelperBase` `SoundHelperType` `DefaultSoundHelper` `SoundAgentHelperBase` `DefaultSoundAgentHelper` `SoundGroupHelperBase` `DefaultSoundGroupHelper` | ✅ 完成 |
+| DownloadComponent | `DownloadComponent` | `CocosDownloadManager` `DownloadAgentHelperBase` `DownloadAgentHelperType` `DefaultDownloadAgentHelper` | ✅ 完成 |
+| FileSystemComponent | `FileSystemComponent` | `FileSystemHelperBase` `FileSystemHelperType` `DefaultFileSystemHelper` `AndroidFileSystemHelper` | ✅ 完成 |
 
 ### 业务层示例（`assets/Game/`）
 
 | 模块 | 文件 | 状态 |
 |------|------|------|
-| Procedure | `ProcedureLaunch` `ProcedurePreload` `ProcedureMain` | ✅ 完成 |
+| Procedure（12 个） | `ProcedureLaunch` `ProcedureSplash` `ProcedureCheckVersion` `ProcedureUpdateVersion` `ProcedureVerifyResources` `ProcedureCheckResources` `ProcedureUpdateResources` `ProcedureInitResources` `ProcedurePreload` `ProcedureChangeScene` `ProcedureMenu` `ProcedureMain` | ✅ 完成 |
+| DataTable 数据行 | `DREntity` `DRMusic` `DRScene` `DRSound` `DRUISound` | ✅ 完成 |
+| 扩展工具 | `UIExtension` `EntityExtension` | ✅ 完成 |
+| 基础 | `GameEntry`（业务层）`BuiltinDataComponent` `Constant`（ResourceMode 枚举、Setting Key、Layer） | ✅ 完成 |
+| 测试面板 | `TestPanelComponent` `TestRunner` `TestCase` + 6 个测试用例 | ✅ 完成 |
 
 ### 模块 Update 优先级（高 → 低）
 
@@ -427,8 +432,14 @@ assets/
 │   ├── Base/
 │   │   ├── GameEntry.ts         ← Component 驱动 + 模块注册门面
 │   │   ├── GameFrameworkComponent.ts
-│   │   ├── BaseComponent.ts
+│   │   ├── BaseComponent.ts     ← 日志/帧率/游戏速度控制，Inspector 可选 LogHelperType
 │   │   └── ShutdownType.ts
+│   ├── Utility/                 ← 新增：引擎层工具集
+│   │   ├── HelperRegistry.ts    ← 替代反射的 Helper 注册表（string→ctor）
+│   │   ├── Log.ts               ← 业务层日志门面（转发 GameFrameworkLog）
+│   │   ├── LogHelperBase.ts     ← 日志辅助器抽象基类（Component）
+│   │   ├── DefaultLogHelper.ts  ← 默认实现（console.*）
+│   │   └── LogHelperType.ts     ← Inspector 下拉枚举
 │   ├── Event/EventComponent.ts
 │   ├── Fsm/FsmComponent.ts
 │   ├── Procedure/ProcedureComponent.ts
@@ -437,26 +448,31 @@ assets/
 │   ├── Setting/
 │   │   ├── SettingComponent.ts
 │   │   ├── SettingHelperBase.ts
+│   │   ├── SettingHelperType.ts ← Inspector 枚举
 │   │   └── LocalStorageSettingHelper.ts
 │   ├── Config/
 │   │   ├── ConfigComponent.ts
 │   │   ├── ConfigHelperBase.ts
+│   │   ├── ConfigHelperType.ts  ← Inspector 枚举
 │   │   ├── DefaultConfigHelper.ts
 │   │   └── ConfigEventArgs.ts
 │   ├── Localization/
 │   │   ├── LocalizationComponent.ts
 │   │   ├── LocalizationHelperBase.ts
+│   │   ├── LocalizationHelperType.ts ← Inspector 枚举
 │   │   └── DefaultLocalizationHelper.ts
 │   ├── DataTable/
 │   │   ├── DataTableComponent.ts
 │   │   ├── DataRowBase.ts
 │   │   ├── DataTableHelperBase.ts
+│   │   ├── DataTableHelperType.ts ← Inspector 枚举
 │   │   ├── DefaultDataTableHelper.ts
 │   │   └── DataTableEventArgs.ts
 │   ├── DataNode/DataNodeComponent.ts
 │   ├── Network/
 │   │   ├── NetworkComponent.ts
 │   │   ├── NetworkChannelHelperBase.ts
+│   │   ├── NetworkChannelHelperType.ts ← Inspector 枚举
 │   │   └── DefaultNetworkChannelHelper.ts
 │   ├── WebRequest/
 │   │   ├── WebRequestComponent.ts
@@ -471,16 +487,21 @@ assets/
 │   │   ├── UIComponent.ts
 │   │   ├── UIFormLogic.ts       ← Prefab 上的 Component 基类
 │   │   ├── UIFormHelperBase.ts
-│   │   └── DefaultUIFormHelper.ts
+│   │   ├── UIFormHelperType.ts  ← Inspector 枚举
+│   │   ├── DefaultUIFormHelper.ts
+│   │   └── DefaultUIGroupHelper.ts ← 新增：组深度 → siblingIndex
 │   ├── Entity/
 │   │   ├── EntityComponent.ts
 │   │   ├── EntityLogic.ts       ← Prefab 上的 Component 基类
 │   │   ├── EntityHelperBase.ts
-│   │   └── DefaultEntityHelper.ts
+│   │   ├── EntityHelperType.ts  ← Inspector 枚举
+│   │   ├── DefaultEntityHelper.ts
+│   │   └── DefaultEntityGroupHelper.ts ← 新增：为每组创建根节点
 │   ├── Sound/
 │   │   ├── SoundComponent.ts
 │   │   ├── CocosSoundManager.ts
 │   │   ├── SoundHelperBase.ts
+│   │   ├── SoundHelperType.ts   ← Inspector 枚举
 │   │   ├── DefaultSoundHelper.ts
 │   │   ├── SoundAgentHelperBase.ts
 │   │   ├── DefaultSoundAgentHelper.ts
@@ -488,18 +509,205 @@ assets/
 │   │   └── DefaultSoundGroupHelper.ts
 │   ├── Download/
 │   │   ├── DownloadComponent.ts
-│   │   └── CocosDownloadManager.ts
+│   │   ├── CocosDownloadManager.ts
+│   │   ├── DownloadAgentHelperBase.ts  ← 新增：下载代理抽象基类
+│   │   ├── DownloadAgentHelperType.ts  ← Inspector 枚举
+│   │   └── DefaultDownloadAgentHelper.ts ← 新增：XHR + Range 断点续传
 │   └── FileSystem/
 │       ├── FileSystemComponent.ts
 │       ├── FileSystemHelperBase.ts
+│       ├── FileSystemHelperType.ts ← Inspector 枚举
 │       ├── DefaultFileSystemHelper.ts
 │       └── AndroidFileSystemHelper.ts
 │
-└── Game/                        ← 业务层示例
-    └── Procedure/
-        ├── ProcedureLaunch.ts
-        ├── ProcedurePreload.ts
-        └── ProcedureMain.ts
+└── Game/                        ← 业务层
+    ├── Scripts/
+    │   ├── Base/GameEntry.ts          ← 注册 12 个 Procedure
+    │   ├── BuiltinData/BuiltinDataComponent.ts ← build-info.json / 默认字典 / resourceMode
+    │   ├── Definition/Constant.ts    ← ResourceMode 枚举 / Setting Key / AssetPriority / Layer
+    │   ├── UI/UIExtension.ts
+    │   ├── Entity/EntityExtension.ts
+    │   ├── DataTable/               ← DREntity / DRMusic / DRScene / DRSound / DRUISound
+    │   ├── Procedure/               ← 12 个流程（见下文流程图）
+    │   └── Test/                    ← 运行时测试面板
+    │       ├── TestPanelComponent.ts
+    │       ├── TestRunner.ts
+    │       ├── TestCase.ts
+    │       └── cases/               ← Event / DataNode / ReferencePool / Config / Sound / DataTable
+    └── DataTables/                  ← CSV / JSON 配置文件
+```
+
+---
+
+## HelperRegistry 机制（引擎适配层新增）
+
+TypeScript 没有 C# 的运行时反射，无法通过字符串直接 `Activator.CreateInstance("MyHelper")`。`HelperRegistry` 解决这个问题，使 Inspector 下拉选择 Helper 类型成为可能（对应 UnityGameFramework 的 `CreateHelper<T>(typeName)` 行为）。
+
+### 工作流程
+
+```
+Helper 文件末尾 → HelperRegistry.register('TypeName', TypeCtor)
+                                    ↓
+Component.onLoad() → HelperRegistry.createHelper(parentNode, typeName, fallback)
+                                    ↓
+              新建子节点 → addComponent(ctor) → 返回实例
+```
+
+### Inspector 下拉接入步骤（以新增日志 Helper 为例）
+
+```typescript
+// 1. 继承 LogHelperBase 并注册
+@ccclass('FileLogHelper')
+export class FileLogHelper extends LogHelperBase {
+    log(level, tag, message) { /* 写文件 */ }
+}
+HelperRegistry.register('FileLogHelper', FileLogHelper);
+
+// 2. 在 LogHelperType.ts 添加枚举项（名称必须与 register 第一参数一致）
+export enum LogHelperType {
+    DefaultLogHelper = 0,
+    FileLogHelper = 1,   // 新增
+}
+Enum(LogHelperType);
+
+// 3. Inspector 下拉选择 FileLogHelper，BaseComponent.onLoad 自动实例化
+```
+
+所有带 `*HelperType.ts` 的模块均遵循同一模式：`SettingHelperType` / `ConfigHelperType` / `LocalizationHelperType` / `DataTableHelperType` / `NetworkChannelHelperType` / `UIFormHelperType` / `EntityHelperType` / `SoundHelperType` / `DownloadAgentHelperType` / `FileSystemHelperType` / `LogHelperType`。
+
+---
+
+## BaseComponent 更新（2026-05-25）
+
+`BaseComponent` 现已接管日志辅助器的初始化，并新增游戏速度控制 API：
+
+| Inspector 属性 | 类型 | 说明 |
+|---------------|------|------|
+| `logHelperType` | `LogHelperType` 枚举 | 选择日志辅助器实现，默认 `DefaultLogHelper` |
+| `frameRate` | number | 目标帧率，-1 不限制，默认 60 |
+| `runInBackground` | bool | 后台是否继续运行 |
+| `neverSleep` | bool | 防止屏幕熄灭（Native 平台） |
+| `_gameSpeed` | number | 初始游戏速度，0=暂停，1=正常 |
+
+| API | 说明 |
+|-----|------|
+| `setGameSpeed(speed)` | 设置速度（0~N） |
+| `pauseGame()` | 等同 `setGameSpeed(0)` |
+| `resumeGame()` | 等同 `setGameSpeed(1)` |
+| `isGamePaused` | speed ≤ 0 |
+| `isNormalGameSpeed` | speed === 1 |
+
+---
+
+## Log 门面（业务层日志）
+
+`CocosGameFramework/Utility/Log.ts` 提供业务层统一日志入口，内部转发给 `GameFrameworkLog`：
+
+```typescript
+import { Log } from 'CocosGameFramework/Utility/Log';
+
+Log.debug('简单消息');
+Log.info('MyTag', '带标签消息');
+Log.warning('值为 {0}，期望 {1}', actual, expected);
+Log.error('加载失败: {0}', url);
+Log.setLevel(GameFrameworkLogLevel.Warning); // 屏蔽 Debug / Info
+```
+
+---
+
+## 业务层流程图（StarForce 风格）
+
+```
+ProcedureLaunch
+  ├─ 初始化 BuildInfo / DefaultDictionary / Sound 设置
+  └─→ ProcedureSplash
+        ├─ resourceMode=Updatable → ProcedureCheckVersion
+        │    └─→ ProcedureUpdateVersion
+        │          └─→ ProcedureVerifyResources
+        │                └─→ ProcedureCheckResources
+        │                      ├─ 有更新 → ProcedureUpdateResources → ProcedurePreload
+        │                      └─ 无更新 → ProcedurePreload
+        ├─ resourceMode=Package → ProcedureInitResources → ProcedurePreload
+        └─ resourceMode=Unspecified/Editor → ProcedurePreload
+              └─→ ProcedureChangeScene
+                    ├─→ ProcedureMenu  ──(startGame)──→ ProcedureChangeScene
+                    └─→ ProcedureMain ──(gotoMenu, 2s)→ ProcedureChangeScene
+```
+
+**关键 API 速查**：
+
+```typescript
+// 流程间传值（FSM data）
+fsm.setData('NextSceneName', 'Menu');
+fsm.getData<string>('NextSceneName');
+
+// 资源模式（Constant.ts）
+import { ResourceMode } from 'Game/Scripts/Definition/Constant';
+// Unspecified=0, Package=1, Updatable=2
+
+// 资源更新回调（ProcedureUpdateResources 中）
+GameEntry.Resource.onResourceUpdateStart = (name, size) => { /* ... */ };
+GameEntry.Resource.onResourceUpdateChanged = (name, loaded, total) => { /* ... */ };
+GameEntry.Resource.onResourceUpdateSuccess = (name, size) => { /* ... */ };
+GameEntry.Resource.onResourceUpdateFailure = (name, msg) => { /* ... */ };
+GameEntry.Resource.startUpdate();
+```
+
+---
+
+## 测试面板系统（`assets/Game/Scripts/Test/`）
+
+挂 `TestPanelComponent` 到场景节点，运行时显示可手动触发的测试用例列表。
+
+| 文件 | 说明 |
+|------|------|
+| `TestPanelComponent.ts` | Cocos Component，驱动 UI 面板 |
+| `TestRunner.ts` | 执行 TestCase，收集结果 |
+| `TestCase.ts` | 抽象基类，子类实现 `run()` |
+| `cases/EventTestCase.ts` | 事件系统测试 |
+| `cases/DataNodeTestCase.ts` | DataNode 树形路径测试 |
+| `cases/ReferencePoolTestCase.ts` | ReferencePool 取还测试 |
+| `cases/ConfigTestCase.ts` | 配置表读取测试 |
+| `cases/SoundTestCase.ts` | 音效播放测试 |
+| `cases/DataTableTestCase.ts` | 数据表解析测试 |
+
+---
+
+## DownloadManager — DownloadAgentHelper（新增）
+
+| 特性 | C# | TypeScript (Cocos) |
+|------|-----|---------------------|
+| 代理基类 | `DownloadAgentHelperBase` | `DownloadAgentHelperBase extends Component implements IDownloadAgentHelper` |
+| 默认实现 | 内置 | `DefaultDownloadAgentHelper`（XHR + Range 断点续传） |
+| 断点续传 | `fromPosition` | XHR `Range: bytes=<fromPosition>-` |
+| 416 处理 | — | 文件已完整，视为空内容成功 |
+| Inspector 选择 | — | `DownloadAgentHelperType` 枚举 + `HelperRegistry` |
+
+---
+
+## UIManager — DefaultUIGroupHelper（新增）
+
+`DefaultUIGroupHelper` 实现 `IUIGroupHelper`，通过调整组根节点的 `siblingIndex` 反映 `depth` 变化，无需业务层手动管理 Canvas 层级：
+
+```typescript
+// UIComponent 在 addUIGroup 后自动调用
+defaultUIGroupHelper.registerGroupNode('Default', groupRootNode);
+defaultUIGroupHelper.setDepth(uiGroup, depth); // → node.setSiblingIndex(depth)
+```
+
+---
+
+## EntityManager — DefaultEntityGroupHelper（新增）
+
+`DefaultEntityGroupHelper` 为每个实体分组在场景中创建根节点（空 Node），可通过 Inspector 指定父节点：
+
+```typescript
+// Inspector 属性
+@property(Node) groupRootParent: Node | null = null;
+
+// 框架调用（EntityManager 内部）
+entityGroupHelper.createEntityGroupRoot('EnemyGroup');
+// → 在 groupRootParent（或本节点）下 new Node('EnemyGroup')
 ```
 
 ---
@@ -586,8 +794,20 @@ A: 通过 ResourceManager 加载文本资源（`TextAsset`），再调用 `table
 1. 在 `GameFramework/` 下定义接口（`IXxxManager`）和纯逻辑实现（`XxxManager extends GameFrameworkModule`）  
 2. 若需要引擎 API，在 `CocosGameFramework/` 实现具体类并通过 `IXxxHelper` 注入  
 3. 在 `GameFrameworkModuleIds.ts` 添加 `XXX: 'GameFramework.IXxxManager'`  
-4. 在`GameEntry._initModules()` 中 `registerModule(MODULE_ID.XXX, new XxxManager())`  
+4. 在 `GameEntry._initModules()` 中 `registerModule(MODULE_ID.XXX, new XxxManager())`  
 5. 在 `GameEntry` 中添加静态门面属性 `static get Xxx(): XxxManager`
+
+**Q: 如何新增自定义 Helper 并让 Inspector 能选择？**  
+1. 继承对应 `*HelperBase`（如 `LogHelperBase`）并实现接口方法  
+2. 文件末尾调用 `HelperRegistry.register('MyHelper', MyHelper)`  
+3. 在对应 `*HelperType.ts` 枚举中添加同名枚举项（枚举名 = register 第一参数）  
+4. Inspector 下拉选择即可，Component 的 `onLoad` 通过 `HelperRegistry.createHelper()` 自动实例化
+
+**Q: `Log` 门面和 `GameFrameworkLog` 有何区别？**  
+A: `GameFrameworkLog` 是核心层静态类，业务层应通过 `Log`（`CocosGameFramework/Utility/Log`）访问，保持分层。两者 API 完全一致，`Log` 只是转发。
+
+**Q: 测试面板如何使用？**  
+A: 将 `TestPanelComponent` 挂到场景节点，运行时点击面板中的测试用例按钮即可触发。新测试用例继承 `TestCase` 并实现 `run()` 方法，在 `TestPanelComponent` 中注册即可。
 
 ---
 
