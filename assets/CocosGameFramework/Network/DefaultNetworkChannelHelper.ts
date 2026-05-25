@@ -3,7 +3,7 @@ import { IPacketHeader } from '../../GameFramework/Network/INetworkChannelHelper
 import { INetworkChannel } from '../../GameFramework/Network/INetworkChannel';
 import { Packet } from '../../GameFramework/Network/Packet';
 import { NetworkChannelHelperBase } from './NetworkChannelHelperBase';
-import { HelperRegistry } from '../Base/HelperRegistry';
+import { HelperRegistry } from '../Utility/HelperRegistry';
 
 const { ccclass, property } = _decorator;
 

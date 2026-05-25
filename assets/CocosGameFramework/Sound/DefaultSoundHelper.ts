@@ -3,7 +3,7 @@ import { SoundHelperBase } from './SoundHelperBase';
 import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
 import { CocosResourceManager } from '../Resource/CocosResourceManager';
-import { HelperRegistry } from '../Base/HelperRegistry';
+import { HelperRegistry } from '../Utility/HelperRegistry';
 
 const { ccclass } = _decorator;
 

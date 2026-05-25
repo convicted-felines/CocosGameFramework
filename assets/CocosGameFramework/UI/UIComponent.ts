@@ -13,7 +13,7 @@ import { EventManager } from '../../GameFramework/Event/EventManager';
 import { CocosResourceManager } from '../Resource/CocosResourceManager';
 import { DefaultUIFormHelper } from './DefaultUIFormHelper';
 import { UIFormLogic } from './UIFormLogic';
-import { HelperRegistry } from '../Base/HelperRegistry';
+import { HelperRegistry } from '../Utility/HelperRegistry';
 import { UIFormHelperType } from './UIFormHelperType';
 
 const { ccclass, property } = _decorator;

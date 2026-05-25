@@ -1,5 +1,5 @@
 import { GameFrameworkLogLevel } from './GameFrameworkLogLevel';
 
 export interface ILogHelper {
-    log(level: GameFrameworkLogLevel, message: unknown): void;
+    log(level: GameFrameworkLogLevel, tag: string, message: string): void;
 }

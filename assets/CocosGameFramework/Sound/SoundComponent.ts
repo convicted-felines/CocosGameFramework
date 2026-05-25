@@ -11,7 +11,7 @@ import { PlaySoundFailureEventArgs } from '../../GameFramework/Sound/PlaySoundFa
 import { PlaySoundUpdateEventArgs } from '../../GameFramework/Sound/PlaySoundUpdateEventArgs';
 import { PlaySoundDependencyAssetEventArgs } from '../../GameFramework/Sound/PlaySoundDependencyAssetEventArgs';
 import { DefaultSoundHelper } from './DefaultSoundHelper';
-import { HelperRegistry } from '../Base/HelperRegistry';
+import { HelperRegistry } from '../Utility/HelperRegistry';
 import { SoundHelperType } from './SoundHelperType';
 
 const { ccclass, property } = _decorator;

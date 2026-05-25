@@ -6,7 +6,7 @@ import { FileSystemManager } from '../../GameFramework/FileSystem/FileSystemMana
 import { FileSystemAccess } from '../../GameFramework/FileSystem/FileSystemAccess';
 import { IFileSystem } from '../../GameFramework/FileSystem/IFileSystem';
 import { DefaultFileSystemHelper } from './DefaultFileSystemHelper';
-import { HelperRegistry } from '../Base/HelperRegistry';
+import { HelperRegistry } from '../Utility/HelperRegistry';
 import { FileSystemHelperType } from './FileSystemHelperType';
 
 const { ccclass, property } = _decorator;

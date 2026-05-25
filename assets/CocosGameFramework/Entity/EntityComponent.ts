@@ -16,7 +16,7 @@ import { CocosResourceManager } from '../Resource/CocosResourceManager';
 import { EntityHelperBase } from './EntityHelperBase';
 import { DefaultEntityHelper } from './DefaultEntityHelper';
 import { EntityLogic } from './EntityLogic';
-import { HelperRegistry } from '../Base/HelperRegistry';
+import { HelperRegistry } from '../Utility/HelperRegistry';
 import { EntityHelperType } from './EntityHelperType';
 
 const { ccclass, property } = _decorator;

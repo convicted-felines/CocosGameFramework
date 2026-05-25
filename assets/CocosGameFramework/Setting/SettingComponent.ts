@@ -4,7 +4,7 @@ import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry'
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
 import { SettingManager } from '../../GameFramework/Setting/SettingManager';
 import { LocalStorageSettingHelper } from './LocalStorageSettingHelper';
-import { HelperRegistry } from '../Base/HelperRegistry';
+import { HelperRegistry } from '../Utility/HelperRegistry';
 import { SettingHelperType } from './SettingHelperType';
 
 const { ccclass, property } = _decorator;

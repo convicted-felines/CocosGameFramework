@@ -1,7 +1,7 @@
 import { _decorator } from 'cc';
 import { IConfigManager } from '../../GameFramework/Config/IConfigManager';
 import { ConfigHelperBase } from './ConfigHelperBase';
-import { HelperRegistry } from '../Base/HelperRegistry';
+import { HelperRegistry } from '../Utility/HelperRegistry';
 
 const { ccclass } = _decorator;
 

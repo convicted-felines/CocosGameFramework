@@ -1,5 +1,6 @@
 import { _decorator, Component, director, game } from 'cc';
 import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
+import { GameFrameworkLog } from '../../GameFramework/Base/Log/GameFrameworkLog';
 import { GameFrameworkComponent } from './GameFrameworkComponent';
 import { ShutdownType } from './ShutdownType';
 
@@ -77,7 +78,7 @@ export class GameEntry extends Component {
         this._lastRealMs = performance.now();
         this.initBuiltinComponents();
         this.initCustomComponents();
-        console.log('[GameFramework] Started.');
+        GameFrameworkLog.info('GameFramework started.');
     }
 
     update(dt: number): void {
@@ -89,7 +90,7 @@ export class GameEntry extends Component {
 
     onDestroy(): void {
         GameFrameworkEntry.shutdown();
-        console.log('[GameFramework] Shutdown.');
+        GameFrameworkLog.info('GameFramework shutdown.');
     }
 
     // ---- 初始化钩子（子类实现）----

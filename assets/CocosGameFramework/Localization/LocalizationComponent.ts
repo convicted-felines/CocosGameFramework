@@ -4,7 +4,7 @@ import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry'
 import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
 import { LocalizationManager } from '../../GameFramework/Localization/LocalizationManager';
 import { DefaultLocalizationHelper } from './DefaultLocalizationHelper';
-import { HelperRegistry } from '../Base/HelperRegistry';
+import { HelperRegistry } from '../Utility/HelperRegistry';
 import { LocalizationHelperType } from './LocalizationHelperType';
 
 const { ccclass, property } = _decorator;

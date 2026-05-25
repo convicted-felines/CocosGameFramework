@@ -1,6 +1,6 @@
 import { _decorator } from 'cc';
 import { DownloadAgentHelperBase } from './DownloadAgentHelperBase';
-import { HelperRegistry } from '../Base/HelperRegistry';
+import { HelperRegistry } from '../Utility/HelperRegistry';
 
 const { ccclass } = _decorator;
 

@@ -10,7 +10,7 @@ import { IResourceManager } from '../../GameFramework/Resource/IResourceManager'
 import { LoadDataTableSuccessEventArgs, LoadDataTableFailureEventArgs } from './DataTableEventArgs';
 import { DataTableHelperBase } from './DataTableHelperBase';
 import { DefaultDataTableHelper } from './DefaultDataTableHelper';
-import { HelperRegistry } from '../Base/HelperRegistry';
+import { HelperRegistry } from '../Utility/HelperRegistry';
 import { DataTableHelperType } from './DataTableHelperType';
 
 const { ccclass, property } = _decorator;

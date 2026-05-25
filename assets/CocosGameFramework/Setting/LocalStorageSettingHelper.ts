@@ -1,6 +1,6 @@
 import { sys, _decorator } from 'cc';
 import { SettingHelperBase } from './SettingHelperBase';
-import { HelperRegistry } from '../Base/HelperRegistry';
+import { HelperRegistry } from '../Utility/HelperRegistry';
 
 const { ccclass } = _decorator;
 

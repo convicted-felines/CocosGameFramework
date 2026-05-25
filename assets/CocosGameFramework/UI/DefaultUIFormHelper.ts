@@ -2,7 +2,7 @@ import { Node, Prefab, instantiate, _decorator } from 'cc';
 import { IUIGroup } from '../../GameFramework/UI/IUIGroup';
 import { UIFormLogic } from './UIFormLogic';
 import { UIFormHelperBase } from './UIFormHelperBase';
-import { HelperRegistry } from '../Base/HelperRegistry';
+import { HelperRegistry } from '../Utility/HelperRegistry';
 
 const { ccclass } = _decorator;
 

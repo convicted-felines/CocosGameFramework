@@ -8,7 +8,7 @@ import { DefaultConfigHelper } from './DefaultConfigHelper';
 import { IEventManager } from '../../GameFramework/Event/IEventManager';
 import { IResourceManager } from '../../GameFramework/Resource/IResourceManager';
 import { LoadConfigSuccessEventArgs, LoadConfigFailureEventArgs } from './ConfigEventArgs';
-import { HelperRegistry } from '../Base/HelperRegistry';
+import { HelperRegistry } from '../Utility/HelperRegistry';
 import { ConfigHelperType } from './ConfigHelperType';
 
 const { ccclass, property } = _decorator;

@@ -23,7 +23,7 @@ import {
     NetworkCustomErrorEventArgs,
 } from '../../GameFramework/Network/NetworkEventArgs';
 import { BaseEventArgs } from '../../GameFramework/Event/BaseEventArgs';
-import { HelperRegistry } from '../Base/HelperRegistry';
+import { HelperRegistry } from '../Utility/HelperRegistry';
 import { NetworkChannelHelperType } from './NetworkChannelHelperType';
 
 const { ccclass, property } = _decorator;

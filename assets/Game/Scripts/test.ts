@@ -2,6 +2,7 @@ import { _decorator, Component, Node } from 'cc';
 import { GameEntry } from './Base/GameEntry';
 import { GameEventArgs } from '../../GameFramework/Event/GameEventArgs';
 import { ReferencePool } from '../../GameFramework/ReferencePool/ReferencePool';
+import { Log } from '../../CocosGameFramework/Utility/Log';
 const { ccclass, property } = _decorator;
 
 @ccclass('test')
@@ -28,6 +29,11 @@ export class test extends Component {
         console.log(this.node.name);
         
         console.log(event.eventName);
+
+        Log.info(event.eventName);
+
+        Log.error(event.eventName);
+        
     }
 
 

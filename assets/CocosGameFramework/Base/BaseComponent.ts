@@ -9,14 +9,14 @@ const { ccclass, property } = _decorator;
 
 /** 默认控制台日志助手，直接输出到 Cocos 控制台。 */
 class DefaultLogHelper implements ILogHelper {
-    log(level: GameFrameworkLogLevel, message: unknown): void {
-        const msg = String(message);
+    log(level: GameFrameworkLogLevel, tag: string, message: string): void {
+        const prefix = tag ? `[GF][${tag}]` : '[GF]';
         switch (level) {
-            case GameFrameworkLogLevel.Debug:   console.debug(`[GF] ${msg}`); break;
-            case GameFrameworkLogLevel.Info:    console.info(`[GF] ${msg}`);  break;
-            case GameFrameworkLogLevel.Warning: console.warn(`[GF] ${msg}`);  break;
-            case GameFrameworkLogLevel.Error:   console.error(`[GF] ${msg}`); break;
-            case GameFrameworkLogLevel.Fatal:   console.error(`[GF][FATAL] ${msg}`); break;
+            case GameFrameworkLogLevel.Debug:   console.debug(`${prefix} ${message}`); break;
+            case GameFrameworkLogLevel.Info:    console.info(`${prefix} ${message}`);  break;
+            case GameFrameworkLogLevel.Warning: console.warn(`${prefix} ${message}`);  break;
+            case GameFrameworkLogLevel.Error:   console.error(`${prefix} ${message}`); break;
+            case GameFrameworkLogLevel.Fatal:   console.error(`${prefix}[FATAL] ${message}`); break;
         }
     }
 }

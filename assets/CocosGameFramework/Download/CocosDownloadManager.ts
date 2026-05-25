@@ -1,6 +1,6 @@
 import { Node } from 'cc';
 import { DownloadManager } from '../../GameFramework/Download/DownloadManager';
-import { HelperRegistry } from '../Base/HelperRegistry';
+import { HelperRegistry } from '../Utility/HelperRegistry';
 import { DefaultDownloadAgentHelper } from './DefaultDownloadAgentHelper';
 import { DownloadAgentHelperBase } from './DownloadAgentHelperBase';
 
