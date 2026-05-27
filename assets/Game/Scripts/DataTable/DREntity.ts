@@ -1,6 +1,6 @@
 // 仓库地址 https://github.com/convicted-felines/CocosGameFramework.git
 // 此文件由工具自动生成，请勿手动修改。
-// 生成时间：2026/5/22 18:03:59
+// 生成时间：2026/5/26 11:00:45
 // 数据表：Entity
 
 import { IDataRow } from 'db://assets/GameFramework/DataTable/IDataRow';

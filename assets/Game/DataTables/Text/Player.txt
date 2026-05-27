@@ -1,0 +1,5 @@
+#	界面声音配置表
+#	Id		MaxHp	MoveSpeed	SprintSpeedScale	JumpSpeed	DefaultWeaponId	MaxWeaponSlots
+#	int		int	float	float	float	int	int
+#	玩家id	策划备注	最大生命值	行走速度（单位/秒）	冲刺倍率（Shift 键）；最终速度 = MoveSpeed × 该值	跳跃初速度	出生时持有的武器，对应后续 DRWeapon.id	最多同时携带的武器数量
+	1		100	1	1	1	1	1

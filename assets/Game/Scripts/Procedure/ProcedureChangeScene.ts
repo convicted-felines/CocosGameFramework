@@ -3,28 +3,26 @@ import { IFsm } from 'db://assets/GameFramework/FSM/IFsm';
 import { ProcedureManager } from 'db://assets/GameFramework/Procedure/ProcedureManager';
 import { ProcedureMenu } from './ProcedureMenu';
 import { ProcedureMain } from './ProcedureMain';
+import { ProcedureFPS } from 'db://assets/Game/Scripts/FPS/Procedure/ProcedureFPS';
 import { GameEntry } from 'db://assets/Game/Scripts/Base/GameEntry';
 import { GameFrameworkLog } from 'db://assets/GameFramework/Base/Log/GameFrameworkLog';
 
 const MENU_SCENE_NAME = 'Menu';
+const FPS_SCENE_NAME  = 'FPS';
 
 export class ProcedureChangeScene extends ProcedureBase {
     private _complete = false;
-    private _gotoMenu = false;
+    private _nextScene = MENU_SCENE_NAME;
 
     onEnter(fsm: IFsm<ProcedureManager>): void {
         this._complete = false;
-        this._gotoMenu = false;
-
-        const nextScene = fsm.getData<string>('NextSceneName') ?? MENU_SCENE_NAME;
+        this._nextScene = fsm.getData<string>('NextSceneName') ?? MENU_SCENE_NAME;
         fsm.removeData('NextSceneName');
-
-        this._gotoMenu = nextScene === MENU_SCENE_NAME;
 
         GameEntry.Sound.stopAllLoadedSounds();
 
         GameEntry.Resource.loadScene(
-            nextScene,
+            this._nextScene,
             (sceneAssetName, duration, _userData) => {
                 GameFrameworkLog.info(`[ProcedureChangeScene] Scene '${sceneAssetName}' loaded in ${duration.toFixed(2)}s.`);
                 this._complete = true;
@@ -39,10 +37,16 @@ export class ProcedureChangeScene extends ProcedureBase {
     onUpdate(fsm: IFsm<ProcedureManager>, _e: number, _r: number): void {
         if (!this._complete) return;
 
-        if (this._gotoMenu) {
-            this.changeState(fsm, ProcedureMenu);
-        } else {
-            this.changeState(fsm, ProcedureMain);
+        switch (this._nextScene) {
+            case MENU_SCENE_NAME:
+                this.changeState(fsm, ProcedureMenu);
+                break;
+            case FPS_SCENE_NAME:
+                this.changeState(fsm, ProcedureFPS);
+                break;
+            default:
+                this.changeState(fsm, ProcedureMain);
+                break;
         }
     }
 }

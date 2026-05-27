@@ -30,6 +30,7 @@ import { BuiltinDataComponent } from 'db://assets/Game/Scripts/BuiltinData/Built
 import { EntityExtension } from 'db://assets/Game/Scripts/Entity/EntityExtension';
 import { UIExtension } from 'db://assets/Game/Scripts/UI/UIExtension';
 import { ProcedureChangeScene } from '../Procedure/ProcedureChangeScene';
+import { ProcedureFPS } from 'db://assets/Game/Scripts/FPS/Procedure/ProcedureFPS';
 
 // ---- 流程 ----
 import { ProcedureCheckResources } from '../Procedure/ProcedureCheckResources';
@@ -197,6 +198,7 @@ export class GameEntry extends GFGameEntry {
             new ProcedureChangeScene(),
             new ProcedureMenu(),
             new ProcedureMain(),
+            new ProcedureFPS(),
         ], launch);
     }
 }

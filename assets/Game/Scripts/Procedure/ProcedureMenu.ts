@@ -5,28 +5,37 @@ import { ProcedureChangeScene } from './ProcedureChangeScene';
 import { GameEntry } from 'db://assets/Game/Scripts/Base/GameEntry';
 import { GameFrameworkLog } from 'db://assets/GameFramework/Base/Log/GameFrameworkLog';
 
+const MENU_FORM_ASSET = 'UI/MenuForm';
+const MENU_FORM_BUNDLE = 'resources';
+const MENU_FORM_GROUP = 'Default';
+
 export class ProcedureMenu extends ProcedureBase {
-    private _startGame = false;
+    private _nextScene: string | null = null;
+    private _menuFormSerialId = -1;
 
     onEnter(_fsm: IFsm<ProcedureManager>): void {
-        this._startGame = false;
+        this._nextScene = null;
         GameFrameworkLog.info('[ProcedureMenu] Enter — opening menu UI.');
-        // TODO: GameEntry.UI.openUIForm('MenuForm', ...)
+        this._menuFormSerialId = GameEntry.UI.openUIForm(
+            MENU_FORM_ASSET, MENU_FORM_BUNDLE, MENU_FORM_GROUP,
+        );
     }
 
     onUpdate(fsm: IFsm<ProcedureManager>, _e: number, _r: number): void {
-        if (!this._startGame) return;
-
-        fsm.setData('NextSceneName', 'Game');
+        if (this._nextScene === null) return;
+        fsm.setData('NextSceneName', this._nextScene);
         this.changeState(fsm, ProcedureChangeScene);
     }
 
     onLeave(_fsm: IFsm<ProcedureManager>, _isShutdown: boolean): void {
-        // TODO: GameEntry.UI.closeUIForm(menuForm)
+        if (this._menuFormSerialId >= 0) {
+            GameEntry.UI.closeUIForm(this._menuFormSerialId);
+            this._menuFormSerialId = -1;
+        }
     }
 
-    /** 由菜单 UI 按钮调用，触发游戏开始 */
-    startGame(): void {
-        this._startGame = true;
+    /** 由 MenuForm 的「开始游戏」按钮调用 */
+    startFPS(): void {
+        this._nextScene = 'FPS';
     }
 }
