@@ -89,10 +89,10 @@ interface PoolEntry {
 }
 
 // ================================================================
-// 正在使用中的实体数据
+// 实体运行时信息（内部跟踪用，区别于用户传入的 EntityInfo 业务数据类）
 // ================================================================
 
-interface EntityData {
+interface EntityInfo {
     entityId: number;
     entityAssetName: string;
     bundleName: string;
@@ -114,7 +114,7 @@ export class EntityManager extends GameFrameworkModule implements IEntityManager
     private _entityHelper: IEntityHelper | null = null;
     private _resourceManager: IResourceManager | null = null;
     private _groups: Map<string, EntityGroup> = new Map();
-    private _entities: Map<number, EntityData> = new Map();
+    private _entities: Map<number, EntityInfo> = new Map();
 
     // 对象池：groupName → assetName → 空闲实例列表
     private _pool: Map<string, Map<string, PoolEntry[]>> = new Map();
@@ -272,7 +272,7 @@ export class EntityManager extends GameFrameworkModule implements IEntityManager
         if (!this._groups.has(groupName)) throw new GameFrameworkError(`EntityGroup '${groupName}' does not exist.`);
         if (this._entities.has(entityId)) throw new GameFrameworkError(`Entity '${entityId}' already exists.`);
 
-        const data: EntityData = {
+        const data: EntityInfo = {
             entityId, entityAssetName, bundleName, groupName,
             priority, userData, instance: null,
             status: EntityStatus.WillInit,
@@ -395,7 +395,7 @@ export class EntityManager extends GameFrameworkModule implements IEntityManager
     }
 
     hideAllLoadingEntities(userData?: object): void {
-        const loading: EntityData[] = [];
+        const loading: EntityInfo[] = [];
         this._entities.forEach((data, id) => {
             if (data.status === EntityStatus.WillInit || data.status === EntityStatus.WillShow) {
                 loading.push(data);
