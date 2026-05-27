@@ -44,14 +44,13 @@ export class DownloadComponent extends GameFrameworkComponent {
         this._manager = new CocosDownloadManager();
         this._manager.timeout = this.timeout;
         this._manager.flushSize = this.flushSize;
-
-        const helperTypeName = DownloadAgentHelperType[this.downloadAgentHelperType];
-        this._manager.createAndAddHelpers(this.node, helperTypeName, this.downloadAgentHelperCount);
-
         GameFrameworkEntry.registerModule(MODULE_ID.DOWNLOAD, this._manager);
     }
 
     start(): void {
+        const helperTypeName = DownloadAgentHelperType[this.downloadAgentHelperType];
+        this._manager.createAndAddHelpers(this.node, helperTypeName, this.downloadAgentHelperCount);
+
         try {
             const eventMgr = GameFrameworkEntry.getModule(EventManager, MODULE_ID.EVENT);
             this._manager.setEventManager(eventMgr);

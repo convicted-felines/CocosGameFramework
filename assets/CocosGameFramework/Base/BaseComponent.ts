@@ -6,6 +6,7 @@ import { LogHelperBase } from '../Utility/LogHelperBase';
 import { DefaultLogHelper } from '../Utility/DefaultLogHelper';
 import { LogHelperType } from '../Utility/LogHelperType';
 import { HelperRegistry } from '../Utility/HelperRegistry';
+import { LanguageType } from './LanguageType';
 
 const { ccclass, property } = _decorator;
 
@@ -25,6 +26,9 @@ export class BaseComponent extends GameFrameworkComponent {
     
     @property({ type: Enum(LogHelperType), tooltip: '日志辅助器类型' })
     logHelperType: LogHelperType = LogHelperType.DefaultLogHelper;
+
+    @property({ type: Enum(LanguageType), tooltip: '编辑器指定语言（仅编辑器内有效，SystemLanguage 表示跟随系统自动识别）' })
+    editorLanguage: LanguageType = LanguageType.SystemLanguage;
 
     @property({ tooltip: '目标帧率，-1 表示不限制' })
     frameRate: number = 60;

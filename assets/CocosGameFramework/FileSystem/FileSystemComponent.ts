@@ -23,11 +23,12 @@ export class FileSystemComponent extends GameFrameworkComponent {
     onLoad(): void {
         super.onLoad();
         this._manager = new FileSystemManager();
+        GameFrameworkEntry.registerModule(MODULE_ID.FILESYSTEM, this._manager);
+    }
 
+    start(): void {
         const helper = HelperRegistry.createHelper(this.node, FileSystemHelperType[this.fileSystemHelperType], DefaultFileSystemHelper);
         this._manager.setFileSystemHelper(helper);
-
-        GameFrameworkEntry.registerModule(MODULE_ID.FILESYSTEM, this._manager);
     }
 
     // ---- 代理方法 ----

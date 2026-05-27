@@ -29,8 +29,11 @@ export class DataTableComponent extends GameFrameworkComponent {
     onLoad(): void {
         super.onLoad();
         this._manager = new DataTableManager();
-        this._helper = HelperRegistry.createHelper(this.node, DataTableHelperType[this.dataTableHelperType], DefaultDataTableHelper);
         GameFrameworkEntry.registerModule(MODULE_ID.DATATABLE, this._manager);
+    }
+
+    start(): void {
+        this._helper = HelperRegistry.createHelper(this.node, DataTableHelperType[this.dataTableHelperType], DefaultDataTableHelper);
         if (GameFrameworkEntry.hasModule(MODULE_ID.EVENT)) {
             this._eventManager = GameFrameworkEntry.getModule(
                 null as any,

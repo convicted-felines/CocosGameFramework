@@ -23,7 +23,8 @@ const { ccclass, property } = _decorator;
 
 @ccclass('SceneComponent')
 export class SceneComponent extends GameFrameworkComponent {
-    @property({ tooltip: '是否通过事件系统广播加载进度事件' })
+
+
     private _enableLoadSceneUpdateEvent: boolean = true;
 
     private _manager!: CocosSceneManager;
@@ -53,6 +54,7 @@ export class SceneComponent extends GameFrameworkComponent {
     get mainCamera(): Camera | null { return this._manager.mainCamera; }
     get activeScene(): string { return this._manager.activeScene; }
     get loadedSceneCount(): number { return this._manager.loadedSceneCount; }
+    @property({ tooltip: '是否通过事件系统广播加载进度事件' })
     get enableLoadSceneUpdateEvent(): boolean { return this._enableLoadSceneUpdateEvent; }
     set enableLoadSceneUpdateEvent(v: boolean) { this._enableLoadSceneUpdateEvent = v; }
 

@@ -66,12 +66,6 @@ export class SoundComponent extends GameFrameworkComponent {
             this._manager.setAudioNode(this.audioNode);
         }
 
-        if (this.soundHelperType !== undefined) {
-            this._manager.setSoundHelper(
-                HelperRegistry.createHelper(this.node, SoundHelperType[this.soundHelperType], DefaultSoundHelper)
-            );
-        }
-
         for (const cfg of this.soundGroups) {
             this._manager.addSoundGroup(cfg.name, cfg.avoidReplace, cfg.mute, cfg.volume, cfg.agentCount);
         }
@@ -80,6 +74,11 @@ export class SoundComponent extends GameFrameworkComponent {
     }
 
     start(): void {
+        if (this.soundHelperType !== undefined) {
+            this._manager.setSoundHelper(
+                HelperRegistry.createHelper(this.node, SoundHelperType[this.soundHelperType], DefaultSoundHelper)
+            );
+        }
         try {
             this._manager.setResourceManager(
                 GameFrameworkEntry.getModule(CocosResourceManager, MODULE_ID.RESOURCE)

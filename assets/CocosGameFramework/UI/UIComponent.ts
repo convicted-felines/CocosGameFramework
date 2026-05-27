@@ -63,12 +63,6 @@ export class UIComponent extends GameFrameworkComponent {
         super.onLoad();
         this._manager = new UIManager();
 
-        const helper = HelperRegistry.createHelper(this.node, UIFormHelperType[this.uiFormHelperType], DefaultUIFormHelper);
-        if (helper instanceof DefaultUIFormHelper && this.uiRoot) {
-            helper.setUIRoot(this.uiRoot);
-        }
-        this._manager.setHelper(helper);
-
         this._manager.instanceCapacity = this.instanceCapacity;
         this._manager.instanceExpireTime = this.instanceExpireTime;
         this._manager.instanceAutoReleaseInterval = this.instanceAutoReleaseInterval;
@@ -78,11 +72,18 @@ export class UIComponent extends GameFrameworkComponent {
             this._manager.addUIGroup(group.name, group.depth);
         }
 
-        this._bindCallbacks();
         GameFrameworkEntry.registerModule(MODULE_ID.UI, this._manager);
     }
 
     start(): void {
+        const helper = HelperRegistry.createHelper(this.node, UIFormHelperType[this.uiFormHelperType], DefaultUIFormHelper);
+        if (helper instanceof DefaultUIFormHelper && this.uiRoot) {
+            helper.setUIRoot(this.uiRoot);
+        }
+        this._manager.setHelper(helper);
+
+        this._bindCallbacks();
+
         try {
             this._manager.setResourceManager(
                 GameFrameworkEntry.getModule(CocosResourceManager, MODULE_ID.RESOURCE)

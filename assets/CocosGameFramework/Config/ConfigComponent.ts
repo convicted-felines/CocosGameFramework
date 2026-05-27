@@ -26,11 +26,14 @@ export class ConfigComponent extends GameFrameworkComponent {
 
     onLoad(): void {
         super.onLoad();
-        this._helper = HelperRegistry.createHelper(this.node, ConfigHelperType[this.configHelperType], DefaultConfigHelper);
         this._manager = new ConfigManager();
+        GameFrameworkEntry.registerModule(MODULE_ID.CONFIG, this._manager);
+    }
+
+    start(): void {
+        this._helper = HelperRegistry.createHelper(this.node, ConfigHelperType[this.configHelperType], DefaultConfigHelper);
         this._helper.setConfigManager(this._manager);
         this._manager.setConfigHelper(this._helper);
-        GameFrameworkEntry.registerModule(MODULE_ID.CONFIG, this._manager);
     }
 
     /**

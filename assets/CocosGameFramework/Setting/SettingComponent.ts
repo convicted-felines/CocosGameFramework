@@ -23,9 +23,12 @@ export class SettingComponent extends GameFrameworkComponent {
     onLoad(): void {
         super.onLoad();
         this._manager = new SettingManager();
+        GameFrameworkEntry.registerModule(MODULE_ID.SETTING, this._manager);
+    }
+
+    start(): void {
         const helper = HelperRegistry.createHelper(this.node, SettingHelperType[this.settingHelperType], LocalStorageSettingHelper);
         this._manager.setSettingHelper(helper);
-        GameFrameworkEntry.registerModule(MODULE_ID.SETTING, this._manager);
         this._manager.load();
     }
 

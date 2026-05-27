@@ -62,7 +62,10 @@ export class EntityComponent extends GameFrameworkComponent {
     onLoad(): void {
         super.onLoad();
         this._manager = new EntityManager();
+        GameFrameworkEntry.registerModule(MODULE_ID.ENTITY, this._manager);
+    }
 
+    start(): void {
         const root = this.entityRoot ?? this.node;
         this._helper = HelperRegistry.createHelper(this.node, EntityHelperType[this.entityHelperType], DefaultEntityHelper);
         this._manager.setHelper(this._helper);
@@ -77,11 +80,7 @@ export class EntityComponent extends GameFrameworkComponent {
         }
 
         this._bindCallbacks();
-        GameFrameworkEntry.registerModule(MODULE_ID.ENTITY, this._manager);
-    }
 
-    start(): void {
-        // start() 时所有模块已注册完毕，安全获取跨模块依赖。
         try {
             this._manager.setResourceManager(
                 GameFrameworkEntry.getModule(CocosResourceManager, MODULE_ID.RESOURCE)

@@ -37,6 +37,7 @@ export class NetworkComponent extends GameFrameworkComponent {
     networkChannelHelperType: NetworkChannelHelperType = NetworkChannelHelperType.DefaultNetworkChannelHelper;
 
     private _manager!: NetworkManager;
+    private _eventMgr: EventManager | null = null;
 
     get manager(): NetworkManager { return this._manager; }
 
@@ -45,14 +46,21 @@ export class NetworkComponent extends GameFrameworkComponent {
     onLoad(): void {
         super.onLoad();
         this._manager = new NetworkManager();
-
-        this._manager.onNetworkConnected = (sender, e) => this._fireEvent(sender, e as BaseEventArgs);
-        this._manager.onNetworkClosed = (sender, e) => this._fireEvent(sender, e as BaseEventArgs);
-        this._manager.onNetworkMissHeartBeat = (sender, e) => this._fireEvent(sender, e as BaseEventArgs);
-        this._manager.onNetworkError = (sender, e) => this._fireEvent(sender, e as BaseEventArgs);
-        this._manager.onNetworkCustomError = (sender, e) => this._fireEvent(sender, e as BaseEventArgs);
-
         GameFrameworkEntry.registerModule(MODULE_ID.NETWORK, this._manager);
+    }
+
+    start(): void {
+        this._manager.onNetworkConnected    = (sender, e) => this._fireEvent(sender, e as BaseEventArgs);
+        this._manager.onNetworkClosed       = (sender, e) => this._fireEvent(sender, e as BaseEventArgs);
+        this._manager.onNetworkMissHeartBeat = (sender, e) => this._fireEvent(sender, e as BaseEventArgs);
+        this._manager.onNetworkError        = (sender, e) => this._fireEvent(sender, e as BaseEventArgs);
+        this._manager.onNetworkCustomError  = (sender, e) => this._fireEvent(sender, e as BaseEventArgs);
+
+        try {
+            this._eventMgr = GameFrameworkEntry.getModule(EventManager, MODULE_ID.EVENT);
+        } catch {
+            // EventComponent 未挂载时静默忽略
+        }
     }
 
     // ── 频道管理 ──────────────────────────────────────────────────────────
@@ -111,7 +119,6 @@ export class NetworkComponent extends GameFrameworkComponent {
     static get EventCustomError(): string { return NetworkCustomErrorEventArgs.eventId; }
 
     private _fireEvent(sender: object, e: BaseEventArgs): void {
-        if (!GameFrameworkEntry.hasModule(MODULE_ID.EVENT)) return;
-        GameFrameworkEntry.getModule(EventManager, MODULE_ID.EVENT).fire(sender, e);
+        this._eventMgr?.fire(sender, e);
     }
 }
