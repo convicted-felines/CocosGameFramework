@@ -110,16 +110,16 @@ export class ResourceUpdateAllCompleteEventArgs extends BaseEventArgs {
 
 // ─── 场景事件 ────────────────────────────────────────────────────────────────
 
-export class LoadSceneSuccessEventArgs extends BaseEventArgs {
+export class ResourceLoadSceneSuccessEventArgs extends BaseEventArgs {
     static readonly eventId = 'resource.scene.loadSuccess';
-    get id(): string { return LoadSceneSuccessEventArgs.eventId; }
+    get id(): string { return ResourceLoadSceneSuccessEventArgs.eventId; }
 
     sceneAssetName!: string;
     duration!: number;
     userData?: object;
 
-    static create(sceneAssetName: string, duration: number, userData?: object): LoadSceneSuccessEventArgs {
-        const e = ReferencePool.acquire(LoadSceneSuccessEventArgs);
+    static create(sceneAssetName: string, duration: number, userData?: object): ResourceLoadSceneSuccessEventArgs {
+        const e = ReferencePool.acquire(ResourceLoadSceneSuccessEventArgs);
         e.sceneAssetName = sceneAssetName; e.duration = duration; e.userData = userData;
         return e;
     }
@@ -127,16 +127,16 @@ export class LoadSceneSuccessEventArgs extends BaseEventArgs {
     clear(): void { this.sceneAssetName = ''; this.duration = 0; this.userData = undefined; }
 }
 
-export class LoadSceneFailureEventArgs extends BaseEventArgs {
+export class ResourceLoadSceneFailureEventArgs extends BaseEventArgs {
     static readonly eventId = 'resource.scene.loadFailure';
-    get id(): string { return LoadSceneFailureEventArgs.eventId; }
+    get id(): string { return ResourceLoadSceneFailureEventArgs.eventId; }
 
     sceneAssetName!: string;
     errorMessage!: string;
     userData?: object;
 
-    static create(sceneAssetName: string, errorMessage: string, userData?: object): LoadSceneFailureEventArgs {
-        const e = ReferencePool.acquire(LoadSceneFailureEventArgs);
+    static create(sceneAssetName: string, errorMessage: string, userData?: object): ResourceLoadSceneFailureEventArgs {
+        const e = ReferencePool.acquire(ResourceLoadSceneFailureEventArgs);
         e.sceneAssetName = sceneAssetName; e.errorMessage = errorMessage; e.userData = userData;
         return e;
     }
@@ -144,15 +144,15 @@ export class LoadSceneFailureEventArgs extends BaseEventArgs {
     clear(): void { this.sceneAssetName = ''; this.errorMessage = ''; this.userData = undefined; }
 }
 
-export class UnloadSceneSuccessEventArgs extends BaseEventArgs {
+export class ResourceUnloadSceneSuccessEventArgs extends BaseEventArgs {
     static readonly eventId = 'resource.scene.unloadSuccess';
-    get id(): string { return UnloadSceneSuccessEventArgs.eventId; }
+    get id(): string { return ResourceUnloadSceneSuccessEventArgs.eventId; }
 
     sceneAssetName!: string;
     userData?: object;
 
-    static create(sceneAssetName: string, userData?: object): UnloadSceneSuccessEventArgs {
-        const e = ReferencePool.acquire(UnloadSceneSuccessEventArgs);
+    static create(sceneAssetName: string, userData?: object): ResourceUnloadSceneSuccessEventArgs {
+        const e = ReferencePool.acquire(ResourceUnloadSceneSuccessEventArgs);
         e.sceneAssetName = sceneAssetName; e.userData = userData;
         return e;
     }
@@ -160,15 +160,15 @@ export class UnloadSceneSuccessEventArgs extends BaseEventArgs {
     clear(): void { this.sceneAssetName = ''; this.userData = undefined; }
 }
 
-export class UnloadSceneFailureEventArgs extends BaseEventArgs {
+export class ResourceUnloadSceneFailureEventArgs extends BaseEventArgs {
     static readonly eventId = 'resource.scene.unloadFailure';
-    get id(): string { return UnloadSceneFailureEventArgs.eventId; }
+    get id(): string { return ResourceUnloadSceneFailureEventArgs.eventId; }
 
     sceneAssetName!: string;
     userData?: object;
 
-    static create(sceneAssetName: string, userData?: object): UnloadSceneFailureEventArgs {
-        const e = ReferencePool.acquire(UnloadSceneFailureEventArgs);
+    static create(sceneAssetName: string, userData?: object): ResourceUnloadSceneFailureEventArgs {
+        const e = ReferencePool.acquire(ResourceUnloadSceneFailureEventArgs);
         e.sceneAssetName = sceneAssetName; e.userData = userData;
         return e;
     }

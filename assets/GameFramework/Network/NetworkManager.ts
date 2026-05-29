@@ -143,7 +143,7 @@ class NetworkChannel implements INetworkChannel {
         if (this._helper) {
             const data = this._helper.serialize(packet);
             if (!data) return false;
-            this._ws!.send(data);
+            this._ws!.send(data.buffer as ArrayBuffer);
         } else {
             this._sendQueue.push(packet);
         }

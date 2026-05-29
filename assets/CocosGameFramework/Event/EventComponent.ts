@@ -11,18 +11,21 @@ const { ccclass, property } = _decorator;
 @ccclass('EventComponent')
 export class EventComponent extends GameFrameworkComponent {
     @property({ tooltip: '允许事件没有处理函数' })
-    get allowNoHandler(): boolean { return (this._mode & EventPoolMode.AllowNoHandler) !== 0; }
-    set allowNoHandler(v: boolean) { this._mode = v ? this._mode | EventPoolMode.AllowNoHandler : this._mode & ~EventPoolMode.AllowNoHandler; }
+    allowNoHandler: boolean = true;
 
     @property({ tooltip: '允许事件有多个处理函数' })
-    get allowMultiHandler(): boolean { return (this._mode & EventPoolMode.AllowMultiHandler) !== 0; }
-    set allowMultiHandler(v: boolean) { this._mode = v ? this._mode | EventPoolMode.AllowMultiHandler : this._mode & ~EventPoolMode.AllowMultiHandler; }
+    allowMultiHandler: boolean = true;
 
     @property({ tooltip: '允许事件有重复的处理函数' })
-    get allowDuplicateHandler(): boolean { return (this._mode & EventPoolMode.AllowDuplicateHandler) !== 0; }
-    set allowDuplicateHandler(v: boolean) { this._mode = v ? this._mode | EventPoolMode.AllowDuplicateHandler : this._mode & ~EventPoolMode.AllowDuplicateHandler; }
+    allowDuplicateHandler: boolean = false;
 
-    private _mode: number = EventPoolMode.AllowNoHandler | EventPoolMode.AllowMultiHandler;
+    private get _mode(): number {
+        let mode = EventPoolMode.Default;
+        if (this.allowNoHandler) mode |= EventPoolMode.AllowNoHandler;
+        if (this.allowMultiHandler) mode |= EventPoolMode.AllowMultiHandler;
+        if (this.allowDuplicateHandler) mode |= EventPoolMode.AllowDuplicateHandler;
+        return mode;
+    }
 
     private _manager!: EventManager;
 

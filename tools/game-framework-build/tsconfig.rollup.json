@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "ESNext",
+        "moduleResolution": "node10",
+        "ignoreDeprecations": "6.0",
+        "rootDir": "../../assets/GameFramework",
+        "strict": false,
+        "esModuleInterop": true,
+        "skipLibCheck": true
+    },
+    "include": ["../../assets/GameFramework/**/*.ts"],
+    "exclude": ["../../assets/GameFramework/node_modules"]
+}

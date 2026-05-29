@@ -9,9 +9,22 @@ const { ccclass } = _decorator;
 @ccclass('DefaultUIFormHelper')
 export class DefaultUIFormHelper extends UIFormHelperBase {
     private _uiRoot: Node | null = null;
+    private _groupNodes: Map<string, Node> = new Map();
 
     setUIRoot(uiRoot: Node): void {
         this._uiRoot = uiRoot;
+    }
+
+    /** 为分组创建父节点，由 UIComponent 在 start() 阶段调用 */
+    createGroupNode(groupName: string, depth: number): void {
+        const root = this._uiRoot ?? this.node;
+        let groupNode = root.getChildByName(groupName);
+        if (!groupNode) {
+            groupNode = new Node(groupName);
+            root.addChild(groupNode);
+        }
+        groupNode.setSiblingIndex(depth);
+        this._groupNodes.set(groupName, groupNode);
     }
 
     instantiateUIForm(uiFormAsset: Prefab): Node {
@@ -19,9 +32,8 @@ export class DefaultUIFormHelper extends UIFormHelperBase {
     }
 
     createUIForm(uiFormInstance: Node, uiGroup: IUIGroup, _userData?: object): void {
-        const root = this._uiRoot ?? this.node;
-        root.addChild(uiFormInstance);
-        uiFormInstance.setSiblingIndex(uiGroup.depth);
+        const groupNode = this._groupNodes.get(uiGroup.name) ?? this._uiRoot ?? this.node;
+        groupNode.addChild(uiFormInstance);
         uiFormInstance.active = false;
     }
 

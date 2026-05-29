@@ -37,15 +37,15 @@ const { ccclass } = _decorator;
  * ├── FileSystemNode   → FileSystemComponent
  * └── BuiltinDataNode  → BuiltinDataComponent（游戏层自定义）
  */
-@ccclass('GFGameEntry')
-export class GameEntry extends Component {
+@ccclass('GFGameEntryBase')
+export class GameEntryBase extends Component {
     private _lastRealMs: number = 0;
     private static _gameSpeed: number = 1;
 
     // ---- 静态工具方法 ----
 
     static setGameSpeed(speed: number): void {
-        GameEntry._gameSpeed = Math.max(0, speed);
+        GameEntryBase._gameSpeed = Math.max(0, speed);
     }
 
     static getComponent<T extends GameFrameworkComponent>(type: new (...args: any[]) => T): T | null {
@@ -85,7 +85,7 @@ export class GameEntry extends Component {
         const nowMs = performance.now();
         const realDt = (nowMs - this._lastRealMs) / 1000;
         this._lastRealMs = nowMs;
-        GameFrameworkEntry.update(dt * GameEntry._gameSpeed, realDt);
+        GameFrameworkEntry.update(dt * GameEntryBase._gameSpeed, realDt);
     }
 
     onDestroy(): void {

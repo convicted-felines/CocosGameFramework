@@ -268,7 +268,7 @@ export class FileSystem implements IFileSystem {
             // 需要更多空间：释放旧块，重新分配
             this._addFreeBlock(bi, block.length);
             block.stringIndex = -1; // 暂时标记为空闲
-            return this._allocateAndWrite(this._fileMap.get('') ?? '', buf, startIndex, dataLen);
+            return this._allocateAndWrite(this._stringMap.get(bi) ?? '', buf, startIndex, dataLen);
         }
 
         // 原地覆写

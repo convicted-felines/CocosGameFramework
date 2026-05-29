@@ -77,8 +77,13 @@ export class UIComponent extends GameFrameworkComponent {
 
     start(): void {
         const helper = HelperRegistry.createHelper(this.node, UIFormHelperType[this.uiFormHelperType], DefaultUIFormHelper);
-        if (helper instanceof DefaultUIFormHelper && this.uiRoot) {
-            helper.setUIRoot(this.uiRoot);
+        if (helper instanceof DefaultUIFormHelper) {
+            if (this.uiRoot) {
+                helper.setUIRoot(this.uiRoot);
+            }
+            for (const group of this.uiGroups) {
+                helper.createGroupNode(group.name, group.depth);
+            }
         }
         this._manager.setHelper(helper);
 

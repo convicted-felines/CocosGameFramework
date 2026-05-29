@@ -1,11 +1,6 @@
 import { Packet } from './Packet';
 import { INetworkChannel } from './INetworkChannel';
-
-/** 网络消息包头接口 */
-export interface IPacketHeader {
-    /** 消息包长度 */
-    readonly packetLength: number;
-}
+import { IPacketHeader } from './IPacketHeader';
 
 /** 网络频道辅助器接口，对应原版 INetworkChannelHelper */
 export interface INetworkChannelHelper {

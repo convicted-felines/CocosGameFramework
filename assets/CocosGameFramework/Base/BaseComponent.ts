@@ -1,7 +1,7 @@
 import { _decorator, Enum, game, native, sys } from 'cc';
 import { GameFrameworkComponent } from './GameFrameworkComponent';
 import { GameFrameworkLog } from '../../GameFramework/Base/Log/GameFrameworkLog';
-import { GameEntry } from './GameEntry';
+import { GameEntryBase } from './GameEntryBase';
 import { LogHelperBase } from '../Utility/LogHelperBase';
 import { DefaultLogHelper } from '../Utility/DefaultLogHelper';
 import { LogHelperType } from '../Utility/LogHelperType';
@@ -62,7 +62,7 @@ export class BaseComponent extends GameFrameworkComponent {
             (native as any).device?.keepScreenOn(this.neverSleep);
         }
 
-        GameEntry.setGameSpeed(this._gameSpeed);
+        GameEntryBase.setGameSpeed(this._gameSpeed);
 
         GameFrameworkLog.info('BaseComponent initialized.');
     }
@@ -71,7 +71,7 @@ export class BaseComponent extends GameFrameworkComponent {
 
     setGameSpeed(speed: number): void {
         this._gameSpeed = Math.max(0, speed);
-        GameEntry.setGameSpeed(this._gameSpeed);
+        GameEntryBase.setGameSpeed(this._gameSpeed);
     }
 
     pauseGame(): void {

@@ -1,5 +1,5 @@
 import { _decorator } from 'cc';
-import { GameEntry as GFGameEntry } from 'db://assets/CocosGameFramework/Base/GameEntry';
+import { GameEntryBase } from 'db://assets/CocosGameFramework/Base/GameEntryBase';
 
 // ---- 框架内置 Components（对应 StarForce GameEntry.Builtin.cs）----
 import { BaseComponent } from 'db://assets/CocosGameFramework/Base/BaseComponent';
@@ -67,7 +67,7 @@ export function applyMixins(target: any, mixins: any[]): void {
 /**
  * 游戏入口，对应 StarForce 中三个 partial class 文件的合并：
  *
- *   GameEntry.cs          → start() 调用顺序（由基类 GFGameEntry 实现）
+ *   GameEntry.cs          → start() 调用顺序（由基类 GameEntryBase 实现）
  *   GameEntry.Builtin.cs  → 框架内置 Component 的静态属性 + initBuiltinComponents()
  *   GameEntry.Custom.cs   → 游戏层自定义 Component 的静态属性 + initCustomComponents()
  *
@@ -77,7 +77,7 @@ export function applyMixins(target: any, mixins: any[]): void {
  *   必须在 start() 执行前完成注册（例如在模块 onLoad 中调用）。
  */
 @ccclass('GameEntry')
-export class GameEntry extends GFGameEntry {
+export class GameEntry extends GameEntryBase {
 
     // ========== 框架内置 Components ==========
     // 对应 StarForce GameEntry.Builtin.cs 中的静态属性
@@ -155,31 +155,31 @@ export class GameEntry extends GFGameEntry {
         // 混入扩展必须在 Component 实例被使用前完成
         GameEntry._applyExtensions();
 
-        GameEntry.Base         = GFGameEntry.getComponent(BaseComponent)!;
-        GameEntry.Event        = GFGameEntry.getComponent(EventComponent)!;
-        GameEntry.Fsm          = GFGameEntry.getComponent(FsmComponent)!;
-        GameEntry.Procedure    = GFGameEntry.getComponent(ProcedureComponent)!;
-        GameEntry.Setting      = GFGameEntry.getComponent(SettingComponent)!;
-        GameEntry.Config       = GFGameEntry.getComponent(ConfigComponent)!;
-        GameEntry.DataTable    = GFGameEntry.getComponent(DataTableComponent)!;
-        GameEntry.DataNode     = GFGameEntry.getComponent(DataNodeComponent)!;
-        GameEntry.ObjectPool   = GFGameEntry.getComponent(ObjectPoolComponent)!;
-        GameEntry.Localization = GFGameEntry.getComponent(LocalizationComponent)!;
-        GameEntry.Network      = GFGameEntry.getComponent(NetworkComponent)!;
-        GameEntry.WebRequest   = GFGameEntry.getComponent(WebRequestComponent)!;
-        GameEntry.Resource     = GFGameEntry.getComponent(ResourceComponent)!;
-        GameEntry.Scene        = GFGameEntry.getComponent(SceneComponent)!;
-        GameEntry.Entity       = GFGameEntry.getComponent(EntityComponent)! as EntityComponent & EntityExtension;
-        GameEntry.UI           = GFGameEntry.getComponent(UIComponent)! as UIComponent & UIExtension;
-        GameEntry.Sound        = GFGameEntry.getComponent(SoundComponent)!;
-        GameEntry.Download     = GFGameEntry.getComponent(DownloadComponent)!;
-        GameEntry.FileSystem   = GFGameEntry.getComponent(FileSystemComponent)!;
-        GameEntry.ReferencePool = GFGameEntry.getComponent(ReferencePoolComponent)!;
+        GameEntry.Base         = GameEntryBase.getComponent(BaseComponent)!;
+        GameEntry.Event        = GameEntryBase.getComponent(EventComponent)!;
+        GameEntry.Fsm          = GameEntryBase.getComponent(FsmComponent)!;
+        GameEntry.Procedure    = GameEntryBase.getComponent(ProcedureComponent)!;
+        GameEntry.Setting      = GameEntryBase.getComponent(SettingComponent)!;
+        GameEntry.Config       = GameEntryBase.getComponent(ConfigComponent)!;
+        GameEntry.DataTable    = GameEntryBase.getComponent(DataTableComponent)!;
+        GameEntry.DataNode     = GameEntryBase.getComponent(DataNodeComponent)!;
+        GameEntry.ObjectPool   = GameEntryBase.getComponent(ObjectPoolComponent)!;
+        GameEntry.Localization = GameEntryBase.getComponent(LocalizationComponent)!;
+        GameEntry.Network      = GameEntryBase.getComponent(NetworkComponent)!;
+        GameEntry.WebRequest   = GameEntryBase.getComponent(WebRequestComponent)!;
+        GameEntry.Resource     = GameEntryBase.getComponent(ResourceComponent)!;
+        GameEntry.Scene        = GameEntryBase.getComponent(SceneComponent)!;
+        GameEntry.Entity       = GameEntryBase.getComponent(EntityComponent)! as EntityComponent & EntityExtension;
+        GameEntry.UI           = GameEntryBase.getComponent(UIComponent)! as UIComponent & UIExtension;
+        GameEntry.Sound        = GameEntryBase.getComponent(SoundComponent)!;
+        GameEntry.Download     = GameEntryBase.getComponent(DownloadComponent)!;
+        GameEntry.FileSystem   = GameEntryBase.getComponent(FileSystemComponent)!;
+        GameEntry.ReferencePool = GameEntryBase.getComponent(ReferencePoolComponent)!;
     }
 
     /** 对应 StarForce GameEntry.Custom.cs InitCustomComponents() */
     protected override initCustomComponents(): void {
-        GameEntry.BuiltinData = GFGameEntry.getComponent(BuiltinDataComponent)!;
+        GameEntry.BuiltinData = GameEntryBase.getComponent(BuiltinDataComponent)!;
 
         GameEntry.BuiltinData.initBuildInfo();
 
