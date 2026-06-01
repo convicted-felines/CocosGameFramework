@@ -1,9 +1,10 @@
+import { GameFrameworkEntry, MODULE_ID, DataNodeManager, IDataNode } from '@game-studio/game-framework';
 import { _decorator } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
-import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
-import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
-import { DataNodeManager } from '../../GameFramework/DataNode/DataNodeManager';
-import { IDataNode } from '../../GameFramework/DataNode/IDataNode';
+
+
+
+
 
 const { ccclass } = _decorator;
 

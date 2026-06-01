@@ -1,5 +1,6 @@
+import { ILocalizationManager } from '@game-studio/game-framework';
 import { sys, _decorator } from 'cc';
-import { ILocalizationManager } from '../../GameFramework/Localization/ILocalizationManager';
+
 import { LocalizationHelperBase } from './LocalizationHelperBase';
 import { HelperRegistry } from '../Utility/HelperRegistry';
 

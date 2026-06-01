@@ -1,28 +1,18 @@
+import { GameFrameworkEntry, MODULE_ID, NetworkManager, EventManager, INetworkChannel, INetworkChannelHelper, Packet, IHttpRequestParams, IHttpResponse, HttpSuccessCallback, HttpFailureCallback, NetworkConnectedEventArgs, NetworkClosedEventArgs, NetworkMissHeartBeatEventArgs, NetworkErrorEventArgs, NetworkCustomErrorEventArgs, BaseEventArgs } from '@game-studio/game-framework';
 import { _decorator, Enum } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
-import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
-import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
-import { NetworkManager } from '../../GameFramework/Network/NetworkManager';
-import { EventManager } from '../../GameFramework/Event/EventManager';
-import { INetworkChannel } from '../../GameFramework/Network/INetworkChannel';
-import { INetworkChannelHelper } from '../../GameFramework/Network/INetworkChannelHelper';
-import { Packet } from '../../GameFramework/Network/Packet';
+
+
+
+
+
+
+
 import { NetworkChannelHelperBase } from './NetworkChannelHelperBase';
 import { DefaultNetworkChannelHelper } from './DefaultNetworkChannelHelper';
-import {
-    IHttpRequestParams,
-    IHttpResponse,
-    HttpSuccessCallback,
-    HttpFailureCallback,
-} from '../../GameFramework/Network/INetworkManager';
-import {
-    NetworkConnectedEventArgs,
-    NetworkClosedEventArgs,
-    NetworkMissHeartBeatEventArgs,
-    NetworkErrorEventArgs,
-    NetworkCustomErrorEventArgs,
-} from '../../GameFramework/Network/NetworkEventArgs';
-import { BaseEventArgs } from '../../GameFramework/Event/BaseEventArgs';
+
+
+
 import { HelperRegistry } from '../Utility/HelperRegistry';
 import { NetworkChannelHelperType } from './NetworkChannelHelperType';
 

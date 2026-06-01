@@ -1,10 +1,11 @@
+import { ProcedureBase, IFsm, ProcedureManager, GameFrameworkLog } from '@game-studio/game-framework';
 import { JsonAsset, TextAsset } from 'cc';
-import { ProcedureBase } from 'db://assets/GameFramework/Procedure/ProcedureBase';
-import { IFsm } from 'db://assets/GameFramework/FSM/IFsm';
-import { ProcedureManager } from 'db://assets/GameFramework/Procedure/ProcedureManager';
+
+
+
 import { ProcedureChangeScene } from './ProcedureChangeScene';
 import { GameEntry } from 'db://assets/Game/Scripts/Base/GameEntry';
-import { GameFrameworkLog } from 'db://assets/GameFramework/Base/Log/GameFrameworkLog';
+
 
 const DATA_TABLES = [
     'Aircraft', 'Armor', 'Asteroid', 'Entity',

@@ -3,5 +3,13 @@
   "uuid": "8242824d-c36b-4912-abaa-16f1101e3c30",
   "creator": {
     "version": "3.8.8"
+  },
+  "scripts": {
+    "build:framework": "npm run build --prefix tools/game-framework-build",
+    "build:framework:obfuscate": "npm run build:obfuscate --prefix tools/game-framework-build",
+    "pack:framework:obfuscate": "npm run pack:obfuscate --prefix tools/game-framework-build"
+  },
+  "dependencies": {
+    "@game-studio/game-framework": "file:./frameworkNpm"
   }
 }

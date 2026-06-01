@@ -1,5 +1,6 @@
+import { GameFrameworkLogLevel } from '@game-studio/game-framework';
 import { _decorator } from 'cc';
-import { GameFrameworkLogLevel } from '../../GameFramework/Base/Log/GameFrameworkLogLevel';
+
 import { LogHelperBase } from './LogHelperBase';
 import { HelperRegistry } from './HelperRegistry';
 

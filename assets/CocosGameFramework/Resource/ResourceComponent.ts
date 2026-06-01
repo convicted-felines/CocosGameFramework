@@ -1,21 +1,11 @@
+import { GameFrameworkEntry, MODULE_ID, LoadSuccessCallback, LoadFailureCallback, LoadProgressCallback, LoadSceneSuccessCallback, LoadSceneFailureCallback, UnloadSceneSuccessCallback, UnloadSceneFailureCallback, IResourceGroup, ResourceUpdateStatus, HasAssetResult, EventHandler } from '@game-studio/game-framework';
 import { _decorator } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
-import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
-import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
+
+
 import { CocosResourceManager } from './CocosResourceManager';
-import {
-    LoadSuccessCallback,
-    LoadFailureCallback,
-    LoadProgressCallback,
-    LoadSceneSuccessCallback,
-    LoadSceneFailureCallback,
-    UnloadSceneSuccessCallback,
-    UnloadSceneFailureCallback,
-    IResourceGroup,
-    ResourceUpdateStatus,
-    HasAssetResult,
-} from '../../GameFramework/Resource/IResourceManager';
-import { EventHandler } from '../../GameFramework/Event/IEventManager';
+
+
 
 const { ccclass, property } = _decorator;
 

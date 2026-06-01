@@ -1,6 +1,7 @@
+import { ILocalizationHelper, ILocalizationManager } from '@game-studio/game-framework';
 import { Component, _decorator } from 'cc';
-import { ILocalizationHelper } from '../../GameFramework/Localization/ILocalizationHelper';
-import { ILocalizationManager } from '../../GameFramework/Localization/ILocalizationManager';
+
+
 
 const { ccclass } = _decorator;
 

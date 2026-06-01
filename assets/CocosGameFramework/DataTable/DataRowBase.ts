@@ -1,4 +1,5 @@
-import { IDataRow } from '../../GameFramework/DataTable/IDataRow';
+import { IDataRow } from '@game-studio/game-framework';
+
 
 /**
  * 数据表行基类，用户的具体行类继承此类并实现 id 与 parseDataRow。

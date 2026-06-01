@@ -1,7 +1,8 @@
+import { IFileSystemHelper, FileSystemAccess, FileSystemStream } from '@game-studio/game-framework';
 import { Component, _decorator } from 'cc';
-import { IFileSystemHelper } from '../../GameFramework/FileSystem/IFileSystemHelper';
-import { FileSystemAccess } from '../../GameFramework/FileSystem/FileSystemAccess';
-import { FileSystemStream } from '../../GameFramework/FileSystem/FileSystemStream';
+
+
+
 
 const { ccclass } = _decorator;
 

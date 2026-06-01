@@ -1,10 +1,11 @@
+import { GameFrameworkEntry, MODULE_ID, FileSystemManager, FileSystemAccess, IFileSystem } from '@game-studio/game-framework';
 import { _decorator, Enum } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
-import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
-import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
-import { FileSystemManager } from '../../GameFramework/FileSystem/FileSystemManager';
-import { FileSystemAccess } from '../../GameFramework/FileSystem/FileSystemAccess';
-import { IFileSystem } from '../../GameFramework/FileSystem/IFileSystem';
+
+
+
+
+
 import { DefaultFileSystemHelper } from './DefaultFileSystemHelper';
 import { HelperRegistry } from '../Utility/HelperRegistry';
 import { FileSystemHelperType } from './FileSystemHelperType';

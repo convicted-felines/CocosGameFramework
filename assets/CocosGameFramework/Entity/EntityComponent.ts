@@ -1,17 +1,12 @@
+import { GameFrameworkEntry, MODULE_ID, EntityManager, IEntityGroup, EntityStatus, ShowEntitySuccessEventArgs, ShowEntityFailureEventArgs, HideEntityCompleteEventArgs, AttachEntitySuccessEventArgs, DetachEntitySuccessEventArgs, EventManager } from '@game-studio/game-framework';
 import { _decorator, Node, Enum } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
-import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
-import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
-import { EntityManager } from '../../GameFramework/Entity/EntityManager';
-import { IEntityGroup, EntityStatus } from '../../GameFramework/Entity/IEntityManager';
-import {
-    ShowEntitySuccessEventArgs,
-    ShowEntityFailureEventArgs,
-    HideEntityCompleteEventArgs,
-    AttachEntitySuccessEventArgs,
-    DetachEntitySuccessEventArgs,
-} from '../../GameFramework/Entity/EntityEventArgs';
-import { EventManager } from '../../GameFramework/Event/EventManager';
+
+
+
+
+
+
 import { CocosResourceManager } from '../Resource/CocosResourceManager';
 import { EntityHelperBase } from './EntityHelperBase';
 import { DefaultEntityHelper } from './DefaultEntityHelper';

@@ -1,6 +1,7 @@
+import { IUIFormHelper, IUIGroup } from '@game-studio/game-framework';
 import { Component, _decorator } from 'cc';
-import { IUIFormHelper } from '../../GameFramework/UI/IUIFormHelper';
-import { IUIGroup } from '../../GameFramework/UI/IUIGroup';
+
+
 
 const { ccclass } = _decorator;
 

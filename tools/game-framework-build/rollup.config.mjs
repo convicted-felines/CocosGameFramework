@@ -1,37 +1,60 @@
 import typescript from '@rollup/plugin-typescript';
 import dts from 'rollup-plugin-dts';
+import obfuscator from 'rollup-plugin-obfuscator';
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { obfuscatorOptions } from './obfuscator-options.mjs';
 
-const srcDir = '../../assets/GameFramework';
-const outDir = '../../assets/GameFramework-dist';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const OBFUSCATE = process.env.OBFUSCATE === '1' || process.env.OBFUSCATE === 'true';
 
-// 构建前清空输出目录
+const srcDir = path.resolve(__dirname, '../../packages/GameFramework');
+const outDir = path.resolve(
+    __dirname,
+    OBFUSCATE ? '../../frameworkNpm-obfuscated' : '../../frameworkNpm'
+);
+const distPackage = path.resolve(
+    __dirname,
+    OBFUSCATE ? 'dist-package-obfuscated.json' : 'dist-package.json'
+);
+
 if (fs.existsSync(outDir)) {
     fs.rmSync(outDir, { recursive: true, force: true });
 }
 fs.mkdirSync(outDir, { recursive: true });
+fs.copyFileSync(distPackage, path.join(outDir, 'package.json'));
+
+const jsPlugins = [
+    typescript({
+        tsconfig: './tsconfig.rollup.json',
+        declaration: false,
+    }),
+];
+
+if (OBFUSCATE) {
+    jsPlugins.push(
+        obfuscator({
+            global: true,
+            options: obfuscatorOptions,
+        })
+    );
+}
 
 export default [
-    // 1. 编译为 ES Module → game-framework.js
     {
-        input: `${srcDir}/index.ts`,
+        input: path.join(srcDir, 'index.ts'),
         output: {
-            file: `${outDir}/game-framework.js`,
+            file: path.join(outDir, 'game-framework.mjs'),
             format: 'es',
             sourcemap: false,
         },
-        plugins: [
-            typescript({
-                tsconfig: './tsconfig.rollup.json',
-                declaration: false,
-            }),
-        ],
+        plugins: jsPlugins,
     },
-    // 2. 生成类型声明 → game-framework.d.ts
     {
-        input: `${srcDir}/index.ts`,
+        input: path.join(srcDir, 'index.ts'),
         output: {
-            file: `${outDir}/game-framework.d.ts`,
+            file: path.join(outDir, 'game-framework.d.ts'),
             format: 'es',
         },
         plugins: [

@@ -1,14 +1,11 @@
-import { ProcedureBase } from 'db://assets/GameFramework/Procedure/ProcedureBase';
-import { IFsm } from 'db://assets/GameFramework/FSM/IFsm';
-import { ProcedureManager } from 'db://assets/GameFramework/Procedure/ProcedureManager';
+
+
+
+import { ProcedureBase, IFsm, ProcedureManager, GameFrameworkLog, ResourceVerifyStartEventArgs, ResourceVerifySuccessEventArgs, ResourceVerifyFailureEventArgs } from '@game-studio/game-framework';
 import { ProcedureCheckResources } from './ProcedureCheckResources';
 import { GameEntry } from 'db://assets/Game/Scripts/Base/GameEntry';
-import { GameFrameworkLog } from 'db://assets/GameFramework/Base/Log/GameFrameworkLog';
-import {
-    ResourceVerifyStartEventArgs,
-    ResourceVerifySuccessEventArgs,
-    ResourceVerifyFailureEventArgs,
-} from 'db://assets/GameFramework/Resource/ResourceEventArgs';
+
+
 
 export class ProcedureVerifyResources extends ProcedureBase {
     private _complete = false;

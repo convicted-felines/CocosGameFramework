@@ -1,10 +1,11 @@
-import { ProcedureBase } from 'db://assets/GameFramework/Procedure/ProcedureBase';
-import { IFsm } from 'db://assets/GameFramework/FSM/IFsm';
-import { ProcedureManager } from 'db://assets/GameFramework/Procedure/ProcedureManager';
+
+
+
+import { ProcedureBase, IFsm, ProcedureManager, GameFrameworkLog } from '@game-studio/game-framework';
 import { ProcedureSplash } from './ProcedureSplash';
 import { GameEntry } from 'db://assets/Game/Scripts/Base/GameEntry';
 import { Constant } from 'db://assets/Game/Scripts/Definition/Constant';
-import { GameFrameworkLog } from 'db://assets/GameFramework/Base/Log/GameFrameworkLog';
+
 
 export class ProcedureLaunch extends ProcedureBase {
     onEnter(_fsm: IFsm<ProcedureManager>): void {

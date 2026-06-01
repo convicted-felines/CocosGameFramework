@@ -1,11 +1,12 @@
+import { GameFrameworkEntry, MODULE_ID, FsmManager, IProcedureManager, ProcedureManager, ProcedureBase } from '@game-studio/game-framework';
 import { _decorator } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
-import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
-import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
-import { FsmManager } from '../../GameFramework/FSM/FsmManager';
-import { IProcedureManager } from '../../GameFramework/Procedure/IProcedureManager';
-import { ProcedureManager } from '../../GameFramework/Procedure/ProcedureManager';
-import { ProcedureBase } from '../../GameFramework/Procedure/ProcedureBase';
+
+
+
+
+
+
 
 const { ccclass } = _decorator;
 
@@ -29,7 +30,7 @@ export class ProcedureComponent extends GameFrameworkComponent {
     initialize(procedures: ProcedureBase[], entranceProcedure: ProcedureBase): void {
         const fsmManager = GameFrameworkEntry.getModule(FsmManager, MODULE_ID.FSM);
         this._manager.initialize(fsmManager, procedures);
-        this._manager.startProcedureByType(entranceProcedure.constructor);
+        this._manager.startProcedure(entranceProcedure.constructor as new (...args: any[]) => ProcedureBase);
     }
 
     get currentProcedure(): ProcedureBase | null { return this._manager.currentProcedure; }

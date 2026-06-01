@@ -1,6 +1,7 @@
+import { FileSystemAccess, FileSystemStream, SeekOrigin } from '@game-studio/game-framework';
 import { sys, _decorator } from 'cc';
-import { FileSystemAccess } from '../../GameFramework/FileSystem/FileSystemAccess';
-import { FileSystemStream, SeekOrigin } from '../../GameFramework/FileSystem/FileSystemStream';
+
+
 import { FileSystemHelperBase } from './FileSystemHelperBase';
 import { HelperRegistry } from '../Utility/HelperRegistry';
 

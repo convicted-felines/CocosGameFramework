@@ -1,5 +1,6 @@
+import { PlaySoundParams } from '@game-studio/game-framework';
 import { AudioClip, AudioSource, Tween, _decorator, tween } from 'cc';
-import { PlaySoundParams } from '../../GameFramework/Sound/PlaySoundParams';
+
 import { SoundAgentHelperBase } from './SoundAgentHelperBase';
 
 const { ccclass, requireComponent } = _decorator;

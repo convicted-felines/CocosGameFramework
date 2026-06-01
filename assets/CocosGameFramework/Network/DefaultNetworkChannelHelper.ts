@@ -1,7 +1,8 @@
+import { IPacketHeader, INetworkChannel, Packet } from '@game-studio/game-framework';
 import { _decorator } from 'cc';
-import { IPacketHeader } from '../../GameFramework/Network/INetworkChannelHelper';
-import { INetworkChannel } from '../../GameFramework/Network/INetworkChannel';
-import { Packet } from '../../GameFramework/Network/Packet';
+
+
+
 import { NetworkChannelHelperBase } from './NetworkChannelHelperBase';
 import { HelperRegistry } from '../Utility/HelperRegistry';
 

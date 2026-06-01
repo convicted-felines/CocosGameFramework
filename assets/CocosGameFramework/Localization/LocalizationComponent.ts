@@ -1,8 +1,9 @@
+import { GameFrameworkEntry, MODULE_ID, LocalizationManager } from '@game-studio/game-framework';
 import { _decorator, Enum } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
-import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
-import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
-import { LocalizationManager } from '../../GameFramework/Localization/LocalizationManager';
+
+
+
 import { DefaultLocalizationHelper } from './DefaultLocalizationHelper';
 import { LocalizationHelperBase } from './LocalizationHelperBase';
 import { HelperRegistry } from '../Utility/HelperRegistry';

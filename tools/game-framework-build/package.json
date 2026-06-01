@@ -3,9 +3,14 @@
     "version": "1.0.0",
     "private": true,
     "scripts": {
-        "build": "rollup -c rollup.config.mjs"
+        "build": "rollup -c rollup.config.mjs",
+        "build:obfuscate": "cross-env OBFUSCATE=1 rollup -c rollup.config.mjs",
+        "pack": "npm run build && cd ../../frameworkNpm && npm pack",
+        "pack:obfuscate": "npm run build:obfuscate && cd ../../frameworkNpm-obfuscated && npm pack",
+        "migrate-imports": "node migrate-imports.mjs"
     },
     "devDependencies": {
+        "cross-env": "^7.0.3",
         "@rollup/plugin-typescript": "^12.3.0",
         "rollup": "^4.60.4",
         "rollup-plugin-dts": "^6.4.1",

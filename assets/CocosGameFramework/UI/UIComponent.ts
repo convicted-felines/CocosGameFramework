@@ -1,15 +1,6 @@
+import { GameFrameworkEntry, MODULE_ID, UIManager, IUIGroup, OpenUIFormSuccessEventArgs, OpenUIFormFailureEventArgs, CloseUIFormCompleteEventArgs, EventManager } from '@game-studio/game-framework';
 import { _decorator, Node, Enum } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
-import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
-import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
-import { UIManager } from '../../GameFramework/UI/UIManager';
-import { IUIGroup } from '../../GameFramework/UI/IUIGroup';
-import {
-    OpenUIFormSuccessEventArgs,
-    OpenUIFormFailureEventArgs,
-    CloseUIFormCompleteEventArgs,
-} from '../../GameFramework/UI/UIEventArgs';
-import { EventManager } from '../../GameFramework/Event/EventManager';
 import { CocosResourceManager } from '../Resource/CocosResourceManager';
 import { DefaultUIFormHelper } from './DefaultUIFormHelper';
 import { UIFormLogic } from './UIFormLogic';

@@ -1,5 +1,6 @@
+import { IDownloadAgentHelper } from '@game-studio/game-framework';
 import { Component, _decorator } from 'cc';
-import { IDownloadAgentHelper } from '../../GameFramework/Download/IDownloadAgentHelper';
+
 
 const { ccclass } = _decorator;
 

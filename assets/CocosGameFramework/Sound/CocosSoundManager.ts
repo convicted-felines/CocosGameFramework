@@ -1,6 +1,7 @@
+import { SoundManager, SoundAgent, SoundGroup, PlaySoundParams } from '@game-studio/game-framework';
 import { AudioClip, AudioSource, Node, tween, Tween } from 'cc';
-import { SoundManager, SoundAgent, SoundGroup } from '../../GameFramework/Sound/SoundManager';
-import { PlaySoundParams } from '../../GameFramework/Sound/PlaySoundParams';
+
+
 
 // ---------- Cocos-specific SoundAgent ----------
 

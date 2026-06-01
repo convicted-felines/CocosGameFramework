@@ -1,5 +1,6 @@
+import { PlaySoundParams } from '@game-studio/game-framework';
 import { AudioClip, AudioSource, Component, _decorator } from 'cc';
-import { PlaySoundParams } from '../../GameFramework/Sound/PlaySoundParams';
+
 
 const { ccclass } = _decorator;
 

@@ -1,7 +1,8 @@
+import { ReferencePool, ReferencePoolInfo } from '@game-studio/game-framework';
 import { _decorator } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
-import { ReferencePool } from '../../GameFramework/ReferencePool/ReferencePool';
-import { ReferencePoolInfo } from '../../GameFramework/ReferencePool/ReferencePoolInfo';
+
+
 
 const { ccclass, property } = _decorator;
 

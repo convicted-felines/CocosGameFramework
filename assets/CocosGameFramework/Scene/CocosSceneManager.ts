@@ -1,5 +1,6 @@
+import { SceneManager } from '@game-studio/game-framework';
 import { director, Camera, Scene } from 'cc';
-import { SceneManager } from '../../GameFramework/Scene/SceneManager';
+
 
 export class CocosSceneManager extends SceneManager {
     private _additiveScenes: Map<string, Scene> = new Map();

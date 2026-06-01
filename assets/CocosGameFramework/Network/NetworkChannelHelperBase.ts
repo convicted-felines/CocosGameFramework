@@ -1,7 +1,8 @@
+import { INetworkChannelHelper, IPacketHeader, INetworkChannel, Packet } from '@game-studio/game-framework';
 import { Component, _decorator } from 'cc';
-import { INetworkChannelHelper, IPacketHeader } from '../../GameFramework/Network/INetworkChannelHelper';
-import { INetworkChannel } from '../../GameFramework/Network/INetworkChannel';
-import { Packet } from '../../GameFramework/Network/Packet';
+
+
+
 
 const { ccclass } = _decorator;
 

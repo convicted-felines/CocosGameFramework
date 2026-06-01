@@ -1,5 +1,6 @@
+import { IEntityInfo } from '@game-studio/game-framework';
 import { Node, Prefab, instantiate, _decorator } from 'cc';
-import { IEntityInfo } from '../../GameFramework/Entity/IEntityHelper';
+
 import { EntityLogic } from './EntityLogic';
 import { EntityHelperBase } from './EntityHelperBase';
 import { HelperRegistry } from '../Utility/HelperRegistry';

@@ -1,7 +1,8 @@
+import { IDataTableHelper, IDataTable, IDataRow } from '@game-studio/game-framework';
 import { Component, _decorator } from 'cc';
-import { IDataTableHelper } from '../../GameFramework/DataTable/IDataTableHelper';
-import { IDataTable } from '../../GameFramework/DataTable/IDataTable';
-import { IDataRow } from '../../GameFramework/DataTable/IDataRow';
+
+
+
 
 const { ccclass } = _decorator;
 

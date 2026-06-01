@@ -1,6 +1,7 @@
+import { IDataTable, IDataRow } from '@game-studio/game-framework';
 import { _decorator } from 'cc';
-import { IDataTable } from '../../GameFramework/DataTable/IDataTable';
-import { IDataRow } from '../../GameFramework/DataTable/IDataRow';
+
+
 import { DataTableHelperBase } from './DataTableHelperBase';
 import { HelperRegistry } from '../Utility/HelperRegistry';
 

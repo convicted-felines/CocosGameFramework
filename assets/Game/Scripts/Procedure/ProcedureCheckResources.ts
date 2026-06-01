@@ -1,10 +1,11 @@
-import { ProcedureBase } from 'db://assets/GameFramework/Procedure/ProcedureBase';
-import { IFsm } from 'db://assets/GameFramework/FSM/IFsm';
-import { ProcedureManager } from 'db://assets/GameFramework/Procedure/ProcedureManager';
+
+
+
+import { ProcedureBase, IFsm, ProcedureManager, GameFrameworkLog } from '@game-studio/game-framework';
 import { ProcedureUpdateResources } from './ProcedureUpdateResources';
 import { ProcedurePreload } from './ProcedurePreload';
 import { GameEntry } from 'db://assets/Game/Scripts/Base/GameEntry';
-import { GameFrameworkLog } from 'db://assets/GameFramework/Base/Log/GameFrameworkLog';
+
 
 export class ProcedureCheckResources extends ProcedureBase {
     private _complete = false;

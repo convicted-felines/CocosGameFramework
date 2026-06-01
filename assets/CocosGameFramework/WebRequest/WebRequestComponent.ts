@@ -1,14 +1,6 @@
+import { GameFrameworkEntry, MODULE_ID, EventManager, IWebRequestInfo, IWebRequestParams, WebRequestStartEventArgs, WebRequestSuccessEventArgs, WebRequestFailureEventArgs } from '@game-studio/game-framework';
 import { _decorator } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
-import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
-import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
-import { EventManager } from '../../GameFramework/Event/EventManager';
-import { IWebRequestInfo, IWebRequestParams } from '../../GameFramework/WebRequest/IWebRequestManager';
-import {
-    WebRequestStartEventArgs,
-    WebRequestSuccessEventArgs,
-    WebRequestFailureEventArgs,
-} from '../../GameFramework/WebRequest/WebRequestEventArgs';
 import { CocosWebRequestManager } from './CocosWebRequestManager';
 
 const { ccclass, property } = _decorator;

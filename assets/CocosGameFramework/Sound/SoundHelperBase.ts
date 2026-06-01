@@ -1,5 +1,6 @@
+import { ISoundHelper } from '@game-studio/game-framework';
 import { Component, _decorator } from 'cc';
-import { ISoundHelper } from '../../GameFramework/Sound/ISoundHelper';
+
 
 const { ccclass } = _decorator;
 

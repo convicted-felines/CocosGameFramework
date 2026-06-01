@@ -1,5 +1,6 @@
+import { IEntityGroupHelper } from '@game-studio/game-framework';
 import { Component, Node, _decorator } from 'cc';
-import { IEntityGroupHelper } from '../../GameFramework/Entity/IEntityGroupHelper';
+
 
 const { ccclass, property } = _decorator;
 

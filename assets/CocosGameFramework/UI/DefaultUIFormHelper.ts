@@ -1,5 +1,6 @@
+import { IUIGroup } from '@game-studio/game-framework';
 import { Node, Prefab, instantiate, _decorator } from 'cc';
-import { IUIGroup } from '../../GameFramework/UI/IUIGroup';
+
 import { UIFormLogic } from './UIFormLogic';
 import { UIFormHelperBase } from './UIFormHelperBase';
 import { HelperRegistry } from '../Utility/HelperRegistry';

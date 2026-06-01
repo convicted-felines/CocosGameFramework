@@ -1,12 +1,13 @@
+import { GameFrameworkEntry, MODULE_ID, ConfigManager, IEventManager, IResourceManager } from '@game-studio/game-framework';
 import { _decorator, Enum } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
-import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
-import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
-import { ConfigManager } from '../../GameFramework/Config/ConfigManager';
+
+
+
 import { ConfigHelperBase } from './ConfigHelperBase';
 import { DefaultConfigHelper } from './DefaultConfigHelper';
-import { IEventManager } from '../../GameFramework/Event/IEventManager';
-import { IResourceManager } from '../../GameFramework/Resource/IResourceManager';
+
+
 import { LoadConfigSuccessEventArgs, LoadConfigFailureEventArgs } from './ConfigEventArgs';
 import { HelperRegistry } from '../Utility/HelperRegistry';
 import { ConfigHelperType } from './ConfigHelperType';

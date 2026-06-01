@@ -1,6 +1,7 @@
+import { ReferencePool, IReference } from '@game-studio/game-framework';
 import { ITestCase, ITestItem } from '../TestCase';
-import { ReferencePool } from 'db://assets/GameFramework/ReferencePool/ReferencePool';
-import { IReference } from 'db://assets/GameFramework/ReferencePool/IReference';
+
+
 import { GameEntry } from '../../Base/GameEntry';
 
 class _TestRef implements IReference {

@@ -1,5 +1,6 @@
-import { BaseEventArgs } from '../../GameFramework/Event/BaseEventArgs';
-import { ReferencePool } from '../../GameFramework/ReferencePool/ReferencePool';
+import { BaseEventArgs, ReferencePool } from '@game-studio/game-framework';
+
+
 
 export class LoadConfigSuccessEventArgs extends BaseEventArgs {
     static readonly eventId = 'config.loadSuccess';

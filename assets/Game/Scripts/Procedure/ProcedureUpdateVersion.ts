@@ -1,9 +1,10 @@
-import { ProcedureBase } from 'db://assets/GameFramework/Procedure/ProcedureBase';
-import { IFsm } from 'db://assets/GameFramework/FSM/IFsm';
-import { ProcedureManager } from 'db://assets/GameFramework/Procedure/ProcedureManager';
+
+
+
+import { ProcedureBase, IFsm, ProcedureManager, GameFrameworkLog } from '@game-studio/game-framework';
 import { ProcedureVerifyResources } from './ProcedureVerifyResources';
 import { GameEntry } from 'db://assets/Game/Scripts/Base/GameEntry';
-import { GameFrameworkLog } from 'db://assets/GameFramework/Base/Log/GameFrameworkLog';
+
 import { UpdateTask } from 'db://assets/CocosGameFramework/Resource/CocosResourceManager';
 
 export class ProcedureUpdateVersion extends ProcedureBase {

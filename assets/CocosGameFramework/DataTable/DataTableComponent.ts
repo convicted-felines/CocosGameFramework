@@ -1,12 +1,13 @@
+import { GameFrameworkEntry, MODULE_ID, DataTableManager, IDataTable, IDataRow, IEventManager, IResourceManager } from '@game-studio/game-framework';
 import { _decorator, Enum } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
-import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
-import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
-import { DataTableManager } from '../../GameFramework/DataTable/DataTableManager';
-import { IDataTable } from '../../GameFramework/DataTable/IDataTable';
-import { IDataRow } from '../../GameFramework/DataTable/IDataRow';
-import { IEventManager } from '../../GameFramework/Event/IEventManager';
-import { IResourceManager } from '../../GameFramework/Resource/IResourceManager';
+
+
+
+
+
+
+
 import { LoadDataTableSuccessEventArgs, LoadDataTableFailureEventArgs } from './DataTableEventArgs';
 import { DataTableHelperBase } from './DataTableHelperBase';
 import { DefaultDataTableHelper } from './DefaultDataTableHelper';

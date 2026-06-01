@@ -4,11 +4,12 @@
         "module": "ESNext",
         "moduleResolution": "node10",
         "ignoreDeprecations": "6.0",
-        "rootDir": "../../assets/GameFramework",
+        "rootDir": "../../packages/GameFramework",
         "strict": false,
         "esModuleInterop": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "preserveConstEnums": true
     },
-    "include": ["../../assets/GameFramework/**/*.ts"],
-    "exclude": ["../../assets/GameFramework/node_modules"]
+    "include": ["../../packages/GameFramework/**/*.ts"],
+    "exclude": ["../../packages/GameFramework/node_modules"]
 }

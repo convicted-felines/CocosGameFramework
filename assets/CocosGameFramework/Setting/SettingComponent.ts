@@ -1,8 +1,9 @@
+import { GameFrameworkEntry, MODULE_ID, SettingManager } from '@game-studio/game-framework';
 import { _decorator, Enum } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
-import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
-import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
-import { SettingManager } from '../../GameFramework/Setting/SettingManager';
+
+
+
 import { LocalStorageSettingHelper } from './LocalStorageSettingHelper';
 import { HelperRegistry } from '../Utility/HelperRegistry';
 import { SettingHelperType } from './SettingHelperType';

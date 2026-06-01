@@ -1,6 +1,7 @@
+import { IConfigHelper, IConfigManager } from '@game-studio/game-framework';
 import { Component, _decorator } from 'cc';
-import { IConfigHelper } from '../../GameFramework/Config/IConfigHelper';
-import { IConfigManager } from '../../GameFramework/Config/IConfigManager';
+
+
 
 const { ccclass } = _decorator;
 

@@ -1,5 +1,6 @@
+import { IConfigManager } from '@game-studio/game-framework';
 import { _decorator } from 'cc';
-import { IConfigManager } from '../../GameFramework/Config/IConfigManager';
+
 import { ConfigHelperBase } from './ConfigHelperBase';
 import { HelperRegistry } from '../Utility/HelperRegistry';
 

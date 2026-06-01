@@ -1,7 +1,8 @@
+import { GameEventArgs, ReferencePool } from '@game-studio/game-framework';
 import { ITestCase, ITestItem } from '../TestCase';
 import { GameEntry } from '../../Base/GameEntry';
-import { GameEventArgs } from 'db://assets/GameFramework/Event/GameEventArgs';
-import { ReferencePool } from 'db://assets/GameFramework/ReferencePool/ReferencePool';
+
+
 
 class _TestEventArgs extends GameEventArgs {
     static readonly EventId = '__test_event__';

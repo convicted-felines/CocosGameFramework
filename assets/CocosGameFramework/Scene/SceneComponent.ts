@@ -1,23 +1,13 @@
+import { GameFrameworkEntry, MODULE_ID, EventManager, EventHandler, SceneLoadedCallback, SceneUnloadedCallback, SceneFailureCallback, LoadSceneSuccessEventArgs, LoadSceneFailureEventArgs, LoadSceneUpdateEventArgs, UnloadSceneSuccessEventArgs, UnloadSceneFailureEventArgs, ActiveSceneChangedEventArgs } from '@game-studio/game-framework';
 import { _decorator, Camera } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
-import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
-import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
-import { EventManager } from '../../GameFramework/Event/EventManager';
-import { EventHandler } from '../../GameFramework/Event/IEventManager';
+
+
+
+
 import { CocosSceneManager } from './CocosSceneManager';
-import {
-    SceneLoadedCallback,
-    SceneUnloadedCallback,
-    SceneFailureCallback,
-} from '../../GameFramework/Scene/ISceneManager';
-import {
-    LoadSceneSuccessEventArgs,
-    LoadSceneFailureEventArgs,
-    LoadSceneUpdateEventArgs,
-    UnloadSceneSuccessEventArgs,
-    UnloadSceneFailureEventArgs,
-    ActiveSceneChangedEventArgs,
-} from '../../GameFramework/Scene/SceneEventArgs';
+
+
 
 const { ccclass, property } = _decorator;
 

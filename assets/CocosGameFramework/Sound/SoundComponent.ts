@@ -1,15 +1,16 @@
+import { GameFrameworkEntry, MODULE_ID, PlaySoundParams, ISoundGroup, ISoundAgent, PlaySoundSuccessEventArgs, PlaySoundFailureEventArgs, PlaySoundUpdateEventArgs, PlaySoundDependencyAssetEventArgs } from '@game-studio/game-framework';
 import { _decorator, Node, Enum } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
-import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
-import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
+
+
 import { CocosSoundManager } from './CocosSoundManager';
 import { CocosResourceManager } from '../Resource/CocosResourceManager';
-import { PlaySoundParams } from '../../GameFramework/Sound/PlaySoundParams';
-import { ISoundGroup, ISoundAgent } from '../../GameFramework/Sound/ISoundManager';
-import { PlaySoundSuccessEventArgs } from '../../GameFramework/Sound/PlaySoundSuccessEventArgs';
-import { PlaySoundFailureEventArgs } from '../../GameFramework/Sound/PlaySoundFailureEventArgs';
-import { PlaySoundUpdateEventArgs } from '../../GameFramework/Sound/PlaySoundUpdateEventArgs';
-import { PlaySoundDependencyAssetEventArgs } from '../../GameFramework/Sound/PlaySoundDependencyAssetEventArgs';
+
+
+
+
+
+
 import { DefaultSoundHelper } from './DefaultSoundHelper';
 import { HelperRegistry } from '../Utility/HelperRegistry';
 import { SoundHelperType } from './SoundHelperType';

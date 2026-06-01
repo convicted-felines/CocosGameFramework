@@ -1,6 +1,7 @@
+import { GameFrameworkLog } from '@game-studio/game-framework';
 import { _decorator, Enum, game, native, sys } from 'cc';
 import { GameFrameworkComponent } from './GameFrameworkComponent';
-import { GameFrameworkLog } from '../../GameFramework/Base/Log/GameFrameworkLog';
+
 import { GameEntryBase } from './GameEntryBase';
 import { LogHelperBase } from '../Utility/LogHelperBase';
 import { DefaultLogHelper } from '../Utility/DefaultLogHelper';

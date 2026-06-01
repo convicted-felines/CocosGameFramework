@@ -1,5 +1,6 @@
+import { ISettingHelper } from '@game-studio/game-framework';
 import { Component, _decorator } from 'cc';
-import { ISettingHelper } from '../../GameFramework/Setting/ISettingHelper';
+
 
 const { ccclass } = _decorator;
 

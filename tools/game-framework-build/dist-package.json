@@ -2,7 +2,14 @@
     "name": "@game-studio/game-framework",
     "version": "1.0.0",
     "description": "CocosGameFramework core layer - engine-agnostic TypeScript modules",
-    "main": "index.ts",
-    "types": "index.ts",
+    "type": "module",
+    "main": "./game-framework.mjs",
+    "types": "./game-framework.d.ts",
+    "exports": {
+        ".": {
+            "import": "./game-framework.mjs",
+            "types": "./game-framework.d.ts"
+        }
+    },
     "license": "MIT"
 }

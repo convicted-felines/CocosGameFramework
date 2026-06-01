@@ -1,6 +1,7 @@
+import { GameFrameworkEntry, GameFrameworkLog } from '@game-studio/game-framework';
 import { _decorator, Component, director, game } from 'cc';
-import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
-import { GameFrameworkLog } from '../../GameFramework/Base/Log/GameFrameworkLog';
+
+
 import { GameFrameworkComponent } from './GameFrameworkComponent';
 import { ShutdownType } from './ShutdownType';
 

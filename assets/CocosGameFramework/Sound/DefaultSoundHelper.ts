@@ -1,7 +1,8 @@
+import { GameFrameworkEntry, MODULE_ID } from '@game-studio/game-framework';
 import { _decorator } from 'cc';
 import { SoundHelperBase } from './SoundHelperBase';
-import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
-import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
+
+
 import { CocosResourceManager } from '../Resource/CocosResourceManager';
 import { HelperRegistry } from '../Utility/HelperRegistry';
 

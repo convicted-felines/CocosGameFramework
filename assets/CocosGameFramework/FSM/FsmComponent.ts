@@ -1,10 +1,11 @@
+import { GameFrameworkEntry, MODULE_ID, FsmManager, FsmState, IFsm } from '@game-studio/game-framework';
 import { _decorator } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
-import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
-import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
-import { FsmManager } from '../../GameFramework/FSM/FsmManager';
-import { FsmState } from '../../GameFramework/FSM/FsmState';
-import { IFsm } from '../../GameFramework/FSM/IFsm';
+
+
+
+
+
 
 const { ccclass } = _decorator;
 

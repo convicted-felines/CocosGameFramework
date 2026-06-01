@@ -1,5 +1,6 @@
+import { IEntityInfo } from '@game-studio/game-framework';
 import { _decorator, Component } from 'cc';
-import { IEntityInfo } from '../../GameFramework/Entity/IEntityHelper';
+
 
 const { ccclass } = _decorator;
 

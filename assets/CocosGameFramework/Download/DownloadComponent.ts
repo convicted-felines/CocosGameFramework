@@ -1,15 +1,11 @@
+import { GameFrameworkEntry, MODULE_ID, EventManager, IDownloadInfo, IDownloadParams, DownloadStartEventArgs, DownloadUpdateEventArgs, DownloadSuccessEventArgs, DownloadFailureEventArgs } from '@game-studio/game-framework';
 import { _decorator, Enum } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
-import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
-import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
-import { EventManager } from '../../GameFramework/Event/EventManager';
-import { IDownloadInfo, IDownloadParams } from '../../GameFramework/Download/IDownloadManager';
-import {
-    DownloadStartEventArgs,
-    DownloadUpdateEventArgs,
-    DownloadSuccessEventArgs,
-    DownloadFailureEventArgs,
-} from '../../GameFramework/Download/DownloadEventArgs';
+
+
+
+
+
 import { CocosDownloadManager } from './CocosDownloadManager';
 import { DownloadAgentHelperType } from './DownloadAgentHelperType';
 import { DefaultDownloadAgentHelper } from './DefaultDownloadAgentHelper';

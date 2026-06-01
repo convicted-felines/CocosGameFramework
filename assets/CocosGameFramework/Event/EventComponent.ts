@@ -1,10 +1,11 @@
+import { GameFrameworkEntry, MODULE_ID, EventManager, EventHandler, EventPoolMode, BaseEventArgs } from '@game-studio/game-framework';
 import { _decorator } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
-import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
-import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
-import { EventManager } from '../../GameFramework/Event/EventManager';
-import { EventHandler, EventPoolMode } from '../../GameFramework/Event/IEventManager';
-import { BaseEventArgs } from '../../GameFramework/Event/BaseEventArgs';
+
+
+
+
+
 
 const { ccclass, property } = _decorator;
 

@@ -1,7 +1,8 @@
+import { GameFrameworkLog, LocalizationManager } from '@game-studio/game-framework';
 import { _decorator, JsonAsset, TextAsset } from 'cc';
 import { GameFrameworkComponent } from 'db://assets/CocosGameFramework/Base/GameFrameworkComponent';
-import { GameFrameworkLog } from 'db://assets/GameFramework/Base/Log/GameFrameworkLog';
-import { LocalizationManager } from 'db://assets/GameFramework/Localization/LocalizationManager';
+
+
 import { ResourceMode } from 'db://assets/Game/Scripts/Definition/Constant';
 
 const { ccclass, property } = _decorator;

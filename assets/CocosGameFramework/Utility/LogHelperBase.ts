@@ -1,6 +1,7 @@
+import { ILogHelper, GameFrameworkLogLevel } from '@game-studio/game-framework';
 import { Component, _decorator } from 'cc';
-import { ILogHelper } from '../../GameFramework/Base/Log/ILogHelper';
-import { GameFrameworkLogLevel } from '../../GameFramework/Base/Log/GameFrameworkLogLevel';
+
+
 
 const { ccclass } = _decorator;
 

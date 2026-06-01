@@ -1,7 +1,8 @@
+import { GameEventArgs, ReferencePool } from '@game-studio/game-framework';
 import { _decorator, Component, Node } from 'cc';
 import { GameEntry } from './Base/GameEntry';
-import { GameEventArgs } from '../../GameFramework/Event/GameEventArgs';
-import { ReferencePool } from '../../GameFramework/ReferencePool/ReferencePool';
+
+
 import { Log } from '../../CocosGameFramework/Utility/Log';
 const { ccclass, property } = _decorator;
 

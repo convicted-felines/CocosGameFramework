@@ -1,10 +1,11 @@
+import { GameFrameworkEntry, MODULE_ID, ObjectPoolManager, ObjectBase, IObjectPool } from '@game-studio/game-framework';
 import { _decorator } from 'cc';
 import { GameFrameworkComponent } from '../Base/GameFrameworkComponent';
-import { GameFrameworkEntry } from '../../GameFramework/Base/GameFrameworkEntry';
-import { MODULE_ID } from '../../GameFramework/Base/GameFrameworkModuleIds';
-import { ObjectPoolManager } from '../../GameFramework/ObjectPool/ObjectPoolManager';
-import { ObjectBase } from '../../GameFramework/ObjectPool/ObjectBase';
-import { IObjectPool } from '../../GameFramework/ObjectPool/IObjectPool';
+
+
+
+
+
 
 const { ccclass, property } = _decorator;
 

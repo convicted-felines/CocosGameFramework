@@ -1,6 +1,7 @@
-import { ProcedureBase } from 'db://assets/GameFramework/Procedure/ProcedureBase';
-import { IFsm } from 'db://assets/GameFramework/FSM/IFsm';
-import { ProcedureManager } from 'db://assets/GameFramework/Procedure/ProcedureManager';
+
+
+
+import { ProcedureBase, IFsm, ProcedureManager } from '@game-studio/game-framework';
 import { ProcedurePreload } from './ProcedurePreload';
 import { ProcedureInitResources } from './ProcedureInitResources';
 import { ProcedureCheckVersion } from './ProcedureCheckVersion';

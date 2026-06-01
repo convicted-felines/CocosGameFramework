@@ -1,5 +1,6 @@
-import { GameFrameworkLog } from '../../GameFramework/Base/Log/GameFrameworkLog';
-import { GameFrameworkLogLevel } from '../../GameFramework/Base/Log/GameFrameworkLogLevel';
+import { GameFrameworkLog, GameFrameworkLogLevel } from '@game-studio/game-framework';
+
+
 
 /**
  * 业务层日志门面。所有日志从此处统一进入，内部转发给 GameFrameworkLog。

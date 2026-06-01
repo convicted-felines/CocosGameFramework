@@ -1,4 +1,5 @@
-import { WebRequestManager, WebRequestTask } from '../../GameFramework/WebRequest/WebRequestManager';
+import { WebRequestManager, WebRequestTask } from '@game-studio/game-framework';
+
 
 export class CocosWebRequestManager extends WebRequestManager {
     private _xhrs: Map<number, XMLHttpRequest> = new Map();

@@ -1,31 +1,10 @@
+import { GameFrameworkError, GameFrameworkModule, IResourceManager, IResourceGroup, HasAssetResult, LoadFailureCallback, LoadSuccessCallback, LoadProgressCallback, LoadSceneSuccessCallback, LoadSceneFailureCallback, UnloadSceneSuccessCallback, UnloadSceneFailureCallback, ResourceUpdateStatus, EventHandler, ResourceUpdateStartEventArgs, ResourceUpdateChangedEventArgs, ResourceUpdateSuccessEventArgs, ResourceUpdateFailureEventArgs, ResourceUpdateAllCompleteEventArgs, ResourceVerifyStartEventArgs, ResourceVerifySuccessEventArgs, ResourceApplyStartEventArgs, ResourceApplySuccessEventArgs, LoadSceneSuccessEventArgs, LoadSceneFailureEventArgs, UnloadSceneSuccessEventArgs, UnloadSceneFailureEventArgs, LoadAssetSuccessEventArgs, LoadAssetFailureEventArgs } from '@game-studio/game-framework';
 import { assetManager, Asset, director } from 'cc';
-import { GameFrameworkError } from '../../GameFramework/Base/GameFrameworkError';
-import { GameFrameworkModule } from '../../GameFramework/Base/GameFrameworkModule';
-import {
-    IResourceManager, IResourceGroup, HasAssetResult,
-    LoadFailureCallback, LoadSuccessCallback, LoadProgressCallback,
-    LoadSceneSuccessCallback, LoadSceneFailureCallback,
-    UnloadSceneSuccessCallback, UnloadSceneFailureCallback,
-    ResourceUpdateStatus,
-} from '../../GameFramework/Resource/IResourceManager';
-import { EventHandler } from '../../GameFramework/Event/IEventManager';
-import {
-    ResourceUpdateStartEventArgs,
-    ResourceUpdateChangedEventArgs,
-    ResourceUpdateSuccessEventArgs,
-    ResourceUpdateFailureEventArgs,
-    ResourceUpdateAllCompleteEventArgs,
-    ResourceVerifyStartEventArgs,
-    ResourceVerifySuccessEventArgs,
-    ResourceApplyStartEventArgs,
-    ResourceApplySuccessEventArgs,
-    LoadSceneSuccessEventArgs,
-    LoadSceneFailureEventArgs,
-    UnloadSceneSuccessEventArgs,
-    UnloadSceneFailureEventArgs,
-    LoadAssetSuccessEventArgs,
-    LoadAssetFailureEventArgs,
-} from '../../GameFramework/Resource/ResourceEventArgs';
+
+
+
+
+
 
 // ─── ResourceGroup ────────────────────────────────────────────────────────────
 
