@@ -5,3 +5,5 @@
 	1		music_menu
 	2		music_background
 	3		music_about
+	4		music_background
+	5		music_about

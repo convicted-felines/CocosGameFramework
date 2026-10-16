@@ -1,7 +1,7 @@
 import { IDataRow } from '@game-studio/game-framework';
 // 仓库地址 https://github.com/convicted-felines/CocosGameFramework.git
 // 此文件由工具自动生成，请勿手动修改。
-// 生成时间：2026/5/22 18:03:59
+// 生成时间：2026/10/16 15:29:38
 // 数据表：Sound
 
 

@@ -25,9 +25,9 @@ export class SettingComponent extends GameFrameworkComponent {
         super.onLoad();
         this._manager = new SettingManager();
         GameFrameworkEntry.registerModule(MODULE_ID.SETTING, this._manager);
-    }
 
-    start(): void {
+        // Helper 必须在 onLoad 完成：GameEntry.start() 早于子组件 start()，
+        // 而 ProcedureLaunch 在 GameEntry.start() 中就会读取 Setting。
         const helper = HelperRegistry.createHelper(this.node, SettingHelperType[this.settingHelperType], LocalStorageSettingHelper);
         this._manager.setSettingHelper(helper);
         this._manager.load();

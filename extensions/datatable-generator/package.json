@@ -1,0 +1,39 @@
+{
+    "package_version": 2,
+    "name": "datatable-generator",
+    "version": "1.0.0",
+    "description": "在编辑器菜单中运行数据表生成器（Excel / txt → DRXxx.ts + .bytes）",
+    "main": "./main.js",
+    "author": "GameFramework",
+    "editor": ">=3.8.0",
+    "contributions": {
+        "menu": [
+            {
+                "path": "GameFramework/数据表",
+                "label": "全部生成 (Excel → txt → 代码)",
+                "message": "generate-all"
+            },
+            {
+                "path": "GameFramework/数据表",
+                "label": "仅导出 Excel → txt",
+                "message": "generate-excel"
+            },
+            {
+                "path": "GameFramework/数据表",
+                "label": "仅生成代码 (txt → DRXxx + bytes)",
+                "message": "generate-code"
+            }
+        ],
+        "messages": {
+            "generate-all": {
+                "methods": ["generateAll"]
+            },
+            "generate-excel": {
+                "methods": ["generateExcel"]
+            },
+            "generate-code": {
+                "methods": ["generateCode"]
+            }
+        }
+    }
+}

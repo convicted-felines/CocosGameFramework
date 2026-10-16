@@ -1,0 +1,46 @@
+---
+description: TypeScript 编码约定与生命周期配对规则
+globs: "**/*.ts"
+alwaysApply: false
+---
+
+# 事件系统
+
+- 事件参数继承 `GameEventArgs`，实现 `clear()` 支持引用池
+- `subscribe` 在 `onOpen`/`onEnter` 中，`unsubscribe` 在 `onClose`/`onLeave` 中（必须配对）
+- 用 `ReferencePool.acquire` 创建，`fire`/`fireNow` 后由框架 release，不要再使用 args
+
+```typescript
+// ✅ 正确
+GameEntry.Event.subscribe(PlayerDieEventArgs.EventId, this._onDie, this);
+GameEntry.Event.fire(this, PlayerDieEventArgs.create(id, killerId));
+GameEntry.Event.unsubscribe(PlayerDieEventArgs.EventId, this._onDie);
+```
+
+# 流程 (Procedure)
+
+- 继承 `ProcedureBase`，用 `this.changeState(fsm, TargetProcedure)` 切换
+- 流程间传值: `fsm.setData('key', value)` / `fsm.getData<T>('key')`
+- 场景切换: `fsm.setData('NextSceneName', 'SceneName')` + `changeState(fsm, ProcedureChangeScene)`
+
+# 引用池
+
+```typescript
+const args = ReferencePool.acquire(MyEventArgs);
+// 使用...
+ReferencePool.release(args); // fire 自动 release 时不需要手动
+```
+
+# Helper 注册
+
+新 Helper 在文件顶层注册，枚举名与注册名一致：
+
+```typescript
+HelperRegistry.register('MyUIFormHelper', MyUIFormHelper);
+```
+
+# 禁止
+
+- 不要调用 `__init` / `__reinit` 等 `__` 前缀的内部方法
+- 不要直接修改 `frameworkNpm/` 或 `DRXxx.ts`（生成器产出）
+- 不要跳过 `npm run build:framework` 就提交核心层改动

@@ -1,0 +1,50 @@
+---
+description: UI 与 Entity 生命周期及使用规范
+globs: "{assets/Game/Scripts/UI/**,assets/Game/Scripts/Entity/**,assets/CocosGameFramework/UI/**,assets/CocosGameFramework/Entity/**}"
+alwaysApply: false
+---
+
+# UI 界面
+
+- 业务 UI 继承 `UIFormLogic`，挂在 Prefab 根节点
+- 打开: `GameEntry.UI.openUIForm(assetName, bundleName, groupName)`，返回 serialId（< 0 失败）
+- 关闭: `GameEntry.UI.closeUIFormByLogic(form)` 或 `closeUIForm(serialId)`
+- 异步打开: `GameEntry.UI.openUIFormAsync(...)`（UIExtension mixin）
+
+## UI 生命周期
+
+```
+onInit(首次) → onOpen → onUpdate → onPause/onCover → onResume/onReveal → onClose → onRecycle
+```
+
+- `onInit`: 仅首次创建，绑定按钮等一次性逻辑
+- `onOpen`/`onClose`: 每次打开/关闭，事件 subscribe/unsubscribe 在此配对
+- `onRecycle`: 回收入池前重置状态
+
+## UI 分组
+
+Default(0) / Dialog(1) / Tip(2)，在 UIComponent Inspector 配置。
+
+# Entity 实体
+
+- 业务实体继承 `EntityLogic`，挂在 Prefab 根节点
+- 显示: `GameEntry.Entity.showEntity(entityId, assetName, bundleName, groupName, priority?, userData?)`
+- 隐藏: `GameEntry.Entity.hideEntity(entityId)` 或 `hideEntity(logic)`
+- entityId 由业务层唯一分配
+
+## Entity 生命周期
+
+```
+onInit(首次) → onShow(每次显示) → onUpdate → onHide
+```
+
+- `onShow`: 每次显示（含池复用），从 userData 读取初始化参数
+- `onHide`: 隐藏时清理
+
+# 扩展方法
+
+游戏层专属方法写入 `UIExtension.ts` / `EntityExtension.ts`，通过 `GameEntry.UI.xxx()` / `GameEntry.Entity.xxx()` 调用。访问 Component 内部: `(this as unknown as UIComponent)`。
+
+# Prefab 注意
+
+AI 无法直接编辑 `.prefab`，创建 Logic 类后需在 Cocos 编辑器中将组件挂到 Prefab 根节点并绑定 `@property` 引用。

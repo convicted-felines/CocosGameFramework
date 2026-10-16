@@ -1,0 +1,47 @@
+---
+description: CocosGameFramework 三层架构与代码放置规则
+alwaysApply: true
+---
+
+# 框架架构
+
+- 核心层 `packages/GameFramework/`：无 `cc` 依赖，改后执行 `npm run build:framework`
+- 引擎适配层 `assets/CocosGameFramework/`：Component + Helper
+- 业务层 `assets/Game/`：流程、UI、实体、数据表
+- **禁止**在 `assets/` 下放 GameFramework 副本
+
+# 统一入口
+
+通过 `GameEntry.Xxx` 访问模块，仅在 `GameEntry.start()` 后可用：
+
+```typescript
+import { GameEntry } from 'db://assets/Game/Scripts/Base/GameEntry';
+```
+
+# 导入路径
+
+```typescript
+import { ProcedureBase } from '@game-studio/game-framework';           // 核心层
+import { UIFormLogic } from 'db://assets/CocosGameFramework/UI/UIFormLogic'; // 适配层
+import { GameEntry } from 'db://assets/Game/Scripts/Base/GameEntry';   // 业务层
+```
+
+# 代码放置决策
+
+- 框架通用能力 + 无 cc → `packages/GameFramework/`
+- 框架通用能力 + 需要 Node/Prefab → `assets/CocosGameFramework/`
+- 游戏业务逻辑 → `assets/Game/`
+- UI/Entity 扩展方法 → `UIExtension.ts` / `EntityExtension.ts`（mixin），不直接改 Component
+
+# 命名约定
+
+- Procedure: `ProcedureXxx.ts`
+- UI 逻辑: `XxxFormLogic.ts`（挂 Prefab 根节点）
+- 实体逻辑: `XxxEntityLogic.ts`（挂 Prefab 根节点）
+- 数据表行: `DRXxx.ts`（生成器产出，勿手改）
+- 私有成员: `_camelCase`
+- 对外枚举: `export enum`（禁止 `const enum`，npm 打包后无运行时对象）
+
+# 必读文档
+
+任务前参考 `AGENTS.md`；常见开发步骤见 `RECIPES.md`；API 见 `MODULES.md`。
